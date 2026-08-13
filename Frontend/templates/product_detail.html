@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load em_extras %}
+
+{% block content %}
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a> <span>&#8250;</span>
+  {% if category %}<a href="{% url 'product_list' category.slug %}">{{ category.name }}</a> <span>&#8250;</span>{% endif %}
+  {{ p.name }}
+</nav>
+
+<div class="detail">
+  <div class="detail-media">
+    <div class="big-img"><span class="ph">{{ p.name|slice:":2"|upper }}</span></div>
+    <div class="thumbs">
+      <span class="thumb on"></span><span class="thumb"></span><span class="thumb"></span>
+    </div>
+  </div>
+
+  <div class="detail-info">
+    <h1>{{ p.name }}</h1>
+    <div class="detail-sub">
+      <span>Part number: <b>{{ p.part_number }}</b></span>
+      <span>Brand: <b>{{ p.brand_name }}</b></span>
+      {% if p.rating_count %}
+      <span class="stars">{{ p.avg_rating|stars }} <i>({{ p.rating_count }} reviews)</i></span>
+      {% endif %}
+    </div>
+
+    <div class="detail-price">
+      <span class="price-now">{{ p.min_price|money }}</span>
+      {% if p.discount_percent %}
+        <span class="price-old">{{ p.list_price|money }}</span>
+        <span class="save">-{{ p.discount_percent }}%</span>
+      {% endif %}
+    </div>
+
+    {% with v=p.variants.0 %}
+    <div class="tier">
+      <div class="tier-title">Quantity pricing (business customers)</div>
+      <table>
+        <tr>{% for t in v.price_tiers %}<th>From {{ t.min_qty }} pcs</th>{% endfor %}</tr>
+        <tr>{% for t in v.price_tiers %}<td>{{ t.price|money }}</td>{% endfor %}</tr>
+      </table>
+    </div>
+    {% endwith %}
+
+    <div class="detail-stock">
+      {% if p.in_stock %}
+        <span class="tag tag-ok">In stock ({{ p.total_stock }} pcs)</span>
+      {% else %}
+        <span class="tag tag-out">Out of stock</span>
+      {% endif %}
+      <span class="sold">{{ p.sold_count }} sold</span>
+    </div>
+
+    <div class="detail-actions">
+      <button class="btn btn-red btn-lg">Add to cart</button>
+      <button class="btn btn-outline js-wish" data-slug="{{ p.slug }}">
+        {% if in_wishlist %}&#9829; In wishlist{% else %}&#9825; Wishlist{% endif %}
+      </button>
+      <label class="btn btn-outline">
+        <input type="checkbox" class="js-compare" data-slug="{{ p.slug }}"
+               {% if in_compare %}checked{% endif %}> Compare
+      </label>
+    </div>
+
+    <div class="detail-note">
+      12-month warranty &middot; 7-day return for manufacturing defects &middot; VAT invoice available
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab-head">
+    <button class="tab-btn on" data-tab="spec">Specifications</button>
+    <button class="tab-btn" data-tab="desc">Description</button>
+    <button class="tab-btn" data-tab="rev">Reviews ({{ p.rating_count }})</button>
+  </div>
+
+  <div class="tab-body on" id="tab-spec">
+    <table class="spec-table">
+      {% for r in spec_rows %}
+      <tr><th>{{ r.label }}</th><td>{{ r.value }}{% if r.unit %} {{ r.unit }}{% endif %}</td></tr>
+      {% empty %}
+      <tr><td>No specification recorded.</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="tab-body" id="tab-desc"><p>{{ p.description }}</p></div>
+
+  <div class="tab-body" id="tab-rev">
+    <p class="muted">Reviews belong to the Interaction module (Minh) and will be
+      connected during integration.</p>
+  </div>
+</div>
+
+{% if related %}
+<section class="block">
+  <div class="block-head"><h2>Related products</h2></div>
+  <div class="grid">{% for p in related %}{% include "partials/product_card.html" %}{% endfor %}</div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.tab-btn').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('.tab-btn').forEach(function (x) { x.classList.remove('on'); });
+    document.querySelectorAll('.tab-body').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    document.getElementById('tab-' + b.dataset.tab).classList.add('on');
+  });
+});
+</script>
+{% endblock %}

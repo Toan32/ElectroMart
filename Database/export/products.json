@@ -1,0 +1,3938 @@
+[
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f693e"
+    },
+    "name": "ESP32-WROOM-32 DevKit V1",
+    "part_number": "ESP32-DEVKITC-32E",
+    "slug": "esp32-wroom-32-devkit-v1-esp32-devkitc-32e",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6929"
+    },
+    "description": "ESP32-WROOM-32 DevKit V1 is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "Xtensa LX6",
+      "clock_speed_mhz": 240,
+      "flash_kb": 4096,
+      "ram_kb": 520,
+      "gpio_count": 34,
+      "wifi": true,
+      "bluetooth": true,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "ESP32-DEVKITC-32E-01",
+        "option_name": "Standard",
+        "retail_price": 165000,
+        "list_price": 190000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 165000
+          },
+          {
+            "min_qty": 10,
+            "price": 151000
+          },
+          {
+            "min_qty": 50,
+            "price": 140000
+          }
+        ],
+        "stock_qty": 320,
+        "reorder_level": 30,
+        "warehouse_location": "A1-01"
+      }
+    ],
+    "min_price": 165000,
+    "list_price": 190000,
+    "total_stock": 320,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "esp32-devkitc-32e",
+      "espressif",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.4,
+    "rating_count": 81,
+    "sold_count": 544,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-23T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f693f"
+    },
+    "name": "ESP32-S3 DevKitC-1 N16R8",
+    "part_number": "ESP32-S3-DEVKITC-1",
+    "slug": "esp32-s3-devkitc-1-n16r8-esp32-s3-devkitc-1",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6929"
+    },
+    "description": "ESP32-S3 DevKitC-1 N16R8 is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "Xtensa LX7",
+      "clock_speed_mhz": 240,
+      "flash_kb": 16384,
+      "ram_kb": 512,
+      "gpio_count": 45,
+      "wifi": true,
+      "bluetooth": true,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "ESP32-S3-DEVKITC-1-01",
+        "option_name": "Standard",
+        "retail_price": 295000,
+        "list_price": 339000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 295000
+          },
+          {
+            "min_qty": 10,
+            "price": 271000
+          },
+          {
+            "min_qty": 50,
+            "price": 250000
+          }
+        ],
+        "stock_qty": 140,
+        "reorder_level": 30,
+        "warehouse_location": "A1-02"
+      }
+    ],
+    "min_price": 295000,
+    "list_price": 339000,
+    "total_stock": 140,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "esp32-s3-devkitc-1",
+      "espressif",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 57,
+    "sold_count": 656,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-03T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6940"
+    },
+    "name": "ESP8266 NodeMCU Lua V3",
+    "part_number": "NODEMCU-V3",
+    "slug": "esp8266-nodemcu-lua-v3-nodemcu-v3",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6929"
+    },
+    "description": "ESP8266 NodeMCU Lua V3 is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "Xtensa LX6",
+      "clock_speed_mhz": 80,
+      "flash_kb": 4096,
+      "ram_kb": 80,
+      "gpio_count": 17,
+      "wifi": true,
+      "bluetooth": false,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "NODEMCU-V3-01",
+        "option_name": "Standard",
+        "retail_price": 89000,
+        "list_price": 89000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 89000
+          },
+          {
+            "min_qty": 10,
+            "price": 81000
+          },
+          {
+            "min_qty": 50,
+            "price": 75000
+          }
+        ],
+        "stock_qty": 410,
+        "reorder_level": 30,
+        "warehouse_location": "A1-03"
+      }
+    ],
+    "min_price": 89000,
+    "list_price": 89000,
+    "total_stock": 410,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "nodemcu-v3",
+      "espressif",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.7,
+    "rating_count": 107,
+    "sold_count": 580,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-28T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6941"
+    },
+    "name": "ESP32-C3 SuperMini Board",
+    "part_number": "ESP32-C3-MINI",
+    "slug": "esp32-c3-supermini-board-esp32-c3-mini",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6929"
+    },
+    "description": "ESP32-C3 SuperMini Board is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "RISC-V",
+      "clock_speed_mhz": 160,
+      "flash_kb": 4096,
+      "ram_kb": 400,
+      "gpio_count": 13,
+      "wifi": true,
+      "bluetooth": true,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "ESP32-C3-MINI-01",
+        "option_name": "Standard",
+        "retail_price": 78000,
+        "list_price": 101000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 78000
+          },
+          {
+            "min_qty": 10,
+            "price": 71000
+          },
+          {
+            "min_qty": 50,
+            "price": 66000
+          }
+        ],
+        "stock_qty": 260,
+        "reorder_level": 30,
+        "warehouse_location": "A1-04"
+      }
+    ],
+    "min_price": 78000,
+    "list_price": 101000,
+    "total_stock": 260,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "esp32-c3-mini",
+      "espressif",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 150,
+    "sold_count": 22,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-27T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6942"
+    },
+    "name": "Arduino Uno R3 (original)",
+    "part_number": "A000066",
+    "slug": "arduino-uno-r3-original-a000066",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6927"
+    },
+    "description": "Arduino Uno R3 (original) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "AVR 8-bit",
+      "clock_speed_mhz": 16,
+      "flash_kb": 32,
+      "ram_kb": 2,
+      "gpio_count": 20,
+      "wifi": false,
+      "bluetooth": false,
+      "operating_voltage_v": 5.0
+    },
+    "variants": [
+      {
+        "sku": "A000066-01",
+        "option_name": "Standard",
+        "retail_price": 585000,
+        "list_price": 673000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 585000
+          },
+          {
+            "min_qty": 10,
+            "price": 538000
+          },
+          {
+            "min_qty": 50,
+            "price": 497000
+          }
+        ],
+        "stock_qty": 60,
+        "reorder_level": 30,
+        "warehouse_location": "A1-05"
+      }
+    ],
+    "min_price": 585000,
+    "list_price": 673000,
+    "total_stock": 60,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "a000066",
+      "arduino",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.1,
+    "rating_count": 28,
+    "sold_count": 120,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-17T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6943"
+    },
+    "name": "Arduino Uno R3 (compatible, CH340)",
+    "part_number": "UNO-R3-CH340",
+    "slug": "arduino-uno-r3-compatible-ch340-uno-r3-ch340",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "Arduino Uno R3 (compatible, CH340) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "AVR 8-bit",
+      "clock_speed_mhz": 16,
+      "flash_kb": 32,
+      "ram_kb": 2,
+      "gpio_count": 20,
+      "wifi": false,
+      "bluetooth": false,
+      "operating_voltage_v": 5.0
+    },
+    "variants": [
+      {
+        "sku": "UNO-R3-CH340-01",
+        "option_name": "Standard",
+        "retail_price": 125000,
+        "list_price": 125000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 125000
+          },
+          {
+            "min_qty": 10,
+            "price": 115000
+          },
+          {
+            "min_qty": 50,
+            "price": 106000
+          }
+        ],
+        "stock_qty": 520,
+        "reorder_level": 30,
+        "warehouse_location": "A1-06"
+      }
+    ],
+    "min_price": 125000,
+    "list_price": 125000,
+    "total_stock": 520,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "uno-r3-ch340",
+      "oem",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.8,
+    "rating_count": 2,
+    "sold_count": 721,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-12T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6944"
+    },
+    "name": "Arduino Nano V3 CH340",
+    "part_number": "NANO-V3-CH340",
+    "slug": "arduino-nano-v3-ch340-nano-v3-ch340",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "Arduino Nano V3 CH340 is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "AVR 8-bit",
+      "clock_speed_mhz": 16,
+      "flash_kb": 32,
+      "ram_kb": 2,
+      "gpio_count": 22,
+      "wifi": false,
+      "bluetooth": false,
+      "operating_voltage_v": 5.0
+    },
+    "variants": [
+      {
+        "sku": "NANO-V3-CH340-01",
+        "option_name": "Standard",
+        "retail_price": 72000,
+        "list_price": 90000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 72000
+          },
+          {
+            "min_qty": 10,
+            "price": 66000
+          },
+          {
+            "min_qty": 50,
+            "price": 61000
+          }
+        ],
+        "stock_qty": 640,
+        "reorder_level": 30,
+        "warehouse_location": "A1-07"
+      }
+    ],
+    "min_price": 72000,
+    "list_price": 90000,
+    "total_stock": 640,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "nano-v3-ch340",
+      "oem",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 53,
+    "sold_count": 376,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-17T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6945"
+    },
+    "name": "Arduino Mega 2560 R3",
+    "part_number": "MEGA2560-R3",
+    "slug": "arduino-mega-2560-r3-mega2560-r3",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "Arduino Mega 2560 R3 is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "AVR 8-bit",
+      "clock_speed_mhz": 16,
+      "flash_kb": 256,
+      "ram_kb": 8,
+      "gpio_count": 54,
+      "wifi": false,
+      "bluetooth": false,
+      "operating_voltage_v": 5.0
+    },
+    "variants": [
+      {
+        "sku": "MEGA2560-R3-01",
+        "option_name": "Standard",
+        "retail_price": 235000,
+        "list_price": 294000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 235000
+          },
+          {
+            "min_qty": 10,
+            "price": 216000
+          },
+          {
+            "min_qty": 50,
+            "price": 199000
+          }
+        ],
+        "stock_qty": 180,
+        "reorder_level": 30,
+        "warehouse_location": "A1-08"
+      }
+    ],
+    "min_price": 235000,
+    "list_price": 294000,
+    "total_stock": 180,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "mega2560-r3",
+      "oem",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 5.0,
+    "rating_count": 96,
+    "sold_count": 545,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-24T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6946"
+    },
+    "name": "STM32F103C8T6 Blue Pill",
+    "part_number": "STM32F103C8T6",
+    "slug": "stm32f103c8t6-blue-pill-stm32f103c8t6",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6936"
+    },
+    "description": "STM32F103C8T6 Blue Pill is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "ARM Cortex-M3",
+      "clock_speed_mhz": 72,
+      "flash_kb": 64,
+      "ram_kb": 20,
+      "gpio_count": 37,
+      "wifi": false,
+      "bluetooth": false,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "STM32F103C8T6-01",
+        "option_name": "Standard",
+        "retail_price": 68000,
+        "list_price": 68000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 68000
+          },
+          {
+            "min_qty": 10,
+            "price": 62000
+          },
+          {
+            "min_qty": 50,
+            "price": 57000
+          }
+        ],
+        "stock_qty": 380,
+        "reorder_level": 30,
+        "warehouse_location": "A1-09"
+      }
+    ],
+    "min_price": 68000,
+    "list_price": 68000,
+    "total_stock": 380,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "stm32f103c8t6",
+      "stmicroelectronics",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.7,
+    "rating_count": 19,
+    "sold_count": 111,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-03T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6947"
+    },
+    "name": "STM32F411CEU6 Black Pill",
+    "part_number": "STM32F411CEU6",
+    "slug": "stm32f411ceu6-black-pill-stm32f411ceu6",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6936"
+    },
+    "description": "STM32F411CEU6 Black Pill is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "ARM Cortex-M4",
+      "clock_speed_mhz": 100,
+      "flash_kb": 512,
+      "ram_kb": 128,
+      "gpio_count": 32,
+      "wifi": false,
+      "bluetooth": false,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "STM32F411CEU6-01",
+        "option_name": "Standard",
+        "retail_price": 148000,
+        "list_price": 185000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 148000
+          },
+          {
+            "min_qty": 10,
+            "price": 136000
+          },
+          {
+            "min_qty": 50,
+            "price": 125000
+          }
+        ],
+        "stock_qty": 150,
+        "reorder_level": 30,
+        "warehouse_location": "A1-10"
+      }
+    ],
+    "min_price": 148000,
+    "list_price": 185000,
+    "total_stock": 150,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "stm32f411ceu6",
+      "stmicroelectronics",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 73,
+    "sold_count": 680,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-15T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6948"
+    },
+    "name": "Raspberry Pi Pico",
+    "part_number": "RP2-PICO",
+    "slug": "raspberry-pi-pico-rp2-pico",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6933"
+    },
+    "description": "Raspberry Pi Pico is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "ARM Cortex-M0",
+      "clock_speed_mhz": 133,
+      "flash_kb": 2048,
+      "ram_kb": 264,
+      "gpio_count": 26,
+      "wifi": false,
+      "bluetooth": false,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "RP2-PICO-01",
+        "option_name": "Standard",
+        "retail_price": 115000,
+        "list_price": 144000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 115000
+          },
+          {
+            "min_qty": 10,
+            "price": 105000
+          },
+          {
+            "min_qty": 50,
+            "price": 97000
+          }
+        ],
+        "stock_qty": 240,
+        "reorder_level": 30,
+        "warehouse_location": "A1-11"
+      }
+    ],
+    "min_price": 115000,
+    "list_price": 144000,
+    "total_stock": 240,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "rp2-pico",
+      "raspberry-pi",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.8,
+    "rating_count": 6,
+    "sold_count": 397,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-28T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6949"
+    },
+    "name": "Raspberry Pi Pico W",
+    "part_number": "RP2-PICO-W",
+    "slug": "raspberry-pi-pico-w-rp2-pico-w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6933"
+    },
+    "description": "Raspberry Pi Pico W is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "core": "ARM Cortex-M0",
+      "clock_speed_mhz": 133,
+      "flash_kb": 2048,
+      "ram_kb": 264,
+      "gpio_count": 26,
+      "wifi": true,
+      "bluetooth": true,
+      "operating_voltage_v": 3.3
+    },
+    "variants": [
+      {
+        "sku": "RP2-PICO-W-01",
+        "option_name": "Standard",
+        "retail_price": 168000,
+        "list_price": 168000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 168000
+          },
+          {
+            "min_qty": 10,
+            "price": 154000
+          },
+          {
+            "min_qty": 50,
+            "price": 142000
+          }
+        ],
+        "stock_qty": 190,
+        "reorder_level": 30,
+        "warehouse_location": "A1-12"
+      }
+    ],
+    "min_price": 168000,
+    "list_price": 168000,
+    "total_stock": 190,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "rp2-pico-w",
+      "raspberry-pi",
+      "microcontrollers-kits"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 118,
+    "sold_count": 428,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-21T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f694b"
+    },
+    "name": "DHT22 / AM2302 Temperature & Humidity Sensor",
+    "part_number": "DHT22",
+    "slug": "dht22-am2302-temperature-humidity-sensor-dht22",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6926"
+    },
+    "description": "DHT22 / AM2302 Temperature & Humidity Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Temperature & Humidity",
+      "interface": "1-Wire",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": -40,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "DHT22-01",
+        "option_name": "Standard",
+        "retail_price": 68000,
+        "list_price": 88000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 68000
+          },
+          {
+            "min_qty": 10,
+            "price": 62000
+          },
+          {
+            "min_qty": 50,
+            "price": 57000
+          }
+        ],
+        "stock_qty": 420,
+        "reorder_level": 30,
+        "warehouse_location": "A2-01"
+      }
+    ],
+    "min_price": 68000,
+    "list_price": 88000,
+    "total_stock": 420,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "dht22",
+      "aosong",
+      "sensors"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 29,
+    "sold_count": 841,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-09T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f694c"
+    },
+    "name": "DHT11 Temperature & Humidity Sensor",
+    "part_number": "DHT11",
+    "slug": "dht11-temperature-humidity-sensor-dht11",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6926"
+    },
+    "description": "DHT11 Temperature & Humidity Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Temperature & Humidity",
+      "interface": "1-Wire",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": 0,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "DHT11-01",
+        "option_name": "Standard",
+        "retail_price": 22000,
+        "list_price": 29000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 22000
+          },
+          {
+            "min_qty": 10,
+            "price": 20000
+          },
+          {
+            "min_qty": 50,
+            "price": 18000
+          }
+        ],
+        "stock_qty": 780,
+        "reorder_level": 30,
+        "warehouse_location": "A2-02"
+      }
+    ],
+    "min_price": 22000,
+    "list_price": 29000,
+    "total_stock": 780,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "dht11",
+      "aosong",
+      "sensors"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 101,
+    "sold_count": 284,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-27T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f694d"
+    },
+    "name": "DS18B20 Waterproof Temperature Probe",
+    "part_number": "DS18B20-WP",
+    "slug": "ds18b20-waterproof-temperature-probe-ds18b20-wp",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692e"
+    },
+    "description": "DS18B20 Waterproof Temperature Probe is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Temperature & Humidity",
+      "interface": "1-Wire",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": -55,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "DS18B20-WP-01",
+        "option_name": "Standard",
+        "retail_price": 35000,
+        "list_price": 35000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 35000
+          },
+          {
+            "min_qty": 10,
+            "price": 32000
+          },
+          {
+            "min_qty": 50,
+            "price": 29000
+          }
+        ],
+        "stock_qty": 560,
+        "reorder_level": 30,
+        "warehouse_location": "A2-03"
+      }
+    ],
+    "min_price": 35000,
+    "list_price": 35000,
+    "total_stock": 560,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "ds18b20-wp",
+      "maxim",
+      "sensors"
+    ],
+    "avg_rating": 4.5,
+    "rating_count": 107,
+    "sold_count": 510,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-09T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f694e"
+    },
+    "name": "BMP280 Barometric Pressure Sensor",
+    "part_number": "BMP280",
+    "slug": "bmp280-barometric-pressure-sensor-bmp280",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6928"
+    },
+    "description": "BMP280 Barometric Pressure Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Pressure",
+      "interface": "I2C",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": -40,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "BMP280-01",
+        "option_name": "Standard",
+        "retail_price": 42000,
+        "list_price": 48000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 42000
+          },
+          {
+            "min_qty": 10,
+            "price": 38000
+          },
+          {
+            "min_qty": 50,
+            "price": 35000
+          }
+        ],
+        "stock_qty": 340,
+        "reorder_level": 30,
+        "warehouse_location": "A2-04"
+      }
+    ],
+    "min_price": 42000,
+    "list_price": 48000,
+    "total_stock": 340,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "bmp280",
+      "bosch",
+      "sensors"
+    ],
+    "avg_rating": 4.1,
+    "rating_count": 147,
+    "sold_count": 152,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f694f"
+    },
+    "name": "BME280 Environmental Sensor",
+    "part_number": "BME280",
+    "slug": "bme280-environmental-sensor-bme280",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6928"
+    },
+    "description": "BME280 Environmental Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Pressure",
+      "interface": "I2C",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": -40,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "BME280-01",
+        "option_name": "Standard",
+        "retail_price": 96000,
+        "list_price": 110000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 96000
+          },
+          {
+            "min_qty": 10,
+            "price": 88000
+          },
+          {
+            "min_qty": 50,
+            "price": 81000
+          }
+        ],
+        "stock_qty": 210,
+        "reorder_level": 30,
+        "warehouse_location": "A2-05"
+      }
+    ],
+    "min_price": 96000,
+    "list_price": 110000,
+    "total_stock": 210,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "bme280",
+      "bosch",
+      "sensors"
+    ],
+    "avg_rating": 4.4,
+    "rating_count": 180,
+    "sold_count": 706,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-31T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6950"
+    },
+    "name": "HC-SR04 Ultrasonic Distance Sensor",
+    "part_number": "HC-SR04",
+    "slug": "hc-sr04-ultrasonic-distance-sensor-hc-sr04",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "HC-SR04 Ultrasonic Distance Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Distance",
+      "interface": "Digital",
+      "supply_voltage_v": 5.0,
+      "operating_temp_min_c": -15,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "HC-SR04-01",
+        "option_name": "Standard",
+        "retail_price": 25000,
+        "list_price": 25000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 25000
+          },
+          {
+            "min_qty": 10,
+            "price": 23000
+          },
+          {
+            "min_qty": 50,
+            "price": 21000
+          }
+        ],
+        "stock_qty": 900,
+        "reorder_level": 30,
+        "warehouse_location": "A2-06"
+      }
+    ],
+    "min_price": 25000,
+    "list_price": 25000,
+    "total_stock": 900,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "hc-sr04",
+      "oem",
+      "sensors"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 159,
+    "sold_count": 165,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-13T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6951"
+    },
+    "name": "VL53L0X Laser Distance Sensor",
+    "part_number": "VL53L0X",
+    "slug": "vl53l0x-laser-distance-sensor-vl53l0x",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6936"
+    },
+    "description": "VL53L0X Laser Distance Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Distance",
+      "interface": "I2C",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": -20,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "VL53L0X-01",
+        "option_name": "Standard",
+        "retail_price": 118000,
+        "list_price": 142000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 118000
+          },
+          {
+            "min_qty": 10,
+            "price": 108000
+          },
+          {
+            "min_qty": 50,
+            "price": 100000
+          }
+        ],
+        "stock_qty": 130,
+        "reorder_level": 30,
+        "warehouse_location": "A2-07"
+      }
+    ],
+    "min_price": 118000,
+    "list_price": 142000,
+    "total_stock": 130,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "vl53l0x",
+      "stmicroelectronics",
+      "sensors"
+    ],
+    "avg_rating": 4.6,
+    "rating_count": 31,
+    "sold_count": 487,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-19T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6952"
+    },
+    "name": "HC-SR501 PIR Motion Sensor",
+    "part_number": "HC-SR501",
+    "slug": "hc-sr501-pir-motion-sensor-hc-sr501",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "HC-SR501 PIR Motion Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Motion",
+      "interface": "Digital",
+      "supply_voltage_v": 5.0,
+      "operating_temp_min_c": -15,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "HC-SR501-01",
+        "option_name": "Standard",
+        "retail_price": 28000,
+        "list_price": 36000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 28000
+          },
+          {
+            "min_qty": 10,
+            "price": 25000
+          },
+          {
+            "min_qty": 50,
+            "price": 23000
+          }
+        ],
+        "stock_qty": 640,
+        "reorder_level": 30,
+        "warehouse_location": "A2-08"
+      }
+    ],
+    "min_price": 28000,
+    "list_price": 36000,
+    "total_stock": 640,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "hc-sr501",
+      "oem",
+      "sensors"
+    ],
+    "avg_rating": 4.1,
+    "rating_count": 139,
+    "sold_count": 431,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-20T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6953"
+    },
+    "name": "BH1750 Digital Light Sensor",
+    "part_number": "BH1750FVI",
+    "slug": "bh1750-digital-light-sensor-bh1750fvi",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6932"
+    },
+    "description": "BH1750 Digital Light Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Light",
+      "interface": "I2C",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": -40,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "BH1750FVI-01",
+        "option_name": "Standard",
+        "retail_price": 38000,
+        "list_price": 38000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 38000
+          },
+          {
+            "min_qty": 10,
+            "price": 34000
+          },
+          {
+            "min_qty": 50,
+            "price": 32000
+          }
+        ],
+        "stock_qty": 290,
+        "reorder_level": 30,
+        "warehouse_location": "A2-09"
+      }
+    ],
+    "min_price": 38000,
+    "list_price": 38000,
+    "total_stock": 290,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "bh1750fvi",
+      "rohm",
+      "sensors"
+    ],
+    "avg_rating": 4.5,
+    "rating_count": 78,
+    "sold_count": 682,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-10T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6954"
+    },
+    "name": "LDR 5mm Photoresistor Module",
+    "part_number": "LDR-5528",
+    "slug": "ldr-5mm-photoresistor-module-ldr-5528",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "LDR 5mm Photoresistor Module is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Light",
+      "interface": "Analog",
+      "supply_voltage_v": 5.0,
+      "operating_temp_min_c": -30,
+      "digital_output": false
+    },
+    "variants": [
+      {
+        "sku": "LDR-5528-01",
+        "option_name": "Standard",
+        "retail_price": 9000,
+        "list_price": 12000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 9000
+          },
+          {
+            "min_qty": 10,
+            "price": 8000
+          },
+          {
+            "min_qty": 50,
+            "price": 7000
+          }
+        ],
+        "stock_qty": 1200,
+        "reorder_level": 30,
+        "warehouse_location": "A2-10"
+      }
+    ],
+    "min_price": 9000,
+    "list_price": 12000,
+    "total_stock": 1200,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "ldr-5528",
+      "oem",
+      "sensors"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 102,
+    "sold_count": 321,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-29T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6955"
+    },
+    "name": "MQ-2 Smoke & Flammable Gas Sensor",
+    "part_number": "MQ-2",
+    "slug": "mq-2-smoke-flammable-gas-sensor-mq-2",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692a"
+    },
+    "description": "MQ-2 Smoke & Flammable Gas Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Gas",
+      "interface": "Analog",
+      "supply_voltage_v": 5.0,
+      "operating_temp_min_c": -20,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "MQ-2-01",
+        "option_name": "Standard",
+        "retail_price": 34000,
+        "list_price": 42000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 34000
+          },
+          {
+            "min_qty": 10,
+            "price": 31000
+          },
+          {
+            "min_qty": 50,
+            "price": 28000
+          }
+        ],
+        "stock_qty": 380,
+        "reorder_level": 30,
+        "warehouse_location": "A2-11"
+      }
+    ],
+    "min_price": 34000,
+    "list_price": 42000,
+    "total_stock": 380,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "mq-2",
+      "hanwei",
+      "sensors"
+    ],
+    "avg_rating": 3.8,
+    "rating_count": 2,
+    "sold_count": 691,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-23T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6956"
+    },
+    "name": "MQ-135 Air Quality Sensor",
+    "part_number": "MQ-135",
+    "slug": "mq-135-air-quality-sensor-mq-135",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692a"
+    },
+    "description": "MQ-135 Air Quality Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Gas",
+      "interface": "Analog",
+      "supply_voltage_v": 5.0,
+      "operating_temp_min_c": -20,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "MQ-135-01",
+        "option_name": "Standard",
+        "retail_price": 45000,
+        "list_price": 45000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 45000
+          },
+          {
+            "min_qty": 10,
+            "price": 41000
+          },
+          {
+            "min_qty": 50,
+            "price": 38000
+          }
+        ],
+        "stock_qty": 220,
+        "reorder_level": 30,
+        "warehouse_location": "A2-12"
+      }
+    ],
+    "min_price": 45000,
+    "list_price": 45000,
+    "total_stock": 220,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "mq-135",
+      "hanwei",
+      "sensors"
+    ],
+    "avg_rating": 5.0,
+    "rating_count": 152,
+    "sold_count": 842,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-08T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6957"
+    },
+    "name": "MPU-6050 Accelerometer & Gyroscope",
+    "part_number": "MPU-6050",
+    "slug": "mpu-6050-accelerometer-gyroscope-mpu-6050",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692b"
+    },
+    "description": "MPU-6050 Accelerometer & Gyroscope is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Accelerometer & Gyroscope",
+      "interface": "I2C",
+      "supply_voltage_v": 3.3,
+      "operating_temp_min_c": -40,
+      "digital_output": true
+    },
+    "variants": [
+      {
+        "sku": "MPU-6050-01",
+        "option_name": "Standard",
+        "retail_price": 48000,
+        "list_price": 62000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 48000
+          },
+          {
+            "min_qty": 10,
+            "price": 44000
+          },
+          {
+            "min_qty": 50,
+            "price": 40000
+          }
+        ],
+        "stock_qty": 470,
+        "reorder_level": 30,
+        "warehouse_location": "A2-13"
+      }
+    ],
+    "min_price": 48000,
+    "list_price": 62000,
+    "total_stock": 470,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "mpu-6050",
+      "invensense",
+      "sensors"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 92,
+    "sold_count": 286,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-17T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6958"
+    },
+    "name": "ACS712 30A Current Sensor",
+    "part_number": "ACS712-30A",
+    "slug": "acs712-30a-current-sensor-acs712-30a",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6925"
+    },
+    "description": "ACS712 30A Current Sensor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "sensor_type": "Current",
+      "interface": "Analog",
+      "supply_voltage_v": 5.0,
+      "operating_temp_min_c": -40,
+      "digital_output": false
+    },
+    "variants": [
+      {
+        "sku": "ACS712-30A-01",
+        "option_name": "Standard",
+        "retail_price": 52000,
+        "list_price": 68000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 52000
+          },
+          {
+            "min_qty": 10,
+            "price": 47000
+          },
+          {
+            "min_qty": 50,
+            "price": 44000
+          }
+        ],
+        "stock_qty": 260,
+        "reorder_level": 30,
+        "warehouse_location": "A2-14"
+      }
+    ],
+    "min_price": 52000,
+    "list_price": 68000,
+    "total_stock": 260,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "acs712-30a",
+      "allegro",
+      "sensors"
+    ],
+    "avg_rating": 4.4,
+    "rating_count": 119,
+    "sold_count": 866,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-11T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f695a"
+    },
+    "name": "220 ohm 1/4W 5% Resistor (100 pcs)",
+    "part_number": "R-220R-025W",
+    "slug": "220-ohm-1-4w-5-pct-resistor-100-pcs-r-220r-025w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "220 ohm 1/4W 5% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 220,
+      "tolerance_percent": "5",
+      "power_rating_w": "0.25",
+      "package": "Through-hole",
+      "material": "Carbon film"
+    },
+    "variants": [
+      {
+        "sku": "R-220R-025W-01",
+        "option_name": "Standard",
+        "retail_price": 15000,
+        "list_price": 20000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 15000
+          },
+          {
+            "min_qty": 10,
+            "price": 13000
+          },
+          {
+            "min_qty": 50,
+            "price": 12000
+          }
+        ],
+        "stock_qty": 1500,
+        "reorder_level": 30,
+        "warehouse_location": "A3-01"
+      }
+    ],
+    "min_price": 15000,
+    "list_price": 20000,
+    "total_stock": 1500,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-220r-025w",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.6,
+    "rating_count": 142,
+    "sold_count": 54,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-29T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f695b"
+    },
+    "name": "330 ohm 1/4W 5% Resistor (100 pcs)",
+    "part_number": "R-330R-025W",
+    "slug": "330-ohm-1-4w-5-pct-resistor-100-pcs-r-330r-025w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "330 ohm 1/4W 5% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 330,
+      "tolerance_percent": "5",
+      "power_rating_w": "0.25",
+      "package": "Through-hole",
+      "material": "Carbon film"
+    },
+    "variants": [
+      {
+        "sku": "R-330R-025W-01",
+        "option_name": "Standard",
+        "retail_price": 15000,
+        "list_price": 19000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 15000
+          },
+          {
+            "min_qty": 10,
+            "price": 13000
+          },
+          {
+            "min_qty": 50,
+            "price": 12000
+          }
+        ],
+        "stock_qty": 1350,
+        "reorder_level": 30,
+        "warehouse_location": "A3-02"
+      }
+    ],
+    "min_price": 15000,
+    "list_price": 19000,
+    "total_stock": 1350,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-330r-025w",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 81,
+    "sold_count": 851,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-08-01T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f695c"
+    },
+    "name": "1k ohm 1/4W 1% Resistor (100 pcs)",
+    "part_number": "R-1K-025W-1P",
+    "slug": "1k-ohm-1-4w-1-pct-resistor-100-pcs-r-1k-025w-1p",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "1k ohm 1/4W 1% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 1000,
+      "tolerance_percent": "1",
+      "power_rating_w": "0.25",
+      "package": "Through-hole",
+      "material": "Metal film"
+    },
+    "variants": [
+      {
+        "sku": "R-1K-025W-1P-01",
+        "option_name": "Standard",
+        "retail_price": 22000,
+        "list_price": 22000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 22000
+          },
+          {
+            "min_qty": 10,
+            "price": 20000
+          },
+          {
+            "min_qty": 50,
+            "price": 18000
+          }
+        ],
+        "stock_qty": 1800,
+        "reorder_level": 30,
+        "warehouse_location": "A3-03"
+      }
+    ],
+    "min_price": 22000,
+    "list_price": 22000,
+    "total_stock": 1800,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-1k-025w-1p",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.6,
+    "rating_count": 112,
+    "sold_count": 823,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-09T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f695d"
+    },
+    "name": "4.7k ohm 1/4W 5% Resistor (100 pcs)",
+    "part_number": "R-4K7-025W",
+    "slug": "4-7k-ohm-1-4w-5-pct-resistor-100-pcs-r-4k7-025w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "4.7k ohm 1/4W 5% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 4700,
+      "tolerance_percent": "5",
+      "power_rating_w": "0.25",
+      "package": "Through-hole",
+      "material": "Carbon film"
+    },
+    "variants": [
+      {
+        "sku": "R-4K7-025W-01",
+        "option_name": "Standard",
+        "retail_price": 15000,
+        "list_price": 19000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 15000
+          },
+          {
+            "min_qty": 10,
+            "price": 13000
+          },
+          {
+            "min_qty": 50,
+            "price": 12000
+          }
+        ],
+        "stock_qty": 1100,
+        "reorder_level": 30,
+        "warehouse_location": "A3-04"
+      }
+    ],
+    "min_price": 15000,
+    "list_price": 19000,
+    "total_stock": 1100,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-4k7-025w",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 115,
+    "sold_count": 207,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-20T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f695e"
+    },
+    "name": "10k ohm 1/4W 1% Resistor (100 pcs)",
+    "part_number": "R-10K-025W-1P",
+    "slug": "10k-ohm-1-4w-1-pct-resistor-100-pcs-r-10k-025w-1p",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "10k ohm 1/4W 1% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 10000,
+      "tolerance_percent": "1",
+      "power_rating_w": "0.25",
+      "package": "Through-hole",
+      "material": "Metal film"
+    },
+    "variants": [
+      {
+        "sku": "R-10K-025W-1P-01",
+        "option_name": "Standard",
+        "retail_price": 22000,
+        "list_price": 29000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 22000
+          },
+          {
+            "min_qty": 10,
+            "price": 20000
+          },
+          {
+            "min_qty": 50,
+            "price": 18000
+          }
+        ],
+        "stock_qty": 2100,
+        "reorder_level": 30,
+        "warehouse_location": "A3-05"
+      }
+    ],
+    "min_price": 22000,
+    "list_price": 29000,
+    "total_stock": 2100,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-10k-025w-1p",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.6,
+    "rating_count": 16,
+    "sold_count": 530,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-27T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f695f"
+    },
+    "name": "100k ohm 1/4W 5% Resistor (100 pcs)",
+    "part_number": "R-100K-025W",
+    "slug": "100k-ohm-1-4w-5-pct-resistor-100-pcs-r-100k-025w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "100k ohm 1/4W 5% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 100000,
+      "tolerance_percent": "5",
+      "power_rating_w": "0.25",
+      "package": "Through-hole",
+      "material": "Carbon film"
+    },
+    "variants": [
+      {
+        "sku": "R-100K-025W-01",
+        "option_name": "Standard",
+        "retail_price": 15000,
+        "list_price": 15000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 15000
+          },
+          {
+            "min_qty": 10,
+            "price": 13000
+          },
+          {
+            "min_qty": 50,
+            "price": 12000
+          }
+        ],
+        "stock_qty": 950,
+        "reorder_level": 30,
+        "warehouse_location": "A3-06"
+      }
+    ],
+    "min_price": 15000,
+    "list_price": 15000,
+    "total_stock": 950,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-100k-025w",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.0,
+    "rating_count": 24,
+    "sold_count": 897,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-22T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6960"
+    },
+    "name": "1M ohm 1/4W 5% Resistor (100 pcs)",
+    "part_number": "R-1M-025W",
+    "slug": "1m-ohm-1-4w-5-pct-resistor-100-pcs-r-1m-025w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "1M ohm 1/4W 5% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 1000000,
+      "tolerance_percent": "5",
+      "power_rating_w": "0.25",
+      "package": "Through-hole",
+      "material": "Carbon film"
+    },
+    "variants": [
+      {
+        "sku": "R-1M-025W-01",
+        "option_name": "Standard",
+        "retail_price": 15000,
+        "list_price": 18000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 15000
+          },
+          {
+            "min_qty": 10,
+            "price": 13000
+          },
+          {
+            "min_qty": 50,
+            "price": 12000
+          }
+        ],
+        "stock_qty": 600,
+        "reorder_level": 30,
+        "warehouse_location": "A3-07"
+      }
+    ],
+    "min_price": 15000,
+    "list_price": 18000,
+    "total_stock": 600,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-1m-025w",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 115,
+    "sold_count": 114,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-08-13T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6961"
+    },
+    "name": "SMD 0805 10k ohm 1% Resistor (100 pcs)",
+    "part_number": "R-SMD0805-10K",
+    "slug": "smd-0805-10k-ohm-1-pct-resistor-100-pcs-r-smd0805-10k",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f693c"
+    },
+    "description": "SMD 0805 10k ohm 1% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 10000,
+      "tolerance_percent": "1",
+      "power_rating_w": "0.125",
+      "package": "SMD 0805",
+      "material": "Metal film"
+    },
+    "variants": [
+      {
+        "sku": "R-SMD0805-10K-01",
+        "option_name": "Standard",
+        "retail_price": 18000,
+        "list_price": 23000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 18000
+          },
+          {
+            "min_qty": 10,
+            "price": 16000
+          },
+          {
+            "min_qty": 50,
+            "price": 15000
+          }
+        ],
+        "stock_qty": 880,
+        "reorder_level": 30,
+        "warehouse_location": "A3-08"
+      }
+    ],
+    "min_price": 18000,
+    "list_price": 23000,
+    "total_stock": 880,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-smd0805-10k",
+      "yageo",
+      "resistors"
+    ],
+    "avg_rating": 4.5,
+    "rating_count": 148,
+    "sold_count": 876,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-08-03T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6962"
+    },
+    "name": "SMD 1206 1k ohm 1% Resistor (100 pcs)",
+    "part_number": "R-SMD1206-1K",
+    "slug": "smd-1206-1k-ohm-1-pct-resistor-100-pcs-r-smd1206-1k",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f693c"
+    },
+    "description": "SMD 1206 1k ohm 1% Resistor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 1000,
+      "tolerance_percent": "1",
+      "power_rating_w": "0.25",
+      "package": "SMD 1206",
+      "material": "Metal film"
+    },
+    "variants": [
+      {
+        "sku": "R-SMD1206-1K-01",
+        "option_name": "Standard",
+        "retail_price": 20000,
+        "list_price": 20000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 20000
+          },
+          {
+            "min_qty": 10,
+            "price": 18000
+          },
+          {
+            "min_qty": 50,
+            "price": 17000
+          }
+        ],
+        "stock_qty": 720,
+        "reorder_level": 30,
+        "warehouse_location": "A3-09"
+      }
+    ],
+    "min_price": 20000,
+    "list_price": 20000,
+    "total_stock": 720,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-smd1206-1k",
+      "yageo",
+      "resistors"
+    ],
+    "avg_rating": 4.8,
+    "rating_count": 156,
+    "sold_count": 273,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-29T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6963"
+    },
+    "name": "10 ohm 5W Ceramic Power Resistor",
+    "part_number": "R-10R-5W",
+    "slug": "10-ohm-5w-ceramic-power-resistor-r-10r-5w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "10 ohm 5W Ceramic Power Resistor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 10,
+      "tolerance_percent": "5",
+      "power_rating_w": "5",
+      "package": "Through-hole",
+      "material": "Wirewound"
+    },
+    "variants": [
+      {
+        "sku": "R-10R-5W-01",
+        "option_name": "Standard",
+        "retail_price": 4500,
+        "list_price": 5000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 4500
+          },
+          {
+            "min_qty": 10,
+            "price": 4000
+          },
+          {
+            "min_qty": 50,
+            "price": 3000
+          }
+        ],
+        "stock_qty": 460,
+        "reorder_level": 30,
+        "warehouse_location": "A3-10"
+      }
+    ],
+    "min_price": 4500,
+    "list_price": 5000,
+    "total_stock": 460,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-10r-5w",
+      "oem",
+      "resistors"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 139,
+    "sold_count": 704,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-09T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6964"
+    },
+    "name": "100 ohm 2W Power Resistor",
+    "part_number": "R-100R-2W",
+    "slug": "100-ohm-2w-power-resistor-r-100r-2w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "100 ohm 2W Power Resistor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 100,
+      "tolerance_percent": "5",
+      "power_rating_w": "2",
+      "package": "Through-hole",
+      "material": "Metal film"
+    },
+    "variants": [
+      {
+        "sku": "R-100R-2W-01",
+        "option_name": "Standard",
+        "retail_price": 2500,
+        "list_price": 3000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 2500
+          },
+          {
+            "min_qty": 10,
+            "price": 2000
+          },
+          {
+            "min_qty": 50,
+            "price": 2000
+          }
+        ],
+        "stock_qty": 540,
+        "reorder_level": 30,
+        "warehouse_location": "A3-11"
+      }
+    ],
+    "min_price": 2500,
+    "list_price": 3000,
+    "total_stock": 540,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-100r-2w",
+      "oem",
+      "resistors"
+    ],
+    "avg_rating": 3.8,
+    "rating_count": 39,
+    "sold_count": 700,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-31T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6965"
+    },
+    "name": "47 ohm 1W Resistor (50 pcs)",
+    "part_number": "R-47R-1W",
+    "slug": "47-ohm-1w-resistor-50-pcs-r-47r-1w",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "description": "47 ohm 1W Resistor (50 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "resistance_ohm": 47,
+      "tolerance_percent": "5",
+      "power_rating_w": "1",
+      "package": "Through-hole",
+      "material": "Metal film"
+    },
+    "variants": [
+      {
+        "sku": "R-47R-1W-01",
+        "option_name": "Standard",
+        "retail_price": 19000,
+        "list_price": 19000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 19000
+          },
+          {
+            "min_qty": 10,
+            "price": 17000
+          },
+          {
+            "min_qty": 50,
+            "price": 16000
+          }
+        ],
+        "stock_qty": 380,
+        "reorder_level": 30,
+        "warehouse_location": "A3-12"
+      }
+    ],
+    "min_price": 19000,
+    "list_price": 19000,
+    "total_stock": 380,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "r-47r-1w",
+      "royal-ohm",
+      "resistors"
+    ],
+    "avg_rating": 4.7,
+    "rating_count": 147,
+    "sold_count": 523,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-17T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6967"
+    },
+    "name": "1000uF 25V Electrolytic Capacitor",
+    "part_number": "C-1000UF-25V",
+    "slug": "1000uf-25v-electrolytic-capacitor-c-1000uf-25v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6935"
+    },
+    "description": "1000uF 25V Electrolytic Capacitor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 1000,
+      "voltage_rating_v": 25,
+      "dielectric": "Electrolytic",
+      "package": "Through-hole",
+      "low_esr": true
+    },
+    "variants": [
+      {
+        "sku": "C-1000UF-25V-01",
+        "option_name": "Standard",
+        "retail_price": 3500,
+        "list_price": 4000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 3500
+          },
+          {
+            "min_qty": 10,
+            "price": 3000
+          },
+          {
+            "min_qty": 50,
+            "price": 2000
+          }
+        ],
+        "stock_qty": 620,
+        "reorder_level": 30,
+        "warehouse_location": "A4-01"
+      }
+    ],
+    "min_price": 3500,
+    "list_price": 4000,
+    "total_stock": 620,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-1000uf-25v",
+      "rubycon",
+      "capacitors"
+    ],
+    "avg_rating": 4.1,
+    "rating_count": 139,
+    "sold_count": 622,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-28T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6968"
+    },
+    "name": "470uF 16V Electrolytic Capacitor",
+    "part_number": "C-470UF-16V",
+    "slug": "470uf-16v-electrolytic-capacitor-c-470uf-16v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6935"
+    },
+    "description": "470uF 16V Electrolytic Capacitor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 470,
+      "voltage_rating_v": 16,
+      "dielectric": "Electrolytic",
+      "package": "Through-hole",
+      "low_esr": true
+    },
+    "variants": [
+      {
+        "sku": "C-470UF-16V-01",
+        "option_name": "Standard",
+        "retail_price": 2200,
+        "list_price": 3000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 2200
+          },
+          {
+            "min_qty": 10,
+            "price": 2000
+          },
+          {
+            "min_qty": 50,
+            "price": 1000
+          }
+        ],
+        "stock_qty": 840,
+        "reorder_level": 30,
+        "warehouse_location": "A4-02"
+      }
+    ],
+    "min_price": 2200,
+    "list_price": 3000,
+    "total_stock": 840,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-470uf-16v",
+      "rubycon",
+      "capacitors"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 21,
+    "sold_count": 183,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-04-16T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6969"
+    },
+    "name": "220uF 25V Electrolytic Capacitor",
+    "part_number": "C-220UF-25V",
+    "slug": "220uf-25v-electrolytic-capacitor-c-220uf-25v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6938"
+    },
+    "description": "220uF 25V Electrolytic Capacitor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 220,
+      "voltage_rating_v": 25,
+      "dielectric": "Electrolytic",
+      "package": "Through-hole",
+      "low_esr": false
+    },
+    "variants": [
+      {
+        "sku": "C-220UF-25V-01",
+        "option_name": "Standard",
+        "retail_price": 1800,
+        "list_price": 2000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 1800
+          },
+          {
+            "min_qty": 10,
+            "price": 1000
+          },
+          {
+            "min_qty": 50,
+            "price": 1000
+          }
+        ],
+        "stock_qty": 900,
+        "reorder_level": 30,
+        "warehouse_location": "A4-03"
+      }
+    ],
+    "min_price": 1800,
+    "list_price": 2000,
+    "total_stock": 900,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-220uf-25v",
+      "samwha",
+      "capacitors"
+    ],
+    "avg_rating": 4.7,
+    "rating_count": 34,
+    "sold_count": 620,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-05T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f696a"
+    },
+    "name": "100uF 50V Electrolytic Capacitor",
+    "part_number": "C-100UF-50V",
+    "slug": "100uf-50v-electrolytic-capacitor-c-100uf-50v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6938"
+    },
+    "description": "100uF 50V Electrolytic Capacitor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 100,
+      "voltage_rating_v": 50,
+      "dielectric": "Electrolytic",
+      "package": "Through-hole",
+      "low_esr": false
+    },
+    "variants": [
+      {
+        "sku": "C-100UF-50V-01",
+        "option_name": "Standard",
+        "retail_price": 1500,
+        "list_price": 2000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 1500
+          },
+          {
+            "min_qty": 10,
+            "price": 1000
+          },
+          {
+            "min_qty": 50,
+            "price": 1000
+          }
+        ],
+        "stock_qty": 760,
+        "reorder_level": 30,
+        "warehouse_location": "A4-04"
+      }
+    ],
+    "min_price": 1500,
+    "list_price": 2000,
+    "total_stock": 760,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-100uf-50v",
+      "samwha",
+      "capacitors"
+    ],
+    "avg_rating": 4.8,
+    "rating_count": 99,
+    "sold_count": 552,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-02T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f696b"
+    },
+    "name": "10uF 63V Electrolytic Capacitor",
+    "part_number": "C-10UF-63V",
+    "slug": "10uf-63v-electrolytic-capacitor-c-10uf-63v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6938"
+    },
+    "description": "10uF 63V Electrolytic Capacitor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 10,
+      "voltage_rating_v": 63,
+      "dielectric": "Electrolytic",
+      "package": "Through-hole",
+      "low_esr": false
+    },
+    "variants": [
+      {
+        "sku": "C-10UF-63V-01",
+        "option_name": "Standard",
+        "retail_price": 900,
+        "list_price": 1000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 900
+          },
+          {
+            "min_qty": 10,
+            "price": 0
+          },
+          {
+            "min_qty": 50,
+            "price": 0
+          }
+        ],
+        "stock_qty": 1050,
+        "reorder_level": 30,
+        "warehouse_location": "A4-05"
+      }
+    ],
+    "min_price": 900,
+    "list_price": 1000,
+    "total_stock": 1050,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-10uf-63v",
+      "samwha",
+      "capacitors"
+    ],
+    "avg_rating": 3.8,
+    "rating_count": 96,
+    "sold_count": 128,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-25T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f696c"
+    },
+    "name": "0.1uF (104) 50V Ceramic Capacitor (100 pcs)",
+    "part_number": "C-104-50V",
+    "slug": "0-1uf-104-50v-ceramic-capacitor-100-pcs-c-104-50v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692f"
+    },
+    "description": "0.1uF (104) 50V Ceramic Capacitor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 0.1,
+      "voltage_rating_v": 50,
+      "dielectric": "Ceramic",
+      "package": "Through-hole",
+      "low_esr": true
+    },
+    "variants": [
+      {
+        "sku": "C-104-50V-01",
+        "option_name": "Standard",
+        "retail_price": 12000,
+        "list_price": 12000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 12000
+          },
+          {
+            "min_qty": 10,
+            "price": 11000
+          },
+          {
+            "min_qty": 50,
+            "price": 10000
+          }
+        ],
+        "stock_qty": 1600,
+        "reorder_level": 30,
+        "warehouse_location": "A4-06"
+      }
+    ],
+    "min_price": 12000,
+    "list_price": 12000,
+    "total_stock": 1600,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-104-50v",
+      "murata",
+      "capacitors"
+    ],
+    "avg_rating": 3.9,
+    "rating_count": 18,
+    "sold_count": 375,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-23T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f696d"
+    },
+    "name": "22pF 50V Ceramic Capacitor (100 pcs)",
+    "part_number": "C-22PF-50V",
+    "slug": "22pf-50v-ceramic-capacitor-100-pcs-c-22pf-50v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692f"
+    },
+    "description": "22pF 50V Ceramic Capacitor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 2.2e-05,
+      "voltage_rating_v": 50,
+      "dielectric": "Ceramic",
+      "package": "Through-hole",
+      "low_esr": true
+    },
+    "variants": [
+      {
+        "sku": "C-22PF-50V-01",
+        "option_name": "Standard",
+        "retail_price": 10000,
+        "list_price": 12000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 10000
+          },
+          {
+            "min_qty": 10,
+            "price": 9000
+          },
+          {
+            "min_qty": 50,
+            "price": 8000
+          }
+        ],
+        "stock_qty": 980,
+        "reorder_level": 30,
+        "warehouse_location": "A4-07"
+      }
+    ],
+    "min_price": 10000,
+    "list_price": 12000,
+    "total_stock": 980,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-22pf-50v",
+      "murata",
+      "capacitors"
+    ],
+    "avg_rating": 3.8,
+    "rating_count": 6,
+    "sold_count": 507,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-03T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f696e"
+    },
+    "name": "SMD 0805 1uF 25V Capacitor (100 pcs)",
+    "part_number": "C-SMD0805-1UF",
+    "slug": "smd-0805-1uf-25v-capacitor-100-pcs-c-smd0805-1uf",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6937"
+    },
+    "description": "SMD 0805 1uF 25V Capacitor (100 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 1,
+      "voltage_rating_v": 25,
+      "dielectric": "Ceramic",
+      "package": "SMD 0805",
+      "low_esr": true
+    },
+    "variants": [
+      {
+        "sku": "C-SMD0805-1UF-01",
+        "option_name": "Standard",
+        "retail_price": 16000,
+        "list_price": 20000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 16000
+          },
+          {
+            "min_qty": 10,
+            "price": 14000
+          },
+          {
+            "min_qty": 50,
+            "price": 13000
+          }
+        ],
+        "stock_qty": 540,
+        "reorder_level": 30,
+        "warehouse_location": "A4-08"
+      }
+    ],
+    "min_price": 16000,
+    "list_price": 20000,
+    "total_stock": 540,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-smd0805-1uf",
+      "samsung",
+      "capacitors"
+    ],
+    "avg_rating": 4.2,
+    "rating_count": 115,
+    "sold_count": 144,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-11T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f696f"
+    },
+    "name": "SMD 1206 10uF 16V Capacitor (50 pcs)",
+    "part_number": "C-SMD1206-10UF",
+    "slug": "smd-1206-10uf-16v-capacitor-50-pcs-c-smd1206-10uf",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6937"
+    },
+    "description": "SMD 1206 10uF 16V Capacitor (50 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 10,
+      "voltage_rating_v": 16,
+      "dielectric": "Ceramic",
+      "package": "SMD 1206",
+      "low_esr": true
+    },
+    "variants": [
+      {
+        "sku": "C-SMD1206-10UF-01",
+        "option_name": "Standard",
+        "retail_price": 24000,
+        "list_price": 24000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 24000
+          },
+          {
+            "min_qty": 10,
+            "price": 22000
+          },
+          {
+            "min_qty": 50,
+            "price": 20000
+          }
+        ],
+        "stock_qty": 410,
+        "reorder_level": 30,
+        "warehouse_location": "A4-09"
+      }
+    ],
+    "min_price": 24000,
+    "list_price": 24000,
+    "total_stock": 410,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-smd1206-10uf",
+      "samsung",
+      "capacitors"
+    ],
+    "avg_rating": 4.5,
+    "rating_count": 119,
+    "sold_count": 844,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-23T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6970"
+    },
+    "name": "10uF 16V Tantalum Capacitor",
+    "part_number": "C-TANT-10UF-16V",
+    "slug": "10uf-16v-tantalum-capacitor-c-tant-10uf-16v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692c"
+    },
+    "description": "10uF 16V Tantalum Capacitor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 10,
+      "voltage_rating_v": 16,
+      "dielectric": "Tantalum",
+      "package": "SMD 1206",
+      "low_esr": true
+    },
+    "variants": [
+      {
+        "sku": "C-TANT-10UF-16V-01",
+        "option_name": "Standard",
+        "retail_price": 5500,
+        "list_price": 7000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 5500
+          },
+          {
+            "min_qty": 10,
+            "price": 5000
+          },
+          {
+            "min_qty": 50,
+            "price": 4000
+          }
+        ],
+        "stock_qty": 320,
+        "reorder_level": 30,
+        "warehouse_location": "A4-10"
+      }
+    ],
+    "min_price": 5500,
+    "list_price": 7000,
+    "total_stock": 320,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-tant-10uf-16v",
+      "kemet",
+      "capacitors"
+    ],
+    "avg_rating": 4.4,
+    "rating_count": 151,
+    "sold_count": 464,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-26T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6971"
+    },
+    "name": "0.22uF 400V Film Capacitor",
+    "part_number": "C-FILM-224-400V",
+    "slug": "0-22uf-400v-film-capacitor-c-film-224-400v",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f693a"
+    },
+    "description": "0.22uF 400V Film Capacitor is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "capacitance_uf": 0.22,
+      "voltage_rating_v": 400,
+      "dielectric": "Film",
+      "package": "Through-hole",
+      "low_esr": false
+    },
+    "variants": [
+      {
+        "sku": "C-FILM-224-400V-01",
+        "option_name": "Standard",
+        "retail_price": 8500,
+        "list_price": 11000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 8500
+          },
+          {
+            "min_qty": 10,
+            "price": 7000
+          },
+          {
+            "min_qty": 50,
+            "price": 7000
+          }
+        ],
+        "stock_qty": 240,
+        "reorder_level": 30,
+        "warehouse_location": "A4-11"
+      }
+    ],
+    "min_price": 8500,
+    "list_price": 11000,
+    "total_stock": 240,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "c-film-224-400v",
+      "wima",
+      "capacitors"
+    ],
+    "avg_rating": 4.5,
+    "rating_count": 117,
+    "sold_count": 714,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-15T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6973"
+    },
+    "name": "LM7805 5V Regulator TO-220 (10 pcs)",
+    "part_number": "LM7805-TO220",
+    "slug": "lm7805-5v-regulator-to-220-10-pcs-lm7805-to220",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6936"
+    },
+    "description": "LM7805 5V Regulator TO-220 (10 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 5.0,
+      "output_current_a": 1.0,
+      "input_voltage_max_v": 35,
+      "module_type": "Linear LDO",
+      "adjustable": false
+    },
+    "variants": [
+      {
+        "sku": "LM7805-TO220-01",
+        "option_name": "Standard",
+        "retail_price": 28000,
+        "list_price": 32000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 28000
+          },
+          {
+            "min_qty": 10,
+            "price": 25000
+          },
+          {
+            "min_qty": 50,
+            "price": 23000
+          }
+        ],
+        "stock_qty": 680,
+        "reorder_level": 30,
+        "warehouse_location": "A5-01"
+      }
+    ],
+    "min_price": 28000,
+    "list_price": 32000,
+    "total_stock": 680,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "lm7805-to220",
+      "stmicroelectronics",
+      "power-regulators"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 140,
+    "sold_count": 220,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-23T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6974"
+    },
+    "name": "LM7812 12V Regulator TO-220 (10 pcs)",
+    "part_number": "LM7812-TO220",
+    "slug": "lm7812-12v-regulator-to-220-10-pcs-lm7812-to220",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6936"
+    },
+    "description": "LM7812 12V Regulator TO-220 (10 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 12.0,
+      "output_current_a": 1.0,
+      "input_voltage_max_v": 35,
+      "module_type": "Linear LDO",
+      "adjustable": false
+    },
+    "variants": [
+      {
+        "sku": "LM7812-TO220-01",
+        "option_name": "Standard",
+        "retail_price": 28000,
+        "list_price": 34000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 28000
+          },
+          {
+            "min_qty": 10,
+            "price": 25000
+          },
+          {
+            "min_qty": 50,
+            "price": 23000
+          }
+        ],
+        "stock_qty": 420,
+        "reorder_level": 30,
+        "warehouse_location": "A5-02"
+      }
+    ],
+    "min_price": 28000,
+    "list_price": 34000,
+    "total_stock": 420,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "lm7812-to220",
+      "stmicroelectronics",
+      "power-regulators"
+    ],
+    "avg_rating": 4.6,
+    "rating_count": 11,
+    "sold_count": 879,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-08-07T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6975"
+    },
+    "name": "AMS1117-3.3V SMD Regulator (20 pcs)",
+    "part_number": "AMS1117-3.3",
+    "slug": "ams1117-3-3v-smd-regulator-20-pcs-ams1117-3-3",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6923"
+    },
+    "description": "AMS1117-3.3V SMD Regulator (20 pcs) is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 3.3,
+      "output_current_a": 1.0,
+      "input_voltage_max_v": 15,
+      "module_type": "Linear LDO",
+      "adjustable": false
+    },
+    "variants": [
+      {
+        "sku": "AMS1117-3.3-01",
+        "option_name": "Standard",
+        "retail_price": 18000,
+        "list_price": 18000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 18000
+          },
+          {
+            "min_qty": 10,
+            "price": 16000
+          },
+          {
+            "min_qty": 50,
+            "price": 15000
+          }
+        ],
+        "stock_qty": 920,
+        "reorder_level": 30,
+        "warehouse_location": "A5-03"
+      }
+    ],
+    "min_price": 18000,
+    "list_price": 18000,
+    "total_stock": 920,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "ams1117-3.3",
+      "ams",
+      "power-regulators"
+    ],
+    "avg_rating": 4.8,
+    "rating_count": 115,
+    "sold_count": 676,
+    "is_featured": true,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-20T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6976"
+    },
+    "name": "LM2596 Adjustable Buck Converter",
+    "part_number": "LM2596-ADJ",
+    "slug": "lm2596-adjustable-buck-converter-lm2596-adj",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6939"
+    },
+    "description": "LM2596 Adjustable Buck Converter is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 12.0,
+      "output_current_a": 3.0,
+      "input_voltage_max_v": 40,
+      "module_type": "Buck (step-down)",
+      "adjustable": true
+    },
+    "variants": [
+      {
+        "sku": "LM2596-ADJ-01",
+        "option_name": "Standard",
+        "retail_price": 32000,
+        "list_price": 42000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 32000
+          },
+          {
+            "min_qty": 10,
+            "price": 29000
+          },
+          {
+            "min_qty": 50,
+            "price": 27000
+          }
+        ],
+        "stock_qty": 740,
+        "reorder_level": 30,
+        "warehouse_location": "A5-04"
+      }
+    ],
+    "min_price": 32000,
+    "list_price": 42000,
+    "total_stock": 740,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "lm2596-adj",
+      "texas-instruments",
+      "power-regulators"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 173,
+    "sold_count": 152,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-23T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6977"
+    },
+    "name": "MP1584EN Mini Buck Converter",
+    "part_number": "MP1584EN",
+    "slug": "mp1584en-mini-buck-converter-mp1584en",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f692d"
+    },
+    "description": "MP1584EN Mini Buck Converter is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 5.0,
+      "output_current_a": 3.0,
+      "input_voltage_max_v": 28,
+      "module_type": "Buck (step-down)",
+      "adjustable": true
+    },
+    "variants": [
+      {
+        "sku": "MP1584EN-01",
+        "option_name": "Standard",
+        "retail_price": 24000,
+        "list_price": 29000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 24000
+          },
+          {
+            "min_qty": 10,
+            "price": 22000
+          },
+          {
+            "min_qty": 50,
+            "price": 20000
+          }
+        ],
+        "stock_qty": 560,
+        "reorder_level": 30,
+        "warehouse_location": "A5-05"
+      }
+    ],
+    "min_price": 24000,
+    "list_price": 29000,
+    "total_stock": 560,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "mp1584en",
+      "mps",
+      "power-regulators"
+    ],
+    "avg_rating": 4.9,
+    "rating_count": 132,
+    "sold_count": 161,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-24T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6978"
+    },
+    "name": "XL4015 5A Buck Converter with Display",
+    "part_number": "XL4015-5A",
+    "slug": "xl4015-5a-buck-converter-with-display-xl4015-5a",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f693b"
+    },
+    "description": "XL4015 5A Buck Converter with Display is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 12.0,
+      "output_current_a": 5.0,
+      "input_voltage_max_v": 38,
+      "module_type": "Buck (step-down)",
+      "adjustable": true
+    },
+    "variants": [
+      {
+        "sku": "XL4015-5A-01",
+        "option_name": "Standard",
+        "retail_price": 68000,
+        "list_price": 68000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 68000
+          },
+          {
+            "min_qty": 10,
+            "price": 62000
+          },
+          {
+            "min_qty": 50,
+            "price": 57000
+          }
+        ],
+        "stock_qty": 230,
+        "reorder_level": 30,
+        "warehouse_location": "A5-06"
+      }
+    ],
+    "min_price": 68000,
+    "list_price": 68000,
+    "total_stock": 230,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "xl4015-5a",
+      "xlsemi",
+      "power-regulators"
+    ],
+    "avg_rating": 4.8,
+    "rating_count": 169,
+    "sold_count": 419,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-07-10T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6979"
+    },
+    "name": "XL6009 4A Boost Converter",
+    "part_number": "XL6009",
+    "slug": "xl6009-4a-boost-converter-xl6009",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f693b"
+    },
+    "description": "XL6009 4A Boost Converter is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 24.0,
+      "output_current_a": 4.0,
+      "input_voltage_max_v": 32,
+      "module_type": "Boost (step-up)",
+      "adjustable": true
+    },
+    "variants": [
+      {
+        "sku": "XL6009-01",
+        "option_name": "Standard",
+        "retail_price": 35000,
+        "list_price": 46000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 35000
+          },
+          {
+            "min_qty": 10,
+            "price": 32000
+          },
+          {
+            "min_qty": 50,
+            "price": 29000
+          }
+        ],
+        "stock_qty": 380,
+        "reorder_level": 30,
+        "warehouse_location": "A5-07"
+      }
+    ],
+    "min_price": 35000,
+    "list_price": 46000,
+    "total_stock": 380,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "xl6009",
+      "xlsemi",
+      "power-regulators"
+    ],
+    "avg_rating": 4.3,
+    "rating_count": 136,
+    "sold_count": 100,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-25T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f697a"
+    },
+    "name": "MT3608 2A Boost Converter",
+    "part_number": "MT3608",
+    "slug": "mt3608-2a-boost-converter-mt3608",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6924"
+    },
+    "description": "MT3608 2A Boost Converter is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 12.0,
+      "output_current_a": 2.0,
+      "input_voltage_max_v": 24,
+      "module_type": "Boost (step-up)",
+      "adjustable": true
+    },
+    "variants": [
+      {
+        "sku": "MT3608-01",
+        "option_name": "Standard",
+        "retail_price": 18000,
+        "list_price": 22000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 18000
+          },
+          {
+            "min_qty": 10,
+            "price": 16000
+          },
+          {
+            "min_qty": 50,
+            "price": 15000
+          }
+        ],
+        "stock_qty": 640,
+        "reorder_level": 30,
+        "warehouse_location": "A5-08"
+      }
+    ],
+    "min_price": 18000,
+    "list_price": 22000,
+    "total_stock": 640,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "mt3608",
+      "aerosemi",
+      "power-regulators"
+    ],
+    "avg_rating": 4.2,
+    "rating_count": 47,
+    "sold_count": 289,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-15T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f697b"
+    },
+    "name": "5V 2A AC Adapter, 5.5mm jack",
+    "part_number": "ADP-5V2A",
+    "slug": "5v-2a-ac-adapter-5-5mm-jack-adp-5v2a",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "5V 2A AC Adapter, 5.5mm jack is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 5.0,
+      "output_current_a": 2.0,
+      "input_voltage_max_v": 240,
+      "module_type": "AC Adapter",
+      "adjustable": false
+    },
+    "variants": [
+      {
+        "sku": "ADP-5V2A-01",
+        "option_name": "Standard",
+        "retail_price": 65000,
+        "list_price": 65000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 65000
+          },
+          {
+            "min_qty": 10,
+            "price": 59000
+          },
+          {
+            "min_qty": 50,
+            "price": 55000
+          }
+        ],
+        "stock_qty": 310,
+        "reorder_level": 30,
+        "warehouse_location": "A5-09"
+      }
+    ],
+    "min_price": 65000,
+    "list_price": 65000,
+    "total_stock": 310,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "adp-5v2a",
+      "oem",
+      "power-regulators"
+    ],
+    "avg_rating": 5.0,
+    "rating_count": 127,
+    "sold_count": 854,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-21T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f697c"
+    },
+    "name": "12V 5A AC Adapter, 5.5mm jack",
+    "part_number": "ADP-12V5A",
+    "slug": "12v-5a-ac-adapter-5-5mm-jack-adp-12v5a",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "description": "12V 5A AC Adapter, 5.5mm jack is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 12.0,
+      "output_current_a": 5.0,
+      "input_voltage_max_v": 240,
+      "module_type": "AC Adapter",
+      "adjustable": false
+    },
+    "variants": [
+      {
+        "sku": "ADP-12V5A-01",
+        "option_name": "Standard",
+        "retail_price": 145000,
+        "list_price": 181000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 145000
+          },
+          {
+            "min_qty": 10,
+            "price": 133000
+          },
+          {
+            "min_qty": 50,
+            "price": 123000
+          }
+        ],
+        "stock_qty": 160,
+        "reorder_level": 30,
+        "warehouse_location": "A5-10"
+      }
+    ],
+    "min_price": 145000,
+    "list_price": 181000,
+    "total_stock": 160,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "adp-12v5a",
+      "oem",
+      "power-regulators"
+    ],
+    "avg_rating": 4.0,
+    "rating_count": 119,
+    "sold_count": 551,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-06-13T00:00:00Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f697d"
+    },
+    "name": "TP4056 Type-C Lithium Charger Module",
+    "part_number": "TP4056-TYPEC",
+    "slug": "tp4056-type-c-lithium-charger-module-tp4056-typec",
+    "category_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "brand_id": {
+      "$oid": "6a7dbef068f5434be60f6930"
+    },
+    "description": "TP4056 Type-C Lithium Charger Module is stocked by ElectroMart from authorised distributors and checked before shipping. Suitable for study projects, prototypes and production use. In stock at our warehouse, with a 7-day return window for manufacturing defects.",
+    "specifications": {
+      "output_voltage_v": 4.2,
+      "output_current_a": 1.0,
+      "input_voltage_max_v": 8,
+      "module_type": "Buck-Boost",
+      "adjustable": false
+    },
+    "variants": [
+      {
+        "sku": "TP4056-TYPEC-01",
+        "option_name": "Standard",
+        "retail_price": 12000,
+        "list_price": 16000,
+        "price_tiers": [
+          {
+            "min_qty": 1,
+            "price": 12000
+          },
+          {
+            "min_qty": 10,
+            "price": 11000
+          },
+          {
+            "min_qty": 50,
+            "price": 10000
+          }
+        ],
+        "stock_qty": 1150,
+        "reorder_level": 30,
+        "warehouse_location": "A5-11"
+      }
+    ],
+    "min_price": 12000,
+    "list_price": 16000,
+    "total_stock": 1150,
+    "images": [],
+    "datasheet_url": "",
+    "tags": [
+      "tp4056-typec",
+      "nanjing",
+      "power-regulators"
+    ],
+    "avg_rating": 4.4,
+    "rating_count": 30,
+    "sold_count": 557,
+    "is_featured": false,
+    "is_hidden": false,
+    "created_at": {
+      "$date": "2026-05-04T00:00:00Z"
+    }
+  }
+]

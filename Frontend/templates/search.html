@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load em_extras %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Search</nav>
+
+<div class="results-head plain">
+  <h1>Results for &ldquo;{{ q }}&rdquo;</h1>
+  <span class="count"><b>{{ total }}</b> product(s)</span>
+</div>
+
+{% if products %}
+  <div class="grid">{% for p in products %}{% include "partials/product_card.html" %}{% endfor %}</div>
+  {% if total_pages > 1 %}
+  <div class="pager">
+    {% for n in page_range %}
+      {% if n == page %}<span class="on">{{ n }}</span>
+      {% else %}<a href="?q={{ q|urlencode }}&amp;page={{ n }}">{{ n }}</a>{% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+{% else %}
+  <div class="empty">
+    <div class="empty-ico">&#128269;</div>
+    <p>No product found{% if q %} for &ldquo;{{ q }}&rdquo;{% endif %}.</p>
+    <a class="btn btn-primary" href="{% url 'home' %}">Back to home</a>
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% load em_extras %}
+<div class="card">
+  {% if p.discount_percent %}<span class="card-sale">-{{ p.discount_percent }}%</span>{% endif %}
+  <button class="card-wish js-wish" data-slug="{{ p.slug }}" title="Add to wishlist">&#9829;</button>
+
+  <a class="card-img" href="{% url 'product_detail' p.slug %}">
+    <span class="ph">{{ p.name|slice:":2"|upper }}</span>
+  </a>
+
+  <a class="card-name" href="{% url 'product_detail' p.slug %}">{{ p.name }}</a>
+  <div class="card-part">{{ p.part_number }}</div>
+
+  <div class="card-price">
+    <span class="price-now">{{ p.min_price|money }}</span>
+    {% if p.discount_percent %}<span class="price-old">{{ p.list_price|money }}</span>{% endif %}
+  </div>
+
+  <div class="card-meta">
+    {% if p.rating_count %}
+      <span class="stars">{{ p.avg_rating|stars }}</span>
+      <span class="rc">({{ p.rating_count }})</span>
+    {% else %}
+      <span class="rc">No reviews yet</span>
+    {% endif %}
+  </div>
+
+  <div class="card-foot">
+    {% if p.in_stock %}
+      <span class="tag tag-ok">In stock</span>
+    {% else %}
+      <span class="tag tag-out">Out of stock</span>
+    {% endif %}
+    <label class="cmp">
+      <input type="checkbox" class="js-compare" data-slug="{{ p.slug }}"> Compare
+    </label>
+  </div>
+</div>

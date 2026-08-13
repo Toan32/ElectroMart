@@ -1,0 +1,124 @@
+{% load static em_extras %}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title|default:"ElectroMart" }}</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <span>Nationwide electronic component stores</span>
+    <span class="topbar-right">
+      <a href="#">Track order</a>
+      <a href="#">Business customers</a>
+      <a href="#">Support 1800 6865</a>
+    </span>
+  </div>
+</div>
+
+<header class="header">
+  <div class="wrap header-in">
+    <a class="logo" href="{% url 'home' %}">
+      <span class="logo-mark">EM</span>
+      <span class="logo-text">Electro<b>Mart</b></span>
+    </a>
+
+    <form class="search" action="{% url 'search' %}" method="get" autocomplete="off">
+      <input type="text" name="q" id="q" value="{{ q|default:'' }}"
+             placeholder="What component are you looking for? (ESP32, DHT22, 10k resistor...)">
+      <button type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor"
+          d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"/></svg>
+      </button>
+      <div class="suggest" id="suggest"></div>
+    </form>
+
+    <nav class="header-actions">
+      <a href="{% url 'compare' %}" class="hact">
+        <span class="hact-ico">⇄</span>
+        <span class="hact-txt">Compare</span>
+        <b class="badge {% if not compare_count %}hide{% endif %}" id="cmp-badge">{{ compare_count }}</b>
+      </a>
+      <a href="{% url 'wishlist' %}" class="hact">
+        <span class="hact-ico">♥</span>
+        <span class="hact-txt">Wishlist</span>
+        <b class="badge {% if not wishlist_count %}hide{% endif %}" id="wish-badge">{{ wishlist_count }}</b>
+      </a>
+      <a href="#" class="hact">
+        <span class="hact-ico">🛒</span>
+        <span class="hact-txt">Cart</span>
+      </a>
+      <a href="#" class="hact">
+        <span class="hact-ico">👤</span>
+        <span class="hact-txt">Account</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<div class="navbar">
+  <div class="wrap navbar-in">
+    <div class="nav-cat">
+      <button class="nav-cat-btn" type="button">☰ All categories</button>
+      <ul class="nav-cat-list">
+        {% for c in nav_categories %}
+        <li><a href="{% url 'product_list' c.slug %}"><span>{{ c.icon }}</span>{{ c.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <ul class="nav-links">
+      {% for c in nav_categories %}
+      <li><a href="{% url 'product_list' c.slug %}">{{ c.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<main class="wrap main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div>
+      <div class="foot-title">ElectroMart</div>
+      <p>Electronic component store: microcontrollers, sensors, resistors,
+         capacitors and power modules. Genuine parts with full datasheets.</p>
+    </div>
+    <div>
+      <div class="foot-title">Categories</div>
+      {% for c in nav_categories %}
+      <a href="{% url 'product_list' c.slug %}">{{ c.name }}</a>
+      {% endfor %}
+    </div>
+    <div>
+      <div class="foot-title">Support</div>
+      <a href="#">How to order</a>
+      <a href="#">Return policy</a>
+      <a href="#">FAQ</a>
+      <a href="#">Contact us</a>
+    </div>
+    <div>
+      <div class="foot-title">Contact</div>
+      <p>590 Cach Mang Thang 8, District 3, Ho Chi Minh City<br>
+         Hotline: 1800 6865<br>
+         Email: support@electromart.vn</p>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    eProject ElectroMart - FPT Aptech &middot; Django + MongoDB &middot; Storefront module by Toan
+  </div>
+</footer>
+
+<div class="compare-bar {% if not compare_count %}hide{% endif %}" id="cmp-bar">
+  <span>Comparing <b id="cmp-bar-n">{{ compare_count }}</b> product(s)</span>
+  <a class="btn btn-primary btn-sm" href="{% url 'compare' %}">View comparison</a>
+</div>
+
+<script src="{% static 'js/app.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

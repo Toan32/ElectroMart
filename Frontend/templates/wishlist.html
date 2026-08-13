@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load em_extras %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Wishlist</nav>
+<div class="results-head plain">
+  <h1>Wishlist</h1>
+  <span class="count"><b>{{ products|length }}</b> product(s)</span>
+</div>
+
+{% if products %}
+<div class="grid">{% for p in products %}{% include "partials/product_card.html" %}{% endfor %}</div>
+{% else %}
+<div class="empty">
+  <div class="empty-ico">&#9825;</div>
+  <p>Your wishlist is empty. Click the heart icon on a product card to save it.</p>
+  <a class="btn btn-primary" href="{% url 'home' %}">Browse products</a>
+</div>
+{% endif %}
+{% endblock %}

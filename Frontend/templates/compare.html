@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load em_extras %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Compare</nav>
+
+<div class="results-head plain">
+  <h1>Compare products</h1>
+  {% if products %}<a class="f-clear" href="{% url 'compare_clear' %}">Clear all</a>{% endif %}
+</div>
+
+{% if products %}
+<div class="cmp-wrap">
+  <table class="cmp-table">
+    <tr>
+      <th class="cmp-first">Product</th>
+      {% for p in products %}
+      <td>
+        <div class="cmp-card">
+          <div class="cmp-img"><span class="ph">{{ p.name|slice:":2"|upper }}</span></div>
+          <a class="cmp-name" href="{% url 'product_detail' p.slug %}">{{ p.name }}</a>
+          <div class="price-now">{{ p.min_price|money }}</div>
+          <button class="btn btn-outline btn-sm js-compare-off" data-slug="{{ p.slug }}">Remove</button>
+        </div>
+      </td>
+      {% endfor %}
+    </tr>
+    <tr><th class="cmp-first">Part number</th>
+      {% for p in products %}<td>{{ p.part_number }}</td>{% endfor %}</tr>
+    <tr><th class="cmp-first">Brand</th>
+      {% for p in products %}<td>{{ p.brand_name }}</td>{% endfor %}</tr>
+    <tr><th class="cmp-first">Stock</th>
+      {% for p in products %}<td>{{ p.total_stock }}</td>{% endfor %}</tr>
+    {% for r in rows %}
+    <tr class="{% if r.differs %}differ{% endif %}">
+      <th class="cmp-first">{{ r.label }}{% if r.unit %} <i>({{ r.unit }})</i>{% endif %}</th>
+      {% for v in r.values %}<td>{{ v }}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<p class="muted">Rows highlighted in yellow are specifications that differ between the products.</p>
+{% else %}
+<div class="empty">
+  <div class="empty-ico">&#8646;</div>
+  <p>No product selected yet. Tick the &ldquo;Compare&rdquo; box on a product card (up to 4).</p>
+  <a class="btn btn-primary" href="{% url 'home' %}">Choose products</a>
+</div>
+{% endif %}
+{% endblock %}

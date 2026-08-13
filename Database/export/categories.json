@@ -1,0 +1,391 @@
+[
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f693d"
+    },
+    "name": "Microcontrollers & Kits",
+    "slug": "microcontrollers-kits",
+    "parent_id": null,
+    "ancestors": [],
+    "level": 0,
+    "icon": "🧠",
+    "description": "",
+    "display_order": 1,
+    "is_hidden": false,
+    "spec_template": [
+      {
+        "key": "core",
+        "label": "Core",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "ARM Cortex-M0",
+          "ARM Cortex-M3",
+          "ARM Cortex-M4",
+          "AVR 8-bit",
+          "Xtensa LX6",
+          "Xtensa LX7",
+          "RISC-V"
+        ],
+        "is_filterable": true,
+        "display_order": 1
+      },
+      {
+        "key": "clock_speed_mhz",
+        "label": "Clock speed",
+        "data_type": "number",
+        "unit": "MHz",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 2
+      },
+      {
+        "key": "flash_kb",
+        "label": "Flash memory",
+        "data_type": "number",
+        "unit": "KB",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 3
+      },
+      {
+        "key": "ram_kb",
+        "label": "RAM",
+        "data_type": "number",
+        "unit": "KB",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 4
+      },
+      {
+        "key": "gpio_count",
+        "label": "GPIO pins",
+        "data_type": "number",
+        "unit": "pins",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 5
+      },
+      {
+        "key": "wifi",
+        "label": "Wi-Fi",
+        "data_type": "boolean",
+        "unit": "",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 6
+      },
+      {
+        "key": "bluetooth",
+        "label": "Bluetooth",
+        "data_type": "boolean",
+        "unit": "",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 7
+      },
+      {
+        "key": "operating_voltage_v",
+        "label": "Operating voltage",
+        "data_type": "number",
+        "unit": "V",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 8
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f694a"
+    },
+    "name": "Sensors",
+    "slug": "sensors",
+    "parent_id": null,
+    "ancestors": [],
+    "level": 0,
+    "icon": "📡",
+    "description": "",
+    "display_order": 2,
+    "is_hidden": false,
+    "spec_template": [
+      {
+        "key": "sensor_type",
+        "label": "Sensor type",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "Temperature & Humidity",
+          "Distance",
+          "Motion",
+          "Light",
+          "Gas",
+          "Accelerometer & Gyroscope",
+          "Pressure",
+          "Current"
+        ],
+        "is_filterable": true,
+        "display_order": 1
+      },
+      {
+        "key": "interface",
+        "label": "Interface",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "I2C",
+          "SPI",
+          "UART",
+          "Analog",
+          "Digital",
+          "1-Wire"
+        ],
+        "is_filterable": true,
+        "display_order": 2
+      },
+      {
+        "key": "supply_voltage_v",
+        "label": "Supply voltage",
+        "data_type": "number",
+        "unit": "V",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 3
+      },
+      {
+        "key": "operating_temp_min_c",
+        "label": "Min operating temperature",
+        "data_type": "number",
+        "unit": "C",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 4
+      },
+      {
+        "key": "digital_output",
+        "label": "Digital output",
+        "data_type": "boolean",
+        "unit": "",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 5
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6959"
+    },
+    "name": "Resistors",
+    "slug": "resistors",
+    "parent_id": null,
+    "ancestors": [],
+    "level": 0,
+    "icon": "🎚",
+    "description": "",
+    "display_order": 3,
+    "is_hidden": false,
+    "spec_template": [
+      {
+        "key": "resistance_ohm",
+        "label": "Resistance",
+        "data_type": "number",
+        "unit": "ohm",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 1
+      },
+      {
+        "key": "tolerance_percent",
+        "label": "Tolerance",
+        "data_type": "select",
+        "unit": "%",
+        "allowed_values": [
+          "1",
+          "5"
+        ],
+        "is_filterable": true,
+        "display_order": 2
+      },
+      {
+        "key": "power_rating_w",
+        "label": "Power rating",
+        "data_type": "select",
+        "unit": "W",
+        "allowed_values": [
+          "0.125",
+          "0.25",
+          "0.5",
+          "1",
+          "2",
+          "5"
+        ],
+        "is_filterable": true,
+        "display_order": 3
+      },
+      {
+        "key": "package",
+        "label": "Package",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "Through-hole",
+          "SMD 0805",
+          "SMD 1206"
+        ],
+        "is_filterable": true,
+        "display_order": 4
+      },
+      {
+        "key": "material",
+        "label": "Material",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "Carbon film",
+          "Metal film",
+          "Wirewound"
+        ],
+        "is_filterable": true,
+        "display_order": 5
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6966"
+    },
+    "name": "Capacitors",
+    "slug": "capacitors",
+    "parent_id": null,
+    "ancestors": [],
+    "level": 0,
+    "icon": "⚡",
+    "description": "",
+    "display_order": 4,
+    "is_hidden": false,
+    "spec_template": [
+      {
+        "key": "capacitance_uf",
+        "label": "Capacitance",
+        "data_type": "number",
+        "unit": "uF",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 1
+      },
+      {
+        "key": "voltage_rating_v",
+        "label": "Voltage rating",
+        "data_type": "number",
+        "unit": "V",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 2
+      },
+      {
+        "key": "dielectric",
+        "label": "Dielectric",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "Electrolytic",
+          "Ceramic",
+          "Tantalum",
+          "Film"
+        ],
+        "is_filterable": true,
+        "display_order": 3
+      },
+      {
+        "key": "package",
+        "label": "Package",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "Through-hole",
+          "SMD 0805",
+          "SMD 1206"
+        ],
+        "is_filterable": true,
+        "display_order": 4
+      },
+      {
+        "key": "low_esr",
+        "label": "Low ESR",
+        "data_type": "boolean",
+        "unit": "",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 5
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6972"
+    },
+    "name": "Power & Regulators",
+    "slug": "power-regulators",
+    "parent_id": null,
+    "ancestors": [],
+    "level": 0,
+    "icon": "🔋",
+    "description": "",
+    "display_order": 5,
+    "is_hidden": false,
+    "spec_template": [
+      {
+        "key": "output_voltage_v",
+        "label": "Output voltage",
+        "data_type": "number",
+        "unit": "V",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 1
+      },
+      {
+        "key": "output_current_a",
+        "label": "Max output current",
+        "data_type": "number",
+        "unit": "A",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 2
+      },
+      {
+        "key": "input_voltage_max_v",
+        "label": "Max input voltage",
+        "data_type": "number",
+        "unit": "V",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 3
+      },
+      {
+        "key": "module_type",
+        "label": "Module type",
+        "data_type": "select",
+        "unit": "",
+        "allowed_values": [
+          "Linear LDO",
+          "Buck (step-down)",
+          "Boost (step-up)",
+          "Buck-Boost",
+          "AC Adapter"
+        ],
+        "is_filterable": true,
+        "display_order": 4
+      },
+      {
+        "key": "adjustable",
+        "label": "Adjustable output",
+        "data_type": "boolean",
+        "unit": "",
+        "allowed_values": [],
+        "is_filterable": true,
+        "display_order": 5
+      }
+    ]
+  }
+]

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load em_extras %}
+
+{% block content %}
+<section class="hero">
+  <aside class="hero-cats">
+    {% for c in nav_categories %}
+    <a href="{% url 'product_list' c.slug %}"><span class="ico">{{ c.icon }}</span>{{ c.name }}<span class="arrow">&#8250;</span></a>
+    {% endfor %}
+  </aside>
+
+  <div class="hero-main">
+    <div class="banner">
+      <div class="banner-txt">
+        <div class="banner-kicker">Electronic components specialist</div>
+        <h1>Find the right part<br>by <span>technical specification</span></h1>
+        <p>Filter directly on clock speed, flash size, capacitance or power rating
+           instead of digging through datasheets one by one.</p>
+        <a class="btn btn-light" href="{% url 'product_list' nav_categories.0.slug %}">Start browsing</a>
+      </div>
+      <div class="banner-art">
+        <div class="chip">
+          <span></span><span></span><span></span><span></span>
+          <b>MCU</b>
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="perks">
+      <div class="perk"><b>Genuine parts</b><span>Full datasheets</span></div>
+      <div class="perk"><b>Fast delivery</b><span>2 hours in the city</span></div>
+      <div class="perk"><b>7-day returns</b><span>Manufacturing defects</span></div>
+      <div class="perk"><b>Wholesale price</b><span>Quantity discounts</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="cat-tiles">
+  {% for c in nav_categories %}
+  <a href="{% url 'product_list' c.slug %}" class="tile">
+    <span class="tile-ico">{{ c.icon }}</span>
+    <span class="tile-name">{{ c.name }}</span>
+  </a>
+  {% endfor %}
+</section>
+
+{% if featured %}
+<section class="block">
+  <div class="block-head"><h2>Featured products</h2></div>
+  <div class="grid">{% for p in featured %}{% include "partials/product_card.html" %}{% endfor %}</div>
+</section>
+{% endif %}
+
+{% if bestseller %}
+<section class="block">
+  <div class="block-head"><h2>Best sellers</h2></div>
+  <div class="grid">{% for p in bestseller %}{% include "partials/product_card.html" %}{% endfor %}</div>
+</section>
+{% endif %}
+
+{% if newest %}
+<section class="block">
+  <div class="block-head"><h2>New arrivals</h2></div>
+  <div class="grid">{% for p in newest %}{% include "partials/product_card.html" %}{% endfor %}</div>
+</section>
+{% endif %}
+{% endblock %}

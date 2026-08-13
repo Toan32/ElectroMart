@@ -1,0 +1,236 @@
+[
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6923"
+    },
+    "name": "AMS",
+    "slug": "ams",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6924"
+    },
+    "name": "Aerosemi",
+    "slug": "aerosemi",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6925"
+    },
+    "name": "Allegro",
+    "slug": "allegro",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6926"
+    },
+    "name": "Aosong",
+    "slug": "aosong",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6927"
+    },
+    "name": "Arduino",
+    "slug": "arduino",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6928"
+    },
+    "name": "Bosch",
+    "slug": "bosch",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6929"
+    },
+    "name": "Espressif",
+    "slug": "espressif",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f692a"
+    },
+    "name": "Hanwei",
+    "slug": "hanwei",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f692b"
+    },
+    "name": "InvenSense",
+    "slug": "invensense",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f692c"
+    },
+    "name": "KEMET",
+    "slug": "kemet",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f692d"
+    },
+    "name": "MPS",
+    "slug": "mps",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f692e"
+    },
+    "name": "Maxim",
+    "slug": "maxim",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f692f"
+    },
+    "name": "Murata",
+    "slug": "murata",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6930"
+    },
+    "name": "NanJing",
+    "slug": "nanjing",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6931"
+    },
+    "name": "OEM",
+    "slug": "oem",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6932"
+    },
+    "name": "ROHM",
+    "slug": "rohm",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6933"
+    },
+    "name": "Raspberry Pi",
+    "slug": "raspberry-pi",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6934"
+    },
+    "name": "Royal Ohm",
+    "slug": "royal-ohm",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6935"
+    },
+    "name": "Rubycon",
+    "slug": "rubycon",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6936"
+    },
+    "name": "STMicroelectronics",
+    "slug": "stmicroelectronics",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6937"
+    },
+    "name": "Samsung",
+    "slug": "samsung",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6938"
+    },
+    "name": "Samwha",
+    "slug": "samwha",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f6939"
+    },
+    "name": "Texas Instruments",
+    "slug": "texas-instruments",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f693a"
+    },
+    "name": "WIMA",
+    "slug": "wima",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f693b"
+    },
+    "name": "XLSEMI",
+    "slug": "xlsemi",
+    "country": "",
+    "logo": ""
+  },
+  {
+    "_id": {
+      "$oid": "6a7dbef068f5434be60f693c"
+    },
+    "name": "Yageo",
+    "slug": "yageo",
+    "country": "",
+    "logo": ""
+  }
+]

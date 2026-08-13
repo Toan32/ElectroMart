@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load em_extras %}
+
+{% block content %}
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a> <span>&#8250;</span> {{ category.name }}
+</nav>
+
+<div class="listing">
+  <aside class="filters">
+    <form method="get" id="filter-form">
+      <input type="hidden" name="sort" value="{{ sort_key }}">
+
+      <div class="f-head">
+        <b>Filters</b>
+        {% if has_filter %}<a class="f-clear" href="{% url 'product_list' category.slug %}">Clear all</a>{% endif %}
+      </div>
+
+      <div class="f-group">
+        <div class="f-title">Price range</div>
+        <div class="f-range">
+          <input type="number" name="price_min" value="{{ price_min }}" placeholder="From" min="0">
+          <span>&ndash;</span>
+          <input type="number" name="price_max" value="{{ price_max }}" placeholder="To" min="0">
+        </div>
+      </div>
+
+      {% if brand_options %}
+      <div class="f-group">
+        <div class="f-title">Brand</div>
+        {% for b in brand_options %}
+        <label class="f-opt">
+          <input type="checkbox" name="brand" value="{{ b.slug }}" {% if b.checked %}checked{% endif %}>
+          <span>{{ b.name }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% comment %}
+        Every field below is generated from the category spec_template, so
+        switching category changes the whole filter panel without code changes.
+        Note: {# #} only supports one line, multi-line comments need this tag.
+      {% endcomment %}
+      {% for f in panel %}
+      <div class="f-group">
+        <div class="f-title">{{ f.label }}{% if f.unit %} <i>({{ f.unit }})</i>{% endif %}</div>
+
+        {% if f.data_type == 'number' %}
+          <div class="f-range">
+            <input type="number" step="any" name="spec_{{ f.key }}_min" value="{{ f.value_min }}"
+                   placeholder="{% if f.range_min != None %}{{ f.range_min }}{% else %}From{% endif %}">
+            <span>&ndash;</span>
+            <input type="number" step="any" name="spec_{{ f.key }}_max" value="{{ f.value_max }}"
+                   placeholder="{% if f.range_max != None %}{{ f.range_max }}{% else %}To{% endif %}">
+          </div>
+
+        {% elif f.data_type == 'boolean' %}
+          <label class="f-opt {% if not f.count %}f-zero{% endif %}">
+            <input type="checkbox" name="spec_{{ f.key }}" value="1" {% if f.checked %}checked{% endif %}>
+            <span>Yes</span><em>{{ f.count }}</em>
+          </label>
+
+        {% else %}
+          {% for o in f.options %}
+          <label class="f-opt {% if not o.count and not o.checked %}f-zero{% endif %}">
+            <input type="checkbox" name="spec_{{ f.key }}" value="{{ o.value }}"
+                   {% if o.checked %}checked{% endif %} {% if not o.count and not o.checked %}disabled{% endif %}>
+            <span>{{ o.value }}</span><em>{{ o.count }}</em>
+          </label>
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="f-group">
+        <label class="f-opt">
+          <input type="checkbox" name="in_stock" value="1" {% if in_stock %}checked{% endif %}>
+          <span>In stock only</span>
+        </label>
+      </div>
+
+      <button class="btn btn-primary btn-block" type="submit">Apply filters</button>
+    </form>
+  </aside>
+
+  <section class="results">
+    <div class="results-head">
+      <h1>{{ category.name }}</h1>
+      <div class="results-tools">
+        <span class="count"><b>{{ total }}</b> product(s)</span>
+        <div class="sorts">
+          {% for key, label in sort_labels %}
+          <a class="sort {% if sort_key == key %}on{% endif %}"
+             href="?{% if qs_no_sort %}{{ qs_no_sort }}&amp;{% endif %}sort={{ key }}">{{ label }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    {% if products %}
+      <div class="grid">
+        {% for p in products %}{% include "partials/product_card.html" %}{% endfor %}
+      </div>
+
+      {% if total_pages > 1 %}
+      <div class="pager">
+        {% if page > 1 %}
+          <a href="?{% if qs_base %}{{ qs_base }}&amp;{% endif %}page={{ page|add:'-1' }}">&#8249; Prev</a>
+        {% endif %}
+        {% for n in page_range %}
+          {% if n == page %}<span class="on">{{ n }}</span>
+          {% else %}<a href="?{% if qs_base %}{{ qs_base }}&amp;{% endif %}page={{ n }}">{{ n }}</a>{% endif %}
+        {% endfor %}
+        {% if page < total_pages %}
+          <a href="?{% if qs_base %}{{ qs_base }}&amp;{% endif %}page={{ page|add:'1' }}">Next &#8250;</a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    {% else %}
+      <div class="empty">
+        <div class="empty-ico">&#128269;</div>
+        <p>No product matches the filters you selected.</p>
+        <a class="btn btn-primary" href="{% url 'product_list' category.slug %}">Clear filters</a>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
