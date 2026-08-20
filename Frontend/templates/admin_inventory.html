@@ -1,0 +1,684 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="admin-inventory-page">
+
+    <!-- PAGE HEADER -->
+    <div class="admin-page-header">
+        <div>
+            <h1>Manage Inventory</h1>
+            <p>
+                Monitor product stock levels and inventory movements.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- INVENTORY LIST -->
+    <section class="admin-inventory-panel">
+
+        <div class="admin-inventory-panel-header">
+            <div>
+                <h2>Inventory List</h2>
+                <p>
+                    View and monitor current product stock.
+                </p>
+            </div>
+        </div>
+
+
+        <!-- FILTERS -->
+        <div class="admin-inventory-filters">
+
+            <div class="admin-inventory-search">
+                <label for="inventory-search">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="inventory-search"
+                    placeholder="Search by product name or SKU"
+                >
+            </div>
+
+
+            <div class="admin-inventory-filter-group">
+                <label for="inventory-stock-filter">
+                    Stock Status
+                </label>
+
+                <select id="inventory-stock-filter">
+                    <option value="all">
+                        All Stock
+                    </option>
+
+                    <option value="low">
+                        Low Stock
+                    </option>
+
+                    <option value="out">
+                        Out of Stock
+                    </option>
+                </select>
+            </div>
+
+        </div>
+
+
+        <!-- INVENTORY TABLE -->
+        <div class="admin-inventory-table-wrapper">
+
+            <table class="admin-inventory-table">
+
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Variant</th>
+                        <th>Stock Qty</th>
+                        <th>Reorder Level</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr data-stock="in">
+                        <td>ESP32-DEVKIT-V1</td>
+
+                        <td>
+                            ESP32 Development Board
+                        </td>
+
+                        <td>
+                            Standard
+                        </td>
+
+                        <td>
+                            24
+                        </td>
+
+                        <td>
+                            10
+                        </td>
+
+                        <td>
+                            <span class="inventory-status inventory-status-in">
+                                In Stock
+                            </span>
+                        </td>
+                    </tr>
+
+
+                    <tr data-stock="low">
+    <td>ARD-UNO-R3</td>
+    <td>Arduino Uno R3</td>
+
+                        <td>
+                            Original
+                        </td>
+
+                        <td>
+                            7
+                        </td>
+
+                        <td>
+                            10
+                        </td>
+
+                        <td>
+                            <span class="inventory-status inventory-status-low">
+                                Low Stock
+                            </span>
+                        </td>
+                    </tr>
+
+
+                    <tr data-stock="out">
+                        <td>DHT22-SENSOR</td>
+
+                        <td>
+                            DHT22 Temperature Sensor
+                        </td>
+
+                        <td>
+                            Standard
+                        </td>
+
+                        <td>
+                            0
+                        </td>
+
+                        <td>
+                            5
+                        </td>
+
+                        <td>
+                            <span class="inventory-status inventory-status-out">
+                                Out of Stock
+                            </span>
+                        </td>
+                    </tr>
+
+
+                    <tr data-stock="in">
+                        <td>LM2596-MODULE</td>
+
+                        <td>
+                            LM2596 Step Down Module
+                        </td>
+
+                        <td>
+                            Adjustable
+                        </td>
+
+                        <td>
+                            15
+                        </td>
+
+                        <td>
+                            5
+                        </td>
+
+                        <td>
+                            <span class="inventory-status inventory-status-in">
+                                In Stock
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- STOCK IN -->
+<section class="admin-inventory-panel">
+
+    <div class="admin-inventory-panel-header">
+        <div>
+            <h2>Stock In</h2>
+            <p>
+                Add incoming stock for a product variant.
+            </p>
+        </div>
+    </div>
+
+
+    <form
+        class="admin-inventory-stock-form"
+        id="inventory-stock-form"
+    >
+
+        <div class="admin-inventory-stock-grid">
+
+            <!-- SKU -->
+            <div class="admin-inventory-form-group">
+
+                <label for="stock-sku">
+                    Product / SKU
+                </label>
+
+                <select id="stock-sku">
+
+                    <option value="">
+                        Select product
+                    </option>
+
+                    <option value="ESP32-DEVKIT-V1">
+                        ESP32 Development Board - ESP32-DEVKIT-V1
+                    </option>
+
+                    <option value="ARD-UNO-R3">
+                        Arduino Uno R3 - ARD-UNO-R3
+                    </option>
+
+                    <option value="DHT22-SENSOR">
+                        DHT22 Temperature Sensor - DHT22-SENSOR
+                    </option>
+
+                    <option value="LM2596-MODULE">
+                        LM2596 Step Down Module - LM2596-MODULE
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- QUANTITY -->
+            <div class="admin-inventory-form-group">
+
+                <label for="stock-quantity">
+                    Quantity
+                </label>
+
+                <input
+                    type="number"
+                    id="stock-quantity"
+                    min="1"
+                    placeholder="Enter quantity"
+                >
+
+            </div>
+
+
+            <!-- REASON -->
+            <div class="admin-inventory-form-group admin-inventory-stock-reason">
+
+                <label for="stock-reason">
+                    Reason
+                </label>
+
+                <input
+                    type="text"
+                    id="stock-reason"
+                    placeholder="Example: Supplier delivery"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+        <div class="admin-inventory-form-actions">
+
+            <button
+                type="reset"
+                class="btn btn-outline-secondary"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Add Stock
+            </button>
+
+        </div>
+
+        <div
+    id="stock-success-message"
+    class="admin-inventory-success"
+    style="display: none;"
+>
+    Stock added successfully. GUI mock-up only.
+</div>
+
+    </form>
+
+</section>
+
+
+    <!-- INVENTORY MOVEMENT HISTORY -->
+<section class="admin-inventory-panel">
+
+    <div class="admin-inventory-panel-header">
+        <div>
+            <h2>Inventory Movement History</h2>
+            <p>
+                View stock-in and stock-out activities.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="admin-inventory-table-wrapper">
+
+        <table class="admin-inventory-table" id="inventory-history-table">
+
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>SKU</th>
+                    <th>Product</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>20/08/2026 09:15</td>
+                    <td>ESP32-DEVKIT-V1</td>
+                    <td>ESP32 Development Board</td>
+                    <td>
+                        <span class="inventory-movement inventory-movement-in">
+                            IN
+                        </span>
+                    </td>
+                    <td>+20</td>
+                    <td>Supplier delivery</td>
+                </tr>
+
+
+                <tr>
+                    <td>20/08/2026 10:40</td>
+                    <td>ARD-UNO-R3</td>
+                    <td>Arduino Uno R3</td>
+                    <td>
+                        <span class="inventory-movement inventory-movement-out">
+                            OUT
+                        </span>
+                    </td>
+                    <td>-3</td>
+                    <td>Customer order</td>
+                </tr>
+
+
+                <tr>
+                    <td>20/08/2026 11:25</td>
+                    <td>DHT22-SENSOR</td>
+                    <td>DHT22 Temperature Sensor</td>
+                    <td>
+                        <span class="inventory-movement inventory-movement-out">
+                            OUT
+                        </span>
+                    </td>
+                    <td>-5</td>
+                    <td>Customer order</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ==================================================
+    // INVENTORY FILTER
+    // ==================================================
+
+    const searchInput =
+        document.getElementById("inventory-search");
+
+    const stockFilter =
+        document.getElementById("inventory-stock-filter");
+
+    const inventoryRows =
+        document.querySelectorAll(
+            ".admin-inventory-table tbody tr"
+        );
+
+
+    function filterInventory() {
+
+        const searchValue = searchInput.value
+            .toLowerCase()
+            .trim();
+
+        const stockValue = stockFilter.value;
+
+
+        inventoryRows.forEach(function (row) {
+
+            const rowText =
+                row.textContent.toLowerCase();
+
+            const rowStock =
+                row.dataset.stock;
+
+
+            const matchesSearch =
+                rowText.includes(searchValue);
+
+            const matchesStock =
+                stockValue === "all" ||
+                rowStock === stockValue;
+
+
+            if (matchesSearch && matchesStock) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+
+        });
+
+    }
+
+
+    searchInput.addEventListener(
+        "input",
+        filterInventory
+    );
+
+
+    stockFilter.addEventListener(
+        "change",
+        filterInventory
+    );
+
+
+    // ==================================================
+    // STOCK IN
+    // ==================================================
+
+    const stockForm =
+        document.getElementById("inventory-stock-form");
+
+    const stockSku =
+        document.getElementById("stock-sku");
+
+    const stockQuantity =
+        document.getElementById("stock-quantity");
+
+    const stockReason =
+        document.getElementById("stock-reason");
+
+    const successMessage =
+        document.getElementById("stock-success-message");
+
+    const historyTableBody =
+    document.querySelector(
+        "#inventory-history-table tbody"
+    );
+
+    function updateStockStatus(row) {
+
+        const quantityCell = row.children[3];
+        const reorderCell = row.children[4];
+        const statusCell = row.children[5];
+
+        const quantity =
+            parseInt(quantityCell.textContent.trim());
+
+        const reorderLevel =
+            parseInt(reorderCell.textContent.trim());
+
+
+        let statusText = "";
+        let statusClass = "";
+        let stockType = "";
+
+
+        if (quantity === 0) {
+
+            statusText = "Out of Stock";
+            statusClass = "inventory-status-out";
+            stockType = "out";
+
+        } else if (quantity <= reorderLevel) {
+
+            statusText = "Low Stock";
+            statusClass = "inventory-status-low";
+            stockType = "low";
+
+        } else {
+
+            statusText = "In Stock";
+            statusClass = "inventory-status-in";
+            stockType = "in";
+
+        }
+
+
+        statusCell.innerHTML = `
+            <span class="inventory-status ${statusClass}">
+                ${statusText}
+            </span>
+        `;
+
+        row.dataset.stock = stockType;
+
+    }
+
+
+    stockForm.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+
+        const selectedSku =
+            stockSku.value;
+
+        const quantityToAdd =
+            parseInt(stockQuantity.value);
+
+
+        if (selectedSku === "") {
+            alert("Please select a product.");
+            return;
+        }
+
+
+        if (
+            isNaN(quantityToAdd) ||
+            quantityToAdd <= 0
+        ) {
+            alert("Please enter a valid quantity.");
+            return;
+        }
+
+
+        let selectedRow = null;
+
+
+        inventoryRows.forEach(function (row) {
+
+            const rowSku =
+                row.children[0]
+                    .textContent
+                    .trim();
+
+            if (rowSku === selectedSku) {
+                selectedRow = row;
+            }
+
+        });
+
+
+        if (!selectedRow) {
+            alert("Product not found.");
+            return;
+        }
+
+        const productName =
+    selectedRow.children[1]
+        .textContent
+        .trim();
+
+const reason =
+    stockReason.value.trim() ||
+    "Stock replenishment";
+
+        const quantityCell =
+            selectedRow.children[3];
+
+        const currentQuantity =
+            parseInt(
+                quantityCell.textContent.trim()
+            );
+
+
+        quantityCell.textContent =
+            currentQuantity + quantityToAdd;
+
+
+        updateStockStatus(selectedRow);
+        
+        const now = new Date();
+
+const formattedDate =
+    now.toLocaleDateString("en-GB") +
+    " " +
+    now.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
+
+const historyRow =
+    document.createElement("tr");
+
+historyRow.innerHTML = `
+    <td>${formattedDate}</td>
+    <td>${selectedSku}</td>
+    <td>${productName}</td>
+    <td>
+        <span class="inventory-movement inventory-movement-in">
+            IN
+        </span>
+    </td>
+    <td>+${quantityToAdd}</td>
+    <td>${reason}</td>
+`;
+
+
+historyTableBody.prepend(historyRow);
+
+        stockForm.reset();
+
+
+        successMessage.style.display =
+            "block";
+
+
+        filterInventory();
+
+    });
+
+
+    // Hide success message when user edits form again
+
+    stockSku.addEventListener("change", function () {
+        successMessage.style.display = "none";
+    });
+
+
+    stockQuantity.addEventListener("input", function () {
+        successMessage.style.display = "none";
+    });
+
+
+    stockReason.addEventListener("input", function () {
+        successMessage.style.display = "none";
+    });
+
+
+    stockForm.addEventListener("reset", function () {
+        successMessage.style.display = "none";
+    });
+
+});
+</script>
+
+{% endblock %}

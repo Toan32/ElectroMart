@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a>
+  <span>&#8250;</span>
+  Feedback
+</nav>
+
+
+<section class="feedback-page">
+
+  <div class="feedback-header">
+    <h1>Send us your feedback</h1>
+
+    <p class="muted">
+      Have a suggestion, question or problem?
+      Tell us about your experience with ElectroMart.
+    </p>
+  </div>
+
+
+  <div class="feedback-layout">
+
+    <!-- LEFT: Information -->
+    <aside class="feedback-info">
+
+      <div class="feedback-info-icon">
+        ✉
+      </div>
+
+      <h2>We'd love to hear from you</h2>
+
+      <p>
+        Your feedback helps us improve our products,
+        services and shopping experience.
+      </p>
+
+
+      <div class="feedback-info-item">
+        <strong>Response time</strong>
+        <span>Usually within 1–2 business days</span>
+      </div>
+
+
+      <div class="feedback-info-item">
+        <strong>Technical questions</strong>
+        <span>
+          Please include the product name or part number when possible.
+        </span>
+      </div>
+
+
+      <div class="feedback-info-item">
+        <strong>Attachments</strong>
+        <span>
+          Images and documents can help us understand the issue faster.
+        </span>
+      </div>
+
+    </aside>
+
+
+    <!-- RIGHT: Form -->
+    <div class="feedback-form-card">
+
+      <form id="feedback-form">
+
+        <div class="feedback-form-row">
+
+          <div class="form-group">
+            <label for="feedback-name">
+              Full name <span class="required">*</span>
+            </label>
+
+            <input
+              type="text"
+              id="feedback-name"
+              name="name"
+              placeholder="Enter your full name"
+              required
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="feedback-email">
+              Email <span class="required">*</span>
+            </label>
+
+            <input
+              type="email"
+              id="feedback-email"
+              name="email"
+              placeholder="example@email.com"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+          <label for="feedback-subject">
+            Subject <span class="required">*</span>
+          </label>
+
+          <select
+            id="feedback-subject"
+            name="subject"
+            required
+          >
+            <option value="">Select a subject</option>
+            <option value="product">Product feedback</option>
+            <option value="website">Website experience</option>
+            <option value="order">Order or delivery</option>
+            <option value="technical">Technical support</option>
+            <option value="suggestion">Suggestion</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label for="feedback-content">
+            Message <span class="required">*</span>
+          </label>
+
+          <textarea
+            id="feedback-content"
+            name="content"
+            rows="7"
+            maxlength="1000"
+            placeholder="Tell us more about your feedback..."
+            required
+          ></textarea>
+
+          <div class="feedback-char-count">
+            <span id="feedback-char-current">0</span>/1000
+          </div>
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="feedback-attachment">
+            Attachment
+          </label>
+
+          <div class="feedback-upload">
+
+            <input
+              type="file"
+              id="feedback-attachment"
+              name="attachment"
+              accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+            >
+
+            <p class="muted">
+              JPG, PNG, PDF, DOC or DOCX.
+            </p>
+
+          </div>
+
+
+          <div
+            class="feedback-file-preview"
+            id="feedback-file-preview"
+          ></div>
+
+        </div>
+
+
+        <div
+          class="feedback-message"
+          id="feedback-message"
+        ></div>
+
+
+        <button
+          type="submit"
+          class="btn btn-red feedback-submit"
+        >
+          Send feedback
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+
+/* =========================
+   FEEDBACK - CV31
+   ========================= */
+
+const feedbackForm = document.getElementById('feedback-form');
+const feedbackContent = document.getElementById('feedback-content');
+const feedbackCharCurrent = document.getElementById('feedback-char-current');
+
+const feedbackAttachment = document.getElementById('feedback-attachment');
+const feedbackFilePreview = document.getElementById('feedback-file-preview');
+
+const feedbackMessage = document.getElementById('feedback-message');
+
+
+/* ---------- Character counter ---------- */
+
+if (feedbackContent && feedbackCharCurrent) {
+
+  feedbackContent.addEventListener('input', function () {
+    feedbackCharCurrent.textContent = feedbackContent.value.length;
+  });
+
+}
+
+
+/* ---------- File preview ---------- */
+
+function renderFeedbackFile() {
+
+  feedbackFilePreview.innerHTML = '';
+
+  if (!feedbackAttachment.files.length) {
+    return;
+  }
+
+  const file = feedbackAttachment.files[0];
+
+  const item = document.createElement('div');
+  item.className = 'feedback-file-item';
+
+
+  const icon = document.createElement('div');
+  icon.className = 'feedback-file-icon';
+
+  if (file.type.startsWith('image/')) {
+    icon.textContent = 'IMG';
+  } else if (file.type === 'application/pdf') {
+    icon.textContent = 'PDF';
+  } else {
+    icon.textContent = 'DOC';
+  }
+
+
+  const information = document.createElement('div');
+  information.className = 'feedback-file-info';
+
+
+  const fileName = document.createElement('strong');
+  fileName.textContent = file.name;
+
+
+  const fileSize = document.createElement('span');
+
+  const sizeInKb = Math.ceil(file.size / 1024);
+
+  if (sizeInKb >= 1024) {
+    fileSize.textContent =
+      (sizeInKb / 1024).toFixed(1) + ' MB';
+  } else {
+    fileSize.textContent =
+      sizeInKb + ' KB';
+  }
+
+
+  const removeButton = document.createElement('button');
+  removeButton.type = 'button';
+  removeButton.className = 'feedback-file-remove';
+  removeButton.innerHTML = '&times;';
+  removeButton.title = 'Remove attachment';
+
+
+  removeButton.addEventListener('click', function () {
+
+    feedbackAttachment.value = '';
+    feedbackFilePreview.innerHTML = '';
+
+  });
+
+
+  information.appendChild(fileName);
+  information.appendChild(fileSize);
+
+  item.appendChild(icon);
+  item.appendChild(information);
+  item.appendChild(removeButton);
+
+  feedbackFilePreview.appendChild(item);
+
+}
+
+
+if (feedbackAttachment && feedbackFilePreview) {
+
+  feedbackAttachment.addEventListener('change', function () {
+    renderFeedbackFile();
+  });
+
+}
+
+
+/* ---------- Mock submit ---------- */
+
+if (feedbackForm) {
+
+  feedbackForm.addEventListener('submit', function (event) {
+
+    event.preventDefault();
+
+    feedbackMessage.className =
+      'feedback-message success';
+
+    feedbackMessage.textContent =
+      'Thank you! Your feedback has been received.';
+
+    feedbackForm.reset();
+
+    feedbackCharCurrent.textContent = '0';
+
+    feedbackFilePreview.innerHTML = '';
+
+  });
+
+}
+
+</script>
+{% endblock %}

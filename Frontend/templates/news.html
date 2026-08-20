@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a>
+  <span>&#8250;</span>
+  News
+</nav>
+
+
+<section class="news-page">
+
+  <div class="news-page-head">
+    <div>
+      <h1>News &amp; Updates</h1>
+
+      <p class="muted">
+        Product announcements, technical guides and the latest updates
+        from ElectroMart.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- News filters -->
+  <div class="news-filters">
+
+    <a
+      href="{% url 'news' %}"
+      class="news-filter {% if selected_type == 'all' %}active{% endif %}"
+    >
+      All
+    </a>
+
+    <a
+      href="{% url 'news' %}?type=product-news"
+      class="news-filter {% if selected_type == 'product-news' %}active{% endif %}"
+    >
+      Product News
+    </a>
+
+    <a
+      href="{% url 'news' %}?type=announcement"
+      class="news-filter {% if selected_type == 'announcement' %}active{% endif %}"
+    >
+      Announcement
+    </a>
+
+    <a
+      href="{% url 'news' %}?type=technical-guide"
+      class="news-filter {% if selected_type == 'technical-guide' %}active{% endif %}"
+    >
+      Technical Guide
+    </a>
+
+  </div>
+
+
+  <!-- News grid -->
+  <div class="news-grid">
+
+    {% for item in news_items %}
+
+    <article class="news-card">
+
+      <div class="news-card-image">
+        <span>{{ item.image_text }}</span>
+      </div>
+
+
+      <div class="news-card-body">
+
+        <div class="news-card-meta">
+
+          <span class="news-type">
+            {{ item.type }}
+          </span>
+
+          <span class="news-date">
+            {{ item.date }}
+          </span>
+
+        </div>
+
+
+        <h2>
+          {{ item.title }}
+        </h2>
+
+
+        <p>
+          {{ item.summary }}
+        </p>
+
+
+        <button type="button" class="news-read-more">
+          Read more →
+        </button>
+
+      </div>
+
+    </article>
+
+    {% empty %}
+
+    <div class="news-empty">
+      No news articles found.
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+</section>
+
+{% endblock %}

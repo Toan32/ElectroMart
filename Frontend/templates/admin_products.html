@@ -1,0 +1,1389 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="admin-product-page">
+
+    <div class="admin-page-header">
+        <div>
+            <h1>Manage Products</h1>
+            <p>
+                Manage product information, dynamic specifications
+                and product variants.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="admin-product-layout">
+
+        <!-- PRODUCT FORM -->
+        <section class="admin-product-panel">
+
+            <div class="admin-product-panel-header">
+                <div>
+                    <h2>Product Information</h2>
+                    <p>Create or update product information.</p>
+                </div>
+            </div>
+
+            <form class="admin-product-form" id="admin-product-form">
+
+    <div class="admin-product-form-grid">
+
+        <div class="admin-product-form-group">
+            <label for="product-name">
+                Product Name
+            </label>
+
+            <input
+                type="text"
+                id="product-name"
+                placeholder="Enter product name"
+            >
+        </div>
+
+
+        <div class="admin-product-form-group">
+            <label for="product-sku">
+                SKU
+            </label>
+
+            <input
+                type="text"
+                id="product-sku"
+                placeholder="Example: ESP32-DEVKIT-V1"
+            >
+        </div>
+
+
+        <div class="admin-product-form-group">
+            <label for="product-category">
+                Category
+            </label>
+
+            <select id="product-category">
+
+                <option value="">
+                    Select category
+                </option>
+
+                <option value="microcontrollers-kits">
+                    Microcontrollers & Kits
+                </option>
+
+                <option value="sensors">
+                    Sensors
+                </option>
+
+                <option value="resistors">
+                    Resistors
+                </option>
+
+                <option value="capacitors">
+                    Capacitors
+                </option>
+
+                <option value="power-regulators">
+                    Power & Regulators
+                </option>
+
+            </select>
+        </div>
+
+
+        <div class="admin-product-form-group">
+            <label for="product-brand">
+                Brand
+            </label>
+
+            <select id="product-brand">
+
+                <option value="">
+                    Select brand
+                </option>
+
+                <option value="espressif">
+                    Espressif
+                </option>
+
+                <option value="arduino">
+                    Arduino
+                </option>
+
+                <option value="st">
+                    STMicroelectronics
+                </option>
+
+                <option value="texas-instruments">
+                    Texas Instruments
+                </option>
+
+            </select>
+        </div>
+
+
+        <div class="admin-product-form-group">
+            <label for="product-price">
+                Base Price
+            </label>
+
+            <input
+                type="number"
+                id="product-price"
+                placeholder="0"
+                min="0"
+            >
+        </div>
+
+
+        <div class="admin-product-form-group">
+            <label for="product-status">
+                Status
+            </label>
+
+            <select id="product-status">
+
+                <option value="active">
+                    Active
+                </option>
+
+                <option value="inactive">
+                    Inactive
+                </option>
+
+            </select>
+        </div>
+
+    </div>
+
+
+    <div class="admin-product-form-group admin-product-full-width">
+
+        <label for="product-description">
+            Description
+        </label>
+
+        <textarea
+            id="product-description"
+            rows="5"
+            placeholder="Enter product description"
+        ></textarea>
+
+    </div>
+
+
+    <!-- DYNAMIC SPECIFICATIONS -->
+    <div class="admin-product-spec-section">
+
+        <div class="admin-product-spec-header">
+
+            <div>
+                <h3>Specifications</h3>
+
+                <p>
+                    Select a category to load specification fields.
+                </p>
+            </div>
+
+        </div>
+
+        <div
+            class="admin-product-spec-empty"
+            id="admin-product-spec-fields"
+        >
+            No category selected.
+        </div>
+
+    </div>
+
+
+    <div class="admin-product-form-actions">
+
+        <button
+            type="button"
+            class="admin-product-cancel-btn"
+            id="product-cancel-btn"
+        >
+            Cancel
+        </button>
+
+        <button
+            type="submit"
+            class="admin-product-save-btn"
+        >
+            Save Product
+        </button>
+
+    </div>
+
+    <div
+        class="admin-product-success"
+        id="admin-product-success"
+        hidden
+    >
+        Product saved successfully. GUI mock-up only.
+    </div>
+
+</form>
+
+        </section>
+
+
+        <!-- VARIANT TABLE -->
+        <section class="admin-product-panel">
+
+            <div class="admin-product-panel-header">
+                <div>
+                    <h2>Product Variants</h2>
+                    <p>Manage variants of the selected product.</p>
+                </div>
+            </div>
+
+            <div class="admin-variant-toolbar">
+
+    <div>
+        <span class="admin-variant-count">
+            2 variants
+        </span>
+    </div>
+
+    <button
+        type="button"
+        class="admin-add-variant-btn"
+        id="add-variant-btn"
+    >
+        + Add Variant
+    </button>
+
+</div>
+
+
+<div class="admin-variant-table-wrapper">
+
+    <table class="admin-variant-table">
+
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Variant Name</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="variant-table-body">
+
+            <tr>
+                <td>
+                    <code>ESP32-DEV-V1</code>
+                </td>
+
+                <td>
+                    ESP32 DevKit V1
+                </td>
+
+                <td>
+                    $12.50
+                </td>
+
+                <td>
+                    120
+                </td>
+
+                <td>
+                    <span class="admin-variant-status active">
+                        Active
+                    </span>
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="admin-variant-edit-btn"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-variant-delete-btn"
+                    >
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    <code>ESP32-DEV-V2</code>
+                </td>
+
+                <td>
+                    ESP32 DevKit V2
+                </td>
+
+                <td>
+                    $14.00
+                </td>
+
+                <td>
+                    65
+                </td>
+
+                <td>
+                    <span class="admin-variant-status active">
+                        Active
+                    </span>
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="admin-variant-edit-btn"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        class="admin-variant-delete-btn"
+                    >
+                        Delete
+                    </button>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+        </section>
+
+    </div>
+
+</div>
+
+<!-- VARIANT MODAL -->
+<div class="category-modal" id="variant-modal">
+
+    <div
+        class="category-modal-backdrop"
+        id="variant-modal-backdrop"
+    ></div>
+
+    <div class="category-modal-box">
+
+        <div class="category-modal-header">
+
+            <div>
+                <h2 id="variant-modal-title">Add Product Variant</h2>
+                <p id="variant-modal-description">Create a new product variant.</p>
+            </div>
+
+            <button
+                type="button"
+                class="category-modal-close"
+                id="variant-modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="variant-form">
+
+            <div class="category-form-group">
+                <label for="variant-sku">
+                    SKU
+                </label>
+
+                <input
+                    type="text"
+                    id="variant-sku"
+                    placeholder="Example: ESP32-DEV-V3"
+                    required
+                >
+            </div>
+
+            <div class="category-form-group">
+                <label for="variant-name">
+                    Variant Name
+                </label>
+
+                <input
+                    type="text"
+                    id="variant-name"
+                    placeholder="Example: ESP32 DevKit V3"
+                    required
+                >
+            </div>
+
+            <div class="category-form-group">
+                <label for="variant-price">
+                    Price
+                </label>
+
+                <input
+                    type="number"
+                    id="variant-price"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    required
+                >
+            </div>
+
+            <div class="category-form-group">
+                <label for="variant-stock">
+                    Stock
+                </label>
+
+                <input
+                    type="number"
+                    id="variant-stock"
+                    min="0"
+                    placeholder="0"
+                    required
+                >
+            </div>
+
+            <div class="category-form-group">
+                <label for="variant-status">
+                    Status
+                </label>
+
+                <select id="variant-status">
+                    <option value="active">
+                        Active
+                    </option>
+
+                    <option value="inactive">
+                        Inactive
+                    </option>
+                </select>
+            </div>
+
+            <div class="category-modal-note">
+                GUI mock-up only. Variants are not saved to MongoDB.
+            </div>
+
+            <div class="category-modal-footer">
+
+                <button
+                    type="button"
+                    class="category-modal-cancel"
+                    id="variant-modal-cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="category-modal-save"
+                    id="variant-submit-btn"
+                >
+                    Add Variant
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const productForm =
+        document.getElementById("admin-product-form");
+
+    const productCancelButton =
+        document.getElementById("product-cancel-btn");
+
+    const productSuccess =
+        document.getElementById("admin-product-success");
+
+    const addVariantButton =
+        document.getElementById("add-variant-btn");
+
+    const variantModal =
+        document.getElementById("variant-modal");
+
+    const variantModalBackdrop =
+        document.getElementById("variant-modal-backdrop");
+
+    const variantModalClose =
+        document.getElementById("variant-modal-close");
+
+    const variantModalCancel =
+        document.getElementById("variant-modal-cancel");
+
+    const variantModalTitle =
+        document.getElementById("variant-modal-title");
+
+    const variantModalDescription =
+        document.getElementById("variant-modal-description");
+
+    const variantSubmitButton =
+        document.getElementById("variant-submit-btn");
+
+    const variantForm =
+        document.getElementById("variant-form");
+
+    const variantSku =
+        document.getElementById("variant-sku");
+
+    const variantName =
+        document.getElementById("variant-name");
+
+    const variantPrice =
+        document.getElementById("variant-price");
+
+    const variantStock =
+        document.getElementById("variant-stock");
+
+    const variantStatus =
+        document.getElementById("variant-status");
+
+    const variantTableBody =
+        document.getElementById("variant-table-body");
+
+    const variantCount =
+        document.querySelector(".admin-variant-count");
+
+
+    let variantModalMode = "add";
+    let editingVariantRow = null;
+
+
+    function updateVariantCount() {
+
+        const totalVariants =
+            variantTableBody.querySelectorAll("tr").length;
+
+        variantCount.textContent =
+            `${totalVariants} variants`;
+
+    }
+
+
+    function openVariantModal(mode = "add", row = null) {
+
+        variantModalMode = mode;
+        editingVariantRow = row;
+
+        variantForm.reset();
+
+
+        if (mode === "edit" && row) {
+
+            variantModalTitle.textContent =
+                "Edit Product Variant";
+
+            variantModalDescription.textContent =
+                "Update the selected product variant.";
+
+            variantSubmitButton.textContent =
+                "Save Changes";
+
+
+            variantSku.value =
+                row.cells[0]
+                    .querySelector("code")
+                    ?.textContent.trim() || "";
+
+            variantName.value =
+                row.cells[1].textContent.trim();
+
+            variantPrice.value =
+                row.cells[2].textContent
+                    .replace("$", "")
+                    .trim();
+
+            variantStock.value =
+                row.cells[3].textContent.trim();
+
+
+            const statusBadge =
+                row.cells[4].querySelector(
+                    ".admin-variant-status"
+                );
+
+            variantStatus.value =
+                statusBadge?.classList.contains("inactive")
+                    ? "inactive"
+                    : "active";
+
+        } else {
+
+            variantModalMode = "add";
+            editingVariantRow = null;
+
+            variantModalTitle.textContent =
+                "Add Product Variant";
+
+            variantModalDescription.textContent =
+                "Create a new product variant.";
+
+            variantSubmitButton.textContent =
+                "Add Variant";
+
+            variantStatus.value =
+                "active";
+
+        }
+
+
+        variantModal.classList.add("show");
+
+        document.body.classList.add("modal-open");
+
+    }
+
+
+    function closeVariantModal() {
+
+        variantModal.classList.remove("show");
+
+        document.body.classList.remove("modal-open");
+
+        editingVariantRow = null;
+
+    }
+
+
+    function createVariantStatusBadge(status) {
+
+        const badge =
+            document.createElement("span");
+
+        badge.className =
+            `admin-variant-status ${status}`;
+
+        badge.textContent =
+            status === "active"
+                ? "Active"
+                : "Inactive";
+
+        return badge;
+
+    }
+
+
+    function createVariantActionButton(
+        label,
+        className
+    ) {
+
+        const button =
+            document.createElement("button");
+
+        button.type =
+            "button";
+
+        button.className =
+            className;
+
+        button.textContent =
+            label;
+
+        return button;
+
+    }
+
+
+    addVariantButton.addEventListener(
+        "click",
+        function () {
+
+            openVariantModal("add");
+
+        }
+    );
+
+
+    variantModalClose.addEventListener(
+        "click",
+        closeVariantModal
+    );
+
+
+    variantModalCancel.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            closeVariantModal();
+
+        }
+    );
+
+
+    variantModalBackdrop.addEventListener(
+        "click",
+        closeVariantModal
+    );
+
+
+    variantForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            const skuValue =
+                variantSku.value.trim();
+
+            const nameValue =
+                variantName.value.trim();
+
+            const priceValue =
+                Number(variantPrice.value).toFixed(2);
+
+            const stockValue =
+                variantStock.value.trim();
+
+            const statusValue =
+                variantStatus.value;
+
+
+            if (
+                !skuValue ||
+                !nameValue ||
+                variantPrice.value === "" ||
+                stockValue === ""
+            ) {
+                return;
+            }
+
+
+            if (
+                variantModalMode === "edit" &&
+                editingVariantRow
+            ) {
+
+                const row =
+                    editingVariantRow;
+
+
+                const skuCode =
+                    row.cells[0].querySelector("code");
+
+                if (skuCode) {
+                    skuCode.textContent =
+                        skuValue;
+                }
+
+
+                row.cells[1].textContent =
+                    nameValue;
+
+                row.cells[2].textContent =
+                    `$${priceValue}`;
+
+                row.cells[3].textContent =
+                    stockValue;
+
+
+                row.cells[4].replaceChildren(
+                    createVariantStatusBadge(
+                        statusValue
+                    )
+                );
+
+            } else {
+
+                const row =
+                    document.createElement("tr");
+
+
+                const skuCell =
+                    document.createElement("td");
+
+                const skuCode =
+                    document.createElement("code");
+
+                skuCode.textContent =
+                    skuValue;
+
+                skuCell.appendChild(
+                    skuCode
+                );
+
+
+                const nameCell =
+                    document.createElement("td");
+
+                nameCell.textContent =
+                    nameValue;
+
+
+                const priceCell =
+                    document.createElement("td");
+
+                priceCell.textContent =
+                    `$${priceValue}`;
+
+
+                const stockCell =
+                    document.createElement("td");
+
+                stockCell.textContent =
+                    stockValue;
+
+
+                const statusCell =
+                    document.createElement("td");
+
+                statusCell.appendChild(
+                    createVariantStatusBadge(
+                        statusValue
+                    )
+                );
+
+
+                const actionsCell =
+                    document.createElement("td");
+
+                actionsCell.appendChild(
+                    createVariantActionButton(
+                        "Edit",
+                        "admin-variant-edit-btn"
+                    )
+                );
+
+                actionsCell.appendChild(
+                    createVariantActionButton(
+                        "Delete",
+                        "admin-variant-delete-btn"
+                    )
+                );
+
+
+                row.appendChild(
+                    skuCell
+                );
+
+                row.appendChild(
+                    nameCell
+                );
+
+                row.appendChild(
+                    priceCell
+                );
+
+                row.appendChild(
+                    stockCell
+                );
+
+                row.appendChild(
+                    statusCell
+                );
+
+                row.appendChild(
+                    actionsCell
+                );
+
+
+                variantTableBody.appendChild(
+                    row
+                );
+
+            }
+
+
+            updateVariantCount();
+
+            closeVariantModal();
+
+        }
+    );
+
+
+    variantTableBody.addEventListener(
+        "click",
+        function (event) {
+
+            const deleteButton =
+                event.target.closest(
+                    ".admin-variant-delete-btn"
+                );
+
+
+            if (
+                deleteButton &&
+                variantTableBody.contains(
+                    deleteButton
+                )
+            ) {
+
+                const row =
+                    deleteButton.closest("tr");
+
+                if (!row) {
+                    return;
+                }
+
+
+                const sku =
+                    row.querySelector("code")
+                        ?.textContent.trim() ||
+                    "this variant";
+
+
+                const confirmed =
+                    confirm(
+                        `Delete variant "${sku}"?`
+                    );
+
+
+                if (!confirmed) {
+                    return;
+                }
+
+
+                row.remove();
+
+                updateVariantCount();
+
+                return;
+            }
+
+
+            const editButton =
+                event.target.closest(
+                    ".admin-variant-edit-btn"
+                );
+
+
+            if (
+                editButton &&
+                variantTableBody.contains(
+                    editButton
+                )
+            ) {
+
+                const row =
+                    editButton.closest("tr");
+
+                if (!row) {
+                    return;
+                }
+
+
+                openVariantModal(
+                    "edit",
+                    row
+                );
+
+            }
+
+        }
+    );
+
+
+    const productCategory =
+        document.getElementById("product-category");
+
+    const specificationContainer =
+        document.getElementById("admin-product-spec-fields");
+
+
+    const specificationTemplates = {
+
+        "microcontrollers-kits": [
+            {
+                label: "Core",
+                key: "core",
+                type: "select",
+                unit: ""
+            },
+            {
+                label: "Clock Speed",
+                key: "clock_speed_mhz",
+                type: "number",
+                unit: "MHz"
+            },
+            {
+                label: "Flash Memory",
+                key: "flash_kb",
+                type: "number",
+                unit: "KB"
+            },
+            {
+                label: "RAM",
+                key: "ram_kb",
+                type: "number",
+                unit: "KB"
+            },
+            {
+                label: "GPIO Pins",
+                key: "gpio_count",
+                type: "number",
+                unit: "pins"
+            },
+            {
+                label: "Wi-Fi",
+                key: "wifi",
+                type: "boolean",
+                unit: ""
+            },
+            {
+                label: "Bluetooth",
+                key: "bluetooth",
+                type: "boolean",
+                unit: ""
+            },
+            {
+                label: "Operating Voltage",
+                key: "operating_voltage_v",
+                type: "number",
+                unit: "V"
+            }
+        ],
+
+
+        "sensors": [
+            {
+                label: "Sensor Type",
+                key: "sensor_type",
+                type: "select",
+                unit: ""
+            },
+            {
+                label: "Interface",
+                key: "interface",
+                type: "select",
+                unit: ""
+            },
+            {
+                label: "Supply Voltage",
+                key: "supply_voltage_v",
+                type: "number",
+                unit: "V"
+            },
+            {
+                label: "Min Operating Temperature",
+                key: "operating_temp_min_c",
+                type: "number",
+                unit: "C"
+            },
+            {
+                label: "Digital Output",
+                key: "digital_output",
+                type: "boolean",
+                unit: ""
+            }
+        ],
+
+
+        "resistors": [
+            {
+                label: "Resistance",
+                key: "resistance_ohm",
+                type: "number",
+                unit: "ohm"
+            },
+            {
+                label: "Tolerance",
+                key: "tolerance_percent",
+                type: "select",
+                unit: "%"
+            },
+            {
+                label: "Power Rating",
+                key: "power_rating_w",
+                type: "select",
+                unit: "W"
+            },
+            {
+                label: "Package",
+                key: "package",
+                type: "select",
+                unit: ""
+            },
+            {
+                label: "Material",
+                key: "material",
+                type: "select",
+                unit: ""
+            }
+        ],
+
+
+        "capacitors": [
+            {
+                label: "Capacitance",
+                key: "capacitance_uf",
+                type: "number",
+                unit: "uF"
+            },
+            {
+                label: "Voltage Rating",
+                key: "voltage_rating_v",
+                type: "number",
+                unit: "V"
+            },
+            {
+                label: "Dielectric",
+                key: "dielectric",
+                type: "select",
+                unit: ""
+            },
+            {
+                label: "Package",
+                key: "package",
+                type: "select",
+                unit: ""
+            },
+            {
+                label: "Low ESR",
+                key: "low_esr",
+                type: "boolean",
+                unit: ""
+            }
+        ],
+
+
+        "power-regulators": [
+            {
+                label: "Output Voltage",
+                key: "output_voltage_v",
+                type: "number",
+                unit: "V"
+            },
+            {
+                label: "Max Output Current",
+                key: "output_current_a",
+                type: "number",
+                unit: "A"
+            },
+            {
+                label: "Max Input Voltage",
+                key: "input_voltage_max_v",
+                type: "number",
+                unit: "V"
+            },
+            {
+                label: "Module Type",
+                key: "module_type",
+                type: "select",
+                unit: ""
+            },
+            {
+                label: "Adjustable Output",
+                key: "adjustable",
+                type: "boolean",
+                unit: ""
+            }
+        ]
+
+    };
+
+
+    function createSpecificationControl(field) {
+
+        if (field.type === "boolean") {
+
+            const select =
+                document.createElement("select");
+
+            select.name = field.key;
+
+            const emptyOption =
+                document.createElement("option");
+
+            emptyOption.value = "";
+            emptyOption.textContent = "Select value";
+
+
+            const yesOption =
+                document.createElement("option");
+
+            yesOption.value = "true";
+            yesOption.textContent = "Yes";
+
+
+            const noOption =
+                document.createElement("option");
+
+            noOption.value = "false";
+            noOption.textContent = "No";
+
+
+            select.appendChild(emptyOption);
+            select.appendChild(yesOption);
+            select.appendChild(noOption);
+
+            return select;
+        }
+
+
+        if (field.type === "select") {
+
+            const select =
+                document.createElement("select");
+
+            select.name = field.key;
+
+
+            const option =
+                document.createElement("option");
+
+            option.value = "";
+
+            option.textContent =
+                "Select value";
+
+            select.appendChild(option);
+
+            return select;
+        }
+
+
+        const input =
+            document.createElement("input");
+
+        input.name = field.key;
+
+        input.type =
+            field.type === "number"
+                ? "number"
+                : "text";
+
+        input.placeholder =
+            `Enter ${field.label.toLowerCase()}`;
+
+        return input;
+    }
+
+
+    function renderSpecifications(categoryKey) {
+
+        specificationContainer.replaceChildren();
+
+
+        if (!categoryKey) {
+
+            specificationContainer.className =
+                "admin-product-spec-empty";
+
+            specificationContainer.textContent =
+                "No category selected.";
+
+            return;
+        }
+
+
+        const fields =
+            specificationTemplates[categoryKey];
+
+
+        if (!fields) {
+
+            specificationContainer.className =
+                "admin-product-spec-empty";
+
+            specificationContainer.textContent =
+                "No specification template available.";
+
+            return;
+        }
+
+
+        specificationContainer.className =
+            "admin-product-spec-fields";
+
+
+        fields.forEach(function (field) {
+
+            const group =
+                document.createElement("div");
+
+            group.className =
+                "admin-product-form-group";
+
+
+            const label =
+                document.createElement("label");
+
+            label.textContent =
+                field.unit
+                    ? `${field.label} (${field.unit})`
+                    : field.label;
+
+
+            const control =
+                createSpecificationControl(field);
+
+
+            group.appendChild(label);
+            group.appendChild(control);
+
+            specificationContainer.appendChild(
+                group
+            );
+
+        });
+
+    }
+
+
+    productCategory.addEventListener(
+        "change",
+        function () {
+
+            renderSpecifications(
+                productCategory.value
+            );
+
+        }
+    );
+    
+productForm.addEventListener("submit", function (event) {
+
+        event.preventDefault();
+
+        productSuccess.hidden = false;
+
+    });
+
+
+    productCancelButton.addEventListener("click", function () {
+
+        productForm.reset();
+
+        renderSpecifications("");
+
+        productSuccess.hidden = true;
+
+    });
+
+
+    productForm.addEventListener("input", function () {
+
+        productSuccess.hidden = true;
+
+    });
+
+
+    productForm.addEventListener("change", function () {
+
+        productSuccess.hidden = true;
+
+    });
+
+});
+</script>
+
+{% endblock %}
