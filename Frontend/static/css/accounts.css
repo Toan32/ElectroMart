@@ -1,0 +1,127 @@
+/* ElectroMart - Accounts & B2B module styling (Loc)
+   Reuses the palette variables declared in style.css (:root), so this file
+   must always be loaded together with, and after, style.css. */
+
+/* ---------------------------------------------------------- auth pages */
+.auth-wrap{max-width:420px;margin:40px auto;padding:0 12px}
+.auth-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:28px 26px;
+}
+.auth-title{font-size:20px;font-weight:700;margin:0 0 4px}
+.auth-sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+.auth-foot{text-align:center;font-size:13px;color:var(--muted);margin-top:16px}
+.auth-foot a{color:var(--blue);font-weight:600}
+.auth-foot a:hover{text-decoration:underline}
+.notice-banner{
+  background:#dcf6e6;color:var(--ok);border-radius:6px;padding:10px 14px;
+  font-size:13px;margin-bottom:16px;
+}
+
+/* ---------------------------------------------------------------- form */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.form-label .req{color:var(--red)}
+.form-control{
+  width:100%;height:42px;padding:0 12px;border:1px solid var(--line);
+  border-radius:6px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);
+}
+.form-control:focus{outline:none;border-color:var(--blue)}
+textarea.form-control{height:auto;min-height:90px;padding:10px 12px;resize:vertical}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+.form-error{font-size:12px;color:var(--red);margin-top:5px}
+.form-row{display:flex;gap:14px}
+.form-row .form-group{flex:1}
+
+.radio-group{display:flex;gap:10px;margin-bottom:16px}
+.radio-opt{
+  flex:1;border:1px solid var(--line);border-radius:6px;padding:10px 12px;
+  display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13.5px;
+}
+.radio-opt:has(input:checked){border-color:var(--blue);background:#eef1fd;color:var(--blue-dark)}
+
+/* strength meter for the "change / register" password field (CV58) */
+.pwd-meter{height:5px;border-radius:3px;background:var(--line);margin-top:7px;overflow:hidden}
+.pwd-meter-bar{height:100%;width:0;background:var(--red);transition:width .2s,background .2s}
+.pwd-meter-label{font-size:11.5px;color:var(--muted);margin-top:4px}
+
+/* ------------------------------------------------------------- buttons */
+.btn-block-group{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+
+/* --------------------------------------------------------- profile ui */
+.acc-layout{display:flex;gap:24px;align-items:flex-start}
+.acc-side{
+  width:220px;flex-shrink:0;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:16px;
+}
+.acc-side a{display:block;padding:9px 10px;border-radius:6px;font-size:13.5px;margin-bottom:2px}
+.acc-side a:hover{background:var(--bg)}
+.acc-side a.active{background:var(--blue);color:#fff}
+.acc-main{flex:1;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.acc-title{font-size:18px;font-weight:700;margin:0 0 18px}
+
+.avatar-edit{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.avatar-preview{
+  width:76px;height:76px;border-radius:50%;object-fit:cover;background:var(--bg);
+  border:1px solid var(--line);
+}
+
+/* ------------------------------------------------------------ address */
+.addr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.addr-card{border:1px solid var(--line);border-radius:8px;padding:14px;position:relative}
+.addr-card.is-default{border-color:var(--blue)}
+.addr-tag{
+  display:inline-block;font-size:11px;font-weight:700;color:var(--blue);
+  background:#eef1fd;border-radius:4px;padding:2px 7px;margin-bottom:6px;
+}
+.addr-name{font-weight:600}
+.addr-actions{display:flex;gap:10px;margin-top:10px;font-size:12.5px}
+.addr-actions a{color:var(--blue)}
+.addr-actions a:hover{text-decoration:underline}
+
+/* --------------------------------------------------------------- RFQ */
+.rfq-table{width:100%;border-collapse:collapse;font-size:13px}
+.rfq-table th,.rfq-table td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+.rfq-table th{background:var(--bg);font-weight:600}
+.rfq-table input{width:100%;border:1px solid var(--line);border-radius:5px;height:32px;padding:0 8px}
+.rfq-add-row{margin-top:10px}
+.bom-drop{
+  border:2px dashed var(--line);border-radius:8px;padding:24px;text-align:center;
+  color:var(--muted);font-size:13px;margin-top:16px;
+}
+.bom-drop.drag-over{border-color:var(--blue);background:#eef1fd;color:var(--blue-dark)}
+
+/* -------------------------------------------------------- status pill */
+.pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600}
+.pill-pending{background:#fff4d6;color:#8a6300}
+.pill-approved,.pill-quoted{background:#dcf6e6;color:var(--ok)}
+.pill-rejected,.pill-expired{background:#fde3e5;color:var(--red)}
+.pill-accepted{background:#dbe6ff;color:var(--blue-dark)}
+
+/* --------------------------------------------------------------- admin */
+.admin-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card)}
+.admin-table th,.admin-table td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left}
+.admin-table th{background:var(--bg);font-weight:600;font-size:12.5px}
+.admin-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.admin-toolbar select,.admin-toolbar input{
+  height:36px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font-size:13px;
+}
+.admin-toolbar input[type="text"]{flex:1;min-width:180px}
+
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;
+  align-items:center;justify-content:center;z-index:100;
+}
+.modal-box{
+  background:#fff;border-radius:var(--radius);padding:22px;width:420px;
+  max-width:92vw;box-shadow:var(--shadow-lg);
+}
+.modal-box h3{margin:0 0 14px}
+
+/* -------------------------------------------------------- responsive */
+@media (max-width:768px){
+  .acc-layout{flex-direction:column}
+  .acc-side{width:100%}
+  .addr-grid{grid-template-columns:1fr}
+  .form-row{flex-direction:column;gap:0}
+}

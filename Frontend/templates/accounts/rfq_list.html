@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> <a href="{% url 'accounts_profile' %}">My account</a> <span>&#8250;</span> My RFQs</nav>
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}">Profile</a>
+    <a href="{% url 'accounts_wholesale_status' %}">Wholesale status</a>
+    <a href="{% url 'accounts_rfq_create' %}">New RFQ</a>
+    <a href="{% url 'accounts_rfq_list' %}" class="active">My RFQs</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">My RFQs</h1>
+
+    {% for qt in quotations %}
+    <div class="addr-card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <b>RFQ #{{ qt.id }}</b>
+        <span class="pill pill-{{ qt.status }}">{{ qt.status|capfirst }}</span>
+      </div>
+      <div class="muted" style="margin:6px 0">Sent on {{ qt.created_at|date:"d/m/Y H:i" }}
+        {% if qt.valid_until %} - valid until {{ qt.valid_until|date:"d/m/Y" }}{% endif %}</div>
+      <table class="rfq-table">
+        <thead><tr><th>Part number</th><th>Quantity</th><th>Unit price</th><th>Matched?</th></tr></thead>
+        <tbody>
+          {% for item in qt.items %}
+          <tr>
+            <td>{{ item.part_number }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{% if item.unit_price %}{{ item.unit_price }}{% else %}-{% endif %}</td>
+            <td>{% if item.matched %}Yes{% else %}<span style="color:var(--red)">Not found</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% empty %}
+    <p class="muted">You have not sent any RFQ yet.</p>
+    <a href="{% url 'accounts_rfq_create' %}" class="btn btn-primary">Send an RFQ</a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

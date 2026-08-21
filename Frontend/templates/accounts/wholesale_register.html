@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> <a href="{% url 'accounts_profile' %}">My account</a> <span>&#8250;</span> Business account</nav>
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}">Profile</a>
+    <a href="{% url 'accounts_wholesale_register' %}" class="active">Business account</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">Register a business (Wholesale) account</h1>
+    <p class="muted" style="margin-top:-10px">Once approved by our admin team, you get tiered pricing, can send RFQs and request VAT invoices.</p>
+
+    {% comment %} ---------- Control table ----------
+       company_name/company_address/contact_person : text inputs, required
+       tax_code : text input, required, 10 or 13 digits
+       submit   : posts to accounts/views.py -> wholesale_register {% endcomment %}
+
+    <form method="post" action="{% url 'accounts_wholesale_register' %}" style="max-width:480px">
+      {% csrf_token %}
+      {% if initial %}
+      <p class="form-hint" style="margin-bottom:16px">We already have your company name and tax code from
+        registration - please complete the rest to submit your application.</p>
+      {% endif %}
+      <div class="form-group">
+        <label class="form-label" for="id_company_name">Company name <span class="req">*</span></label>
+        <input class="form-control" type="text" id="id_company_name" name="company_name"
+               value="{{ request.POST.company_name|default:initial.company_name|default:'' }}" required>
+        {% if form.company_name.errors %}<div class="form-error">{{ form.company_name.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="id_tax_code">Tax code (MST) <span class="req">*</span></label>
+        <input class="form-control" type="text" id="id_tax_code" name="tax_code"
+               value="{{ request.POST.tax_code|default:initial.tax_code|default:'' }}" required>
+        <div class="form-hint">10 or 13 digits.</div>
+        {% if form.tax_code.errors %}<div class="form-error">{{ form.tax_code.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="id_company_address">Company address <span class="req">*</span></label>
+        <input class="form-control" type="text" id="id_company_address" name="company_address"
+               value="{{ request.POST.company_address|default:initial.company_address|default:'' }}" required>
+        {% if form.company_address.errors %}<div class="form-error">{{ form.company_address.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="id_contact_person">Contact person <span class="req">*</span></label>
+        <input class="form-control" type="text" id="id_contact_person" name="contact_person"
+               value="{{ request.POST.contact_person|default:initial.contact_person|default:'' }}" required>
+        {% if form.contact_person.errors %}<div class="form-error">{{ form.contact_person.errors.0 }}</div>{% endif %}
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">Submit application</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

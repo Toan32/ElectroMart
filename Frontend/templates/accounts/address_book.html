@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> <a href="{% url 'accounts_profile' %}">My account</a> <span>&#8250;</span> Address book</nav>
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}">Profile</a>
+    <a href="{% url 'accounts_address_book' %}" class="active">Address book</a>
+    <a href="#">My orders</a>
+    <a href="#">My reviews</a>
+    <a href="{% url 'accounts_edit_profile' %}">Edit profile</a>
+    <a href="{% url 'accounts_change_password' %}">Change password</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">Address book</h1>
+
+    {% comment %} ---------- Control table ----------
+       receiver_name/phone/province/district/detail : text inputs, required
+       is_default    : checkbox, optional (first address is always default)
+       Add/Edit forms post to accounts/views.py -> address_add / address_edit
+       Delete/Set default post to address_delete / address_set_default {% endcomment %}
+
+    {% if form %}
+    <div class="form-error" style="margin-bottom:14px">Please fix the highlighted fields below.</div>
+    {% endif %}
+
+    <div class="addr-grid">
+      {% for a in addresses %}
+      <div class="addr-card {% if a.is_default %}is-default{% endif %}">
+        {% if a.is_default %}<span class="addr-tag">Default</span>{% endif %}
+        <div class="addr-name">{{ a.receiver_name }} - {{ a.phone }}</div>
+        <div class="muted">{{ a.detail }}, {{ a.district }}, {{ a.province }}</div>
+        <div class="addr-actions">
+          <details style="display:inline-block">
+            <summary style="cursor:pointer;color:var(--blue)">Edit</summary>
+            <form method="post" action="{% url 'accounts_address_edit' address_id=a.id %}" style="margin-top:8px;min-width:240px">
+              {% csrf_token %}
+              <div class="form-group"><input class="form-control" name="receiver_name" value="{{ a.receiver_name }}" placeholder="Receiver name" required></div>
+              <div class="form-group"><input class="form-control" name="phone" value="{{ a.phone }}" placeholder="Phone" required></div>
+              <div class="form-group"><input class="form-control" name="province" value="{{ a.province }}" placeholder="Province" required></div>
+              <div class="form-group"><input class="form-control" name="district" value="{{ a.district }}" placeholder="District" required></div>
+              <div class="form-group"><input class="form-control" name="detail" value="{{ a.detail }}" placeholder="Street address" required></div>
+              <label style="font-size:12.5px"><input type="checkbox" name="is_default" {% if a.is_default %}checked{% endif %}> Set as default</label>
+              <button type="submit" class="btn btn-primary btn-sm" style="margin-top:8px">Save</button>
+            </form>
+          </details>
+          {% if not a.is_default %}
+          <form method="post" action="{% url 'accounts_address_set_default' address_id=a.id %}" style="display:inline">
+            {% csrf_token %}<button type="submit" style="background:none;border:none;color:var(--blue);cursor:pointer;padding:0">Set default</button>
+          </form>
+          {% endif %}
+          <form method="post" action="{% url 'accounts_address_delete' address_id=a.id %}" style="display:inline">
+            {% csrf_token %}<button type="submit" style="background:none;border:none;color:var(--red);cursor:pointer;padding:0">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% empty %}
+      <p class="muted">You have not added any delivery address yet.</p>
+      {% endfor %}
+    </div>
+
+    <details style="margin-top:20px">
+      <summary class="btn btn-primary btn-sm" style="display:inline-block;cursor:pointer">+ Add new address</summary>
+      <form method="post" action="{% url 'accounts_address_add' %}" style="margin-top:14px;max-width:420px">
+        {% csrf_token %}
+        <div class="form-group"><input class="form-control" name="receiver_name" placeholder="Receiver name" required></div>
+        <div class="form-group"><input class="form-control" name="phone" placeholder="Phone" required></div>
+        <div class="form-group"><input class="form-control" name="province" placeholder="Province" required></div>
+        <div class="form-group"><input class="form-control" name="district" placeholder="District" required></div>
+        <div class="form-group"><input class="form-control" name="detail" placeholder="Street address" required></div>
+        <label style="font-size:12.5px"><input type="checkbox" name="is_default"> Set as default</label>
+        <button type="submit" class="btn btn-primary btn-sm" style="margin-top:8px">Save address</button>
+      </form>
+    </details>
+  </div>
+</div>
+{% endblock %}

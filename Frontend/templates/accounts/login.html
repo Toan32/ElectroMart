@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Login</nav>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">Log in</h1>
+    <p class="auth-sub">Log in to order, track your purchases and manage your account.</p>
+
+    {% comment %} ---------- Control table ----------
+       email      : text input, type=email, required, server checks format + existence
+       password   : password input, required
+       remember   : checkbox, optional, extends session lifetime
+       submit     : primary button, posts to accounts/views.py -> login_view
+       Non-field error (wrong email/password, or account locked) renders
+       above the form as .form-error. {% endcomment %}
+
+    {% if notice %}<div class="notice-banner">{{ notice }}</div>{% endif %}
+
+    <form method="post" action="{% url 'accounts_login' %}">
+      {% csrf_token %}
+      {% if form_error %}
+      <div class="form-error" style="margin-bottom:14px">{{ form_error }}</div>
+      {% endif %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_email">Email <span class="req">*</span></label>
+        <input class="form-control" type="email" id="id_email" name="email"
+               value="{{ request.POST.email|default:'' }}" required autofocus>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_password">Password <span class="req">*</span></label>
+        <input class="form-control" type="password" id="id_password" name="password" required>
+      </div>
+
+      <div class="form-group" style="display:flex;justify-content:space-between;align-items:center">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+          <input type="checkbox" name="remember"> Keep me logged in
+        </label>
+        <a href="{% url 'accounts_forgot_password' %}" style="font-size:13px;color:var(--blue)">Forgot password?</a>
+      </div>
+
+      <div class="btn-block-group">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Log in</button>
+      </div>
+    </form>
+
+    <p class="auth-foot">Don't have an account? <a href="{% url 'accounts_register' %}">Register now</a></p>
+  </div>
+</div>
+{% endblock %}

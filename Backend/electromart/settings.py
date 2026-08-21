@@ -29,6 +29,7 @@ MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'electromart_db')
 INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'catalogue',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'catalogue.context_processors.shop_context',
+                'accounts.context_processors.account_context',
             ],
         },
     },
@@ -82,3 +84,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 PAGE_SIZE = 24
 # Maximum number of products that can be compared at once
 COMPARE_LIMIT = 4
+
+# ------------------------------------------------------------------- email
+# Shared by the whole team through accounts/mailer.py (Viec 10 / CV59).
+# Falls back to the console backend (prints the email instead of sending
+# it) whenever no Gmail app password is configured, so registration/login
+# still work out of the box on a teammate's machine before demo day.
+SITE_BASE_URL = os.environ.get('SITE_BASE_URL', 'http://127.0.0.1:8000')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', '1') == '1'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'ElectroMart <no-reply@electromart.vn>')
+
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
