@@ -11,8 +11,11 @@
 
 <section class="news-page">
 
+  <!-- Page heading -->
   <div class="news-page-head">
     <div>
+      <span class="news-page-label">ElectroMart Insights</span>
+
       <h1>News &amp; Updates</h1>
 
       <p class="muted">
@@ -64,18 +67,56 @@
 
     <article class="news-card">
 
+      <!-- News image -->
       <div class="news-card-image">
-        <span>{{ item.image_text }}</span>
+
+        {% if item.type == "Product News" %}
+
+        <img
+          src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% elif item.type == "Technical Guide" %}
+
+        <img
+          src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% elif item.type == "Announcement" %}
+
+        <img
+          src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% else %}
+
+        <img
+          src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% endif %}
+
+        <div class="news-image-overlay"></div>
+
+        <span class="news-image-category">
+          {{ item.type }}
+        </span>
+
       </div>
 
 
+      <!-- News content -->
       <div class="news-card-body">
 
         <div class="news-card-meta">
-
-          <span class="news-type">
-            {{ item.type }}
-          </span>
 
           <span class="news-date">
             {{ item.date }}
@@ -89,23 +130,39 @@
         </h2>
 
 
-        <p>
+        <p class="news-summary">
           {{ item.summary }}
         </p>
 
 
-        <button type="button" class="news-read-more">
-          Read more →
-        </button>
+        <div class="news-card-footer">
+
+          <button
+            type="button"
+            class="news-read-more"
+            aria-label="Read more about {{ item.title }}"
+          >
+            Read more
+            <span aria-hidden="true">→</span>
+          </button>
+
+        </div>
 
       </div>
 
     </article>
 
+
     {% empty %}
 
     <div class="news-empty">
-      No news articles found.
+      <div class="news-empty-icon">📰</div>
+
+      <h3>No news articles found</h3>
+
+      <p>
+        There are currently no articles available in this category.
+      </p>
     </div>
 
     {% endfor %}
