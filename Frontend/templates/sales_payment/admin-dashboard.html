@@ -1,0 +1,205 @@
+﻿{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ElectroMart Dashboard</title>
+    <!-- CSS imports -->
+    <link rel="stylesheet" href="{% static 'sales_payment/css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'sales_payment/css/shared-components.css' %}">
+    <link rel="stylesheet" href="{% static 'sales_payment/css/layout.css' %}">
+    <!-- Chart.js local file -->
+    <script src="{% static 'sales_payment/js/chart.min.js' %}"></script>
+    <style>
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .kpi-card {
+            padding: var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kpi-info h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-2xs);
+        }
+
+        .kpi-info .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .kpi-icon {
+            font-size: 2rem;
+            background-color: var(--bg-tertiary);
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .chart-card-body {
+            height: 300px;
+            position: relative;
+        }
+
+        @media (max-width: 992px) {
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo-area">
+                <a href="/" class="logo">EM <span>ElectroMart</span></a>
+            </div>
+            <ul class="admin-menu">
+                <li class="admin-menu-item"><a href="/admin-dashboard/" class="active">Dashboard</a></li>
+                <li class="admin-menu-item"><a href="/admin-orders/">Order Management</a></li>
+                <li class="admin-menu-item"><a href="/admin-promotions/">Promotion Management</a></li>
+            </ul>
+            <div class="admin-sidebar-footer">
+                <a href="/" class="btn btn-secondary btn-sm btn-block" style="justify-content:center;">Shop Front</a>
+                <button class="btn btn-secondary btn-sm btn-block" onclick="seedDemoData()" style="justify-content:center; margin-top: var(--space-xs); background-color: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary-light); font-weight: 700;">Seed Demo Data</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="admin-main">
+            <!-- Navbar -->
+            <nav class="admin-navbar">
+                <div style="display:flex; align-items:center; gap:var(--space-md);">
+                    <button class="admin-toggle-btn">&#9776;</button>
+                    <h2 class="admin-page-title">Analytics Dashboard</h2>
+                </div>
+                <div class="admin-navbar-actions">
+                    <div style="display:flex; align-items:center; gap:var(--space-xs);">
+                        <div style="text-align:right;">
+                            <div style="font-weight:600; font-size:0.85rem;">Admin User</div>
+                            <div style="font-size:0.75rem; color:var(--text-secondary);">Sales Module</div>
+                        </div>
+                        <div style="width:36px; height:36px; border-radius:50%; background-color:var(--color-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">
+                            AD
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Body -->
+            <main class="admin-content">
+                <!-- KPI Grid -->
+                <div class="kpi-grid">
+                    <!-- Revenue -->
+                    <div class="card kpi-card">
+                        <div class="kpi-info">
+                            <h3>Total Revenue</h3>
+                            <div class="kpi-value" id="dashTotalRevenue">0Ä‘</div>
+                        </div>
+                        <div class="kpi-icon" style="color: var(--color-success); background-color: var(--color-success-light);"></div>
+                    </div>
+                    <!-- Orders Count -->
+                    <div class="card kpi-card">
+                        <div class="kpi-info">
+                            <h3>Total Orders</h3>
+                            <div class="kpi-value" id="dashTotalOrders">0</div>
+                        </div>
+                        <div class="kpi-icon" style="color: var(--color-primary); background-color: var(--color-primary-light);"></div>
+                    </div>
+                    <!-- Avg Order Value -->
+                    <div class="card kpi-card">
+                        <div class="kpi-info">
+                            <h3>Avg Order Value</h3>
+                            <div class="kpi-value" id="dashAvgOrderValue">0Ä‘</div>
+                        </div>
+                        <div class="kpi-icon" style="color: var(--color-info); background-color: var(--color-info-light);"></div>
+                    </div>
+                    <!-- Active Promos -->
+                    <div class="card kpi-card">
+                        <div class="kpi-info">
+                            <h3>Active Promos</h3>
+                            <div class="kpi-value" id="dashActivePromotions">0</div>
+                        </div>
+                        <div class="kpi-icon" style="color: var(--color-secondary); background-color: rgba(168, 85, 247, 0.15);"></div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <!-- Revenue Chart -->
+                    <div class="card" style="padding: var(--space-lg); background-color: var(--bg-secondary);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-md);">
+                            <h3 style="font-size:1.05rem; font-weight:700;">Weekly Revenue Trend</h3>
+                            <span style="font-size:0.75rem; color:var(--text-secondary);">Auto-updated</span>
+                        </div>
+                        <div class="chart-card-body">
+                            <canvas id="revenueChartCanvas"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Share Chart -->
+                    <div class="card" style="padding: var(--space-lg); background-color: var(--bg-secondary);">
+                        <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:var(--space-md);">Sales by Category</h3>
+                        <div class="chart-card-body">
+                            <canvas id="categoryChartCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Table -->
+                <div class="card" style="padding: var(--space-lg); background-color: var(--bg-secondary);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-md); border-bottom:1px solid var(--border-color); padding-bottom:var(--space-xs);">
+                        <h3 style="font-size:1.05rem; font-weight:700;">Recent Orders</h3>
+                        <a href="/admin-orders/" class="btn btn-secondary btn-sm">View all orders â†’</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashRecentOrdersTable">
+                                <!-- Loaded dynamically from dashboard.js?v=3 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Scripts -->
+    <script src="{% static 'sales_payment/js/shared.js' %}?v=3"></script>
+    <script src="{% static 'sales_payment/js/admin-orders.js' %}?v=3"></script>
+    <script src="{% static 'sales_payment/js/dashboard.js' %}?v=3"></script>
+</body>
+</html>
+

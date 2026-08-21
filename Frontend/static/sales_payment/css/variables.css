@@ -1,0 +1,105 @@
+/* variables.css - Design Tokens & Theme Variables for ElectroMart */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Font family */
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    
+    /* Common Spacing (rem based) */
+    --space-2xs: 0.25rem;
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+
+    /* Border Radius */
+    --radius-xs: 0.25rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+    --radius-full: 9999px;
+
+    /* Standard Colors (Fixed across themes) */
+    --color-primary: #6366f1;       /* Indigo */
+    --color-primary-hover: #4f46e5;
+    --color-primary-light: rgba(99, 102, 241, 0.15);
+    
+    --color-secondary: #a855f7;     /* Purple */
+    --color-secondary-hover: #9333ea;
+    
+    --color-success: #10b981;       /* Emerald */
+    --color-success-hover: #059669;
+    --color-success-light: rgba(16, 185, 129, 0.15);
+
+    --color-warning: #f59e0b;       /* Amber */
+    --color-warning-hover: #d97706;
+    --color-warning-light: rgba(245, 158, 11, 0.15);
+
+    --color-danger: #f43f5e;        /* Rose */
+    --color-danger-hover: #e11d48;
+    --color-danger-light: rgba(244, 63, 94, 0.15);
+
+    --color-info: #0ea5e9;          /* Sky Blue */
+    --color-info-hover: #0284c7;
+    --color-info-light: rgba(14, 165, 233, 0.15);
+
+    /* Transition */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s ease;
+
+    /* Theme colors - Light Mode (Default) */
+    --bg-primary: #f8fafc;          /* Slate 50 */
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;         /* Slate 100 */
+    
+    --text-primary: #0f172a;        /* Slate 900 */
+    --text-secondary: #475569;      /* Slate 600 */
+    --text-muted: #94a3b8;          /* Slate 400 */
+    
+    --border-color: #e2e8f0;        /* Slate 200 */
+    --border-color-hover: #cbd5e1;  /* Slate 300 */
+
+    /* Glassmorphism settings - Light Mode */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+    --glass-backdrop-blur: 10px;
+
+    /* Box Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-primary: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+}
+
+/* Theme colors - Dark Mode */
+[data-theme="dark"] {
+    --bg-primary: #0b0f19;          /* Deep dark blue-grey */
+    --bg-secondary: #111827;        /* Gray 900 */
+    --bg-tertiary: #1f2937;         /* Gray 800 */
+    
+    --text-primary: #f9fafb;        /* Gray 50 */
+    --text-secondary: #d1d5db;      /* Gray 300 */
+    --text-muted: #6b7280;          /* Gray 500 */
+    
+    --border-color: #374151;        /* Gray 700 */
+    --border-color-hover: #4b5563;  /* Gray 600 */
+
+    /* Glassmorphism settings - Dark Mode */
+    --glass-bg: rgba(17, 24, 39, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --glass-backdrop-blur: 12px;
+
+    /* Box Shadows (Darker, more contrast) */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    --shadow-primary: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+}

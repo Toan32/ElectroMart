@@ -1,0 +1,68 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Stylesheets dynamically loaded inside body to avoid modifying base.html -->
+<link rel="stylesheet" href="{% static 'sales_payment/css/variables.css' %}">
+<link rel="stylesheet" href="{% static 'sales_payment/css/shared-components.css' %}">
+<link rel="stylesheet" href="{% static 'sales_payment/css/layout.css' %}">
+<style>
+    .search-container {
+        max-width: 600px;
+        margin: 0 auto var(--space-xl) auto;
+        text-align: center;
+        margin-top: var(--space-md);
+    }
+
+    .search-box-large {
+        display: flex;
+        gap: var(--space-sm);
+        margin-top: var(--space-md);
+    }
+
+    .search-box-large input {
+        padding: 0.8rem 1.2rem;
+        font-size: 1.1rem;
+        font-family: monospace;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        background-color: var(--bg-secondary);
+    }
+
+    .search-box-large input::placeholder {
+        font-family: var(--font-sans);
+        letter-spacing: normal;
+        text-transform: none;
+    }
+
+    .search-box-large button {
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+    }
+</style>
+
+<!-- Search Container -->
+<div class="search-container">
+    <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: var(--space-2xs);">Order Tracking</h1>
+    <p style="color: var(--text-secondary); font-size: 1rem;">Enter the order ID received after placing your order (e.g. EM-123456) to track delivery status in real-time.</p>
+    
+    <form id="trackingSearchForm" class="search-box-large">
+        <input type="text" id="trackingOrderIdInput" class="form-control" placeholder="Enter order ID EM-XXXXXX..." required>
+        <button type="submit" class="btn btn-primary">Track 🔍</button>
+    </form>
+</div>
+
+<!-- Tracking Results container -->
+<div id="trackingResults" style="max-width: 1000px; margin: 0 auto; margin-bottom: var(--space-xl);">
+    <!-- Tracking details card or error will be injected here by tracking.js?v=3 -->
+    <div class="card" style="padding: var(--space-2xl); text-align: center; border-style: dashed; background-color: var(--bg-secondary);">
+        <span style="font-size: 3.5rem; filter: grayscale(100%);">📦</span>
+        <h3 style="margin-top: var(--space-md); margin-bottom: var(--space-sm); color: var(--text-secondary);">No tracking information yet</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 450px; margin: 0 auto;">Enter your order number in the box above and press "Track" to display delivery progress details.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'sales_payment/js/tracking.js' %}?v=3"></script>
+{% endblock %}

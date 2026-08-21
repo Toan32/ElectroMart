@@ -15,6 +15,14 @@ urlpatterns = [
     path('compare/<slug:slug>/', views.compare_toggle, name='compare_toggle'),
     path('wishlist/', views.wishlist, name='wishlist'),
     path('wishlist/<slug:slug>/', views.wishlist_toggle, name='wishlist_toggle'),
+
+    # Sales & Payment module URL routes
+    path('cart/', views.cart, name='cart'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('tracking/', views.tracking, name='tracking'),
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-orders/', views.admin_orders, name='admin_orders'),
+    path('admin-promotions/', views.admin_promotions, name='admin_promotions'),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,389 @@
+/* layout.css - Base Layouts (Customer and Admin Panel) for ElectroMart */
+
+/* ==========================================================================
+   CUSTOMER SITE LAYOUT
+   ========================================================================== */
+.site-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header */
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-backdrop-blur));
+    box-shadow: var(--glass-shadow);
+    transition: background var(--transition-normal), border var(--transition-normal);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.logo span {
+    color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    font-weight: 550;
+    font-size: 0.95rem;
+    position: relative;
+    padding: var(--space-xs) 0;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--color-primary);
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--color-primary);
+    transition: width var(--transition-fast);
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.cart-icon-btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    padding: var(--space-2xs);
+    display: flex;
+    align-items: center;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background-color: var(--color-danger);
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-secondary);
+}
+
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    padding: var(--space-2xs);
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-lg);
+}
+
+/* Footer */
+.site-footer {
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: var(--space-xl) 0 var(--space-lg) 0;
+    margin-top: auto;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-2xl);
+}
+
+.footer-brand p {
+    color: var(--text-secondary);
+    margin-top: var(--space-sm);
+    font-size: 0.9rem;
+    max-width: 320px;
+}
+
+.footer-links h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+}
+
+.footer-links ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+    color: var(--color-primary);
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: var(--space-xl) auto 0 auto;
+    padding: var(--space-md) var(--space-lg) 0 var(--space-lg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   ADMIN PANEL LAYOUT
+   ========================================================================== */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Admin Sidebar */
+.admin-sidebar {
+    width: 260px;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+    transition: transform var(--transition-normal);
+}
+
+.admin-logo-area {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-logo {
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.admin-logo span {
+    color: var(--color-primary);
+}
+
+.admin-menu {
+    list-style: none;
+    padding: var(--space-md) var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    flex-grow: 1;
+}
+
+.admin-menu-item a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-secondary);
+    font-weight: 550;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.admin-menu-item a:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.admin-menu-item a.active {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.admin-sidebar-footer {
+    padding: var(--space-md) var(--space-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Admin Main Content Container */
+.admin-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Prevent flex children from overflowing */
+}
+
+/* Admin Navbar */
+.admin-navbar {
+    height: 70px;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.admin-page-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.admin-navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+/* Admin Content Body */
+.admin-content {
+    padding: var(--space-lg);
+    flex-grow: 1;
+    background-color: var(--bg-primary);
+}
+
+/* Toggle menu button for mobile admin */
+.admin-toggle-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 992px) {
+    /* Admin responsive */
+    .admin-sidebar {
+        position: fixed;
+        left: 0;
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .admin-sidebar.is-active {
+        transform: translateX(0);
+    }
+    
+    .admin-toggle-btn {
+        display: block;
+    }
+    
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+}
+
+@media (max-width: 768px) {
+    /* Customer site responsive */
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    .nav-links {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background-color: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        padding: var(--space-md) var(--space-lg);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        display: none;
+        box-shadow: var(--shadow-md);
+    }
+    
+    .nav-links.is-active {
+        display: flex;
+    }
+    
+    .nav-links a {
+        width: 100%;
+    }
+}
