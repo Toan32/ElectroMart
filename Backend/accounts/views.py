@@ -3,6 +3,7 @@ CV61, CV62, CV63). Session-based auth, no django.contrib.auth - see
 Backend/accounts/repo.py and Docs1GioiThieuChung.txt Phan V for why.
 """
 import os
+import re
 import secrets
 from datetime import datetime, timedelta
 
@@ -357,8 +358,13 @@ def admin_manage_user(request):
     elif status == 'locked':
         query['is_hidden'] = True
     if q:
-        query['$or'] = [{'full_name': {'$regex': q, '$options': 'i'}},
-                        {'email': {'$regex': q, '$options': 'i'}}]
+        # re.escape so a search box character that means something in regex
+        # syntax (e.g. an unbalanced "(") cannot reach $regex raw - Mongo
+        # rejects an invalid pattern with a 500 error otherwise (found in
+        # Viec 17 security testing / CV78).
+        safe_q = re.escape(q)
+        query['$or'] = [{'full_name': {'$regex': safe_q, '$options': 'i'}},
+                        {'email': {'$regex': safe_q, '$options': 'i'}}]
 
     db = repo.get_db()
     users = list(db[repo.USERS].find(query).sort('created_at', -1))
