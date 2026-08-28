@@ -64,16 +64,31 @@
       {% endfor %}
     </div>
 
-    <details style="margin-top:20px">
+    <details style="margin-top:20px" {% if form %}open{% endif %}>
       <summary class="btn btn-primary btn-sm" style="display:inline-block;cursor:pointer">+ Add new address</summary>
       <form method="post" action="{% url 'accounts_address_add' %}" style="margin-top:14px;max-width:420px">
         {% csrf_token %}
-        <div class="form-group"><input class="form-control" name="receiver_name" placeholder="Receiver name" required></div>
-        <div class="form-group"><input class="form-control" name="phone" placeholder="Phone" required></div>
-        <div class="form-group"><input class="form-control" name="province" placeholder="Province" required></div>
-        <div class="form-group"><input class="form-control" name="district" placeholder="District" required></div>
-        <div class="form-group"><input class="form-control" name="detail" placeholder="Street address" required></div>
-        <label style="font-size:12.5px"><input type="checkbox" name="is_default"> Set as default</label>
+        <div class="form-group">
+          <input class="form-control" name="receiver_name" placeholder="Receiver name" value="{{ form.receiver_name.value|default:'' }}" required>
+          {% if form.receiver_name.errors %}<div class="form-error">{{ form.receiver_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <input class="form-control" name="phone" placeholder="Phone" value="{{ form.phone.value|default:'' }}" required>
+          {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <input class="form-control" name="province" placeholder="Province" value="{{ form.province.value|default:'' }}" required>
+          {% if form.province.errors %}<div class="form-error">{{ form.province.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <input class="form-control" name="district" placeholder="District" value="{{ form.district.value|default:'' }}" required>
+          {% if form.district.errors %}<div class="form-error">{{ form.district.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <input class="form-control" name="detail" placeholder="Street address" value="{{ form.detail.value|default:'' }}" required>
+          {% if form.detail.errors %}<div class="form-error">{{ form.detail.errors.0 }}</div>{% endif %}
+        </div>
+        <label style="font-size:12.5px"><input type="checkbox" name="is_default" {% if form.is_default.value %}checked{% endif %}> Set as default</label>
         <button type="submit" class="btn btn-primary btn-sm" style="margin-top:8px">Save address</button>
       </form>
     </details>

@@ -223,8 +223,11 @@ def address_add(request):
             repo.add_address(user['_id'], d['receiver_name'], d['phone'], d['province'],
                              d['district'], d['detail'], d['is_default'])
             return redirect('accounts_address_book')
+        addresses = repo.list_addresses(user['_id'])
+        for a in addresses:
+            a['id'] = str(a['_id'])  # template's {% url %} tags need this - was missing, caused 500
         return render(request, 'accounts/address_book.html', {
-            'addresses': repo.list_addresses(user['_id']), 'form': form})
+            'addresses': addresses, 'form': form})
     return redirect('accounts_address_book')
 
 
@@ -288,7 +291,7 @@ def wholesale_register(request):
                 repo.create_wholesale_profile(user['_id'], d['company_name'], d['tax_code'],
                                               d['company_address'], d['contact_person'])
             return redirect('accounts_wholesale_status')
-        return render(request, 'accounts/wholesale_register.html', {'form': form})
+        return render(request, 'accounts/wholesale_register.html', {'form': form, 'initial': existing or {}})
 
     initial = existing or {}
     return render(request, 'accounts/wholesale_register.html', {
