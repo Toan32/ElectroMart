@@ -88,10 +88,16 @@
       </ul>
     </div>
     <ul class="nav-links">
-      {% for c in nav_categories %}
-      <li><a href="{% url 'product_list' c.slug %}">{{ c.name }}</a></li>
-      {% endfor %}
-    </ul>
+
+    {% for c in nav_categories %}
+    <li><a href="{% url 'product_list' c.slug %}">{{ c.name }}</a></li>
+    {% endfor %}
+
+    <li><a href="/news/">News</a></li>
+    <li><a href="/feedback/">Feedback</a></li>
+    <li><a href="/faq/">FAQ</a></li>
+
+</ul>
   </div>
 </div>
 
@@ -116,8 +122,8 @@
       <div class="foot-title">Support</div>
       <a href="#">How to order</a>
       <a href="#">Return policy</a>
-      <a href="#">FAQ</a>
-      <a href="#">Contact us</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/feedback/">Feedback</a>
     </div>
     <div>
       <div class="foot-title">Contact</div>

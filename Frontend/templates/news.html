@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a>
+  <span>&#8250;</span>
+  News
+</nav>
+
+
+<section class="news-page">
+
+  <!-- Page heading -->
+  <div class="news-page-head">
+    <div>
+      <span class="news-page-label">ElectroMart Insights</span>
+
+      <h1>News &amp; Updates</h1>
+
+      <p class="muted">
+        Product announcements, technical guides and the latest updates
+        from ElectroMart.
+      </p>
+    </div>
+  </div>
+
+
+  <!-- News filters -->
+  <div class="news-filters">
+
+    <a
+      href="{% url 'news' %}"
+      class="news-filter {% if selected_type == 'all' %}active{% endif %}"
+    >
+      All
+    </a>
+
+    <a
+      href="{% url 'news' %}?type=product-news"
+      class="news-filter {% if selected_type == 'product-news' %}active{% endif %}"
+    >
+      Product News
+    </a>
+
+    <a
+      href="{% url 'news' %}?type=announcement"
+      class="news-filter {% if selected_type == 'announcement' %}active{% endif %}"
+    >
+      Announcement
+    </a>
+
+    <a
+      href="{% url 'news' %}?type=technical-guide"
+      class="news-filter {% if selected_type == 'technical-guide' %}active{% endif %}"
+    >
+      Technical Guide
+    </a>
+
+  </div>
+
+
+  <!-- News grid -->
+  <div class="news-grid">
+
+    {% for item in news_items %}
+
+    <article class="news-card">
+
+      <!-- News image -->
+      <div class="news-card-image">
+
+        {% if item.type == "Product News" %}
+
+        <img
+          src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% elif item.type == "Technical Guide" %}
+
+        <img
+          src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% elif item.type == "Announcement" %}
+
+        <img
+          src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% else %}
+
+        <img
+          src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80"
+          alt="{{ item.title }}"
+          loading="lazy"
+        >
+
+        {% endif %}
+
+        <div class="news-image-overlay"></div>
+
+        <span class="news-image-category">
+          {{ item.type }}
+        </span>
+
+      </div>
+
+
+      <!-- News content -->
+      <div class="news-card-body">
+
+        <div class="news-card-meta">
+
+          <span class="news-date">
+            {{ item.date }}
+          </span>
+
+        </div>
+
+
+        <h2>
+          {{ item.title }}
+        </h2>
+
+
+        <p class="news-summary">
+          {{ item.summary }}
+        </p>
+
+
+        <div class="news-card-footer">
+
+          <button
+            type="button"
+            class="news-read-more"
+            aria-label="Read more about {{ item.title }}"
+          >
+            Read more
+            <span aria-hidden="true">→</span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    {% empty %}
+
+    <div class="news-empty">
+      <div class="news-empty-icon">📰</div>
+
+      <h3>No news articles found</h3>
+
+      <p>
+        There are currently no articles available in this category.
+      </p>
+    </div>
+
+    {% endfor %}
+
+  </div>
+
+</section>
+
+{% endblock %}

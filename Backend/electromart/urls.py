@@ -16,7 +16,6 @@ urlpatterns = [
     path('compare/<slug:slug>/', views.compare_toggle, name='compare_toggle'),
     path('wishlist/', views.wishlist, name='wishlist'),
     path('wishlist/<slug:slug>/', views.wishlist_toggle, name='wishlist_toggle'),
-
     # ------------------------------------------------------- accounts (Loc)
     path('accounts/register/', accounts_views.register, name='accounts_register'),
     path('accounts/activate/<str:token>/', accounts_views.activate, name='accounts_activate'),
@@ -44,6 +43,14 @@ urlpatterns = [
     path('admin/users/', accounts_views.admin_manage_user, name='admin_manage_user'),
     path('admin/users/<str:user_id>/lock/', accounts_views.admin_toggle_lock, name='admin_toggle_lock'),
     path('admin/users/<str:profile_id>/wholesale-review/', accounts_views.admin_wholesale_review, name='admin_wholesale_review'),
+
+    # ------------------------------------------------------- catalogue & content (Minh)
+    path('news/', views.news, name='news'),
+    path('feedback/', views.feedback, name='feedback'),
+    path('faq/', views.faq, name='faq'),
+    path('admin/categories/', views.admin_categories, name='admin_categories'),
+    path('admin/products/', views.admin_products, name='admin_products'),
+    path('admin/inventory/', views.admin_inventory, name='admin_inventory'),
 ]
 
 if settings.DEBUG:

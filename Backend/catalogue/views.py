@@ -262,3 +262,96 @@ def wishlist(request):
     items = _decorate(repo.products_by_slugs(request.session.get(WISHLIST_KEY, [])))
     return render(request, 'wishlist.html',
                   {'products': items, 'page_title': 'Wishlist'})
+
+def news(request):
+    selected_type = request.GET.get('type', 'all')
+
+    news_items = [
+        {
+            'title': 'ElectroMart launches new STM32 development kits',
+            'type': 'Product News',
+            'date': 'August 20, 2026',
+            'summary': 'Explore the latest STM32 development boards now available at ElectroMart.',
+            'image_text': 'STM32',
+        },
+        {
+            'title': 'Scheduled system maintenance this weekend',
+            'type': 'Announcement',
+            'date': 'August 18, 2026',
+            'summary': 'Some ElectroMart services may be temporarily unavailable during maintenance.',
+            'image_text': 'NOTICE',
+        },
+        {
+            'title': 'How to choose the right capacitor for your project',
+            'type': 'Technical Guide',
+            'date': 'August 15, 2026',
+            'summary': 'A practical guide to capacitance, voltage rating, tolerance and capacitor types.',
+            'image_text': 'GUIDE',
+        },
+        {
+            'title': 'New sensor modules added to our catalogue',
+            'type': 'Product News',
+            'date': 'August 12, 2026',
+            'summary': 'Discover newly added temperature, humidity, pressure and motion sensors.',
+            'image_text': 'SENSOR',
+        },
+        {
+            'title': 'Holiday shipping schedule update',
+            'type': 'Announcement',
+            'date': 'August 10, 2026',
+            'summary': 'Important information about shipping and order processing during the holiday period.',
+            'image_text': 'UPDATE',
+        },
+        {
+            'title': 'Understanding resistor color codes',
+            'type': 'Technical Guide',
+            'date': 'August 8, 2026',
+            'summary': 'Learn how to quickly identify resistor values using standard color bands.',
+            'image_text': 'RESISTOR',
+        },
+    ]
+
+    news_types = [
+        'All',
+        'Product News',
+        'Announcement',
+        'Technical Guide',
+    ]
+
+    if selected_type != 'all':
+        filtered_items = [
+            item for item in news_items
+            if item['type'].lower().replace(' ', '-') == selected_type
+        ]
+    else:
+        filtered_items = news_items
+
+    return render(request, 'news.html', {
+        'page_title': 'News - ElectroMart',
+        'news_items': filtered_items,
+        'news_types': news_types,
+        'selected_type': selected_type,
+    })
+
+def feedback(request):
+    return render(request, 'feedback.html', {
+        'page_title': 'Feedback - ElectroMart',
+    })
+
+def faq(request):
+    return render(request, 'faq.html', {
+        'page_title': 'FAQ - ElectroMart',
+    })
+
+def admin_categories(request):
+    return render(request, 'admin_categories.html', {
+        'page_title': 'Manage Categories - ElectroMart'
+    })
+
+def admin_products(request):
+    return render(request, 'admin_products.html', {
+        'page_title': 'Manage Products - ElectroMart'
+    })
+    
+def admin_inventory(request):
+    return render(request, 'admin_inventory.html')
