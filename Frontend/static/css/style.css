@@ -174,8 +174,11 @@ img{max-width:100%}
 .card-wish:hover,.card-wish.on{background:#ffe8ea;color:var(--red)}
 
 .card-img{
-  height:130px;display:grid;place-items:center;background:#ffffff;
-  border-radius:6px;margin-bottom:9px;overflow:hidden;
+  height:160px;display:flex;align-items:center;justify-content:center;background:#ffffff;
+  border-radius:6px;margin-bottom:9px;overflow:hidden;padding:6px;
+}
+.card-img img{
+  max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;margin:auto;
 }
 .ph{
   width:58px;height:58px;border-radius:12px;background:linear-gradient(135deg,var(--blue),#4b73f0);
@@ -253,7 +256,8 @@ img{max-width:100%}
 /* ---------------------------------------------------------- detail */
 .detail{display:grid;grid-template-columns:420px 1fr;gap:20px;background:#fff;
   border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
-.big-img{height:330px;background:#f7f8fa;border-radius:var(--radius);display:grid;place-items:center}
+.big-img{height:330px;background:#ffffff;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden;}
+.big-img img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;margin:auto;}
 .big-img .ph{width:110px;height:110px;font-size:34px;border-radius:20px}
 .thumbs{display:flex;gap:8px;margin-top:10px}
 .thumb{width:64px;height:64px;background:#f7f8fa;border:2px solid var(--line);border-radius:6px}
@@ -300,7 +304,8 @@ img{max-width:100%}
 .cmp-first{text-align:left !important;background:#fafbfc;font-weight:600;width:190px}
 .cmp-table tr.differ{background:#fffbeb}
 .cmp-card{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:150px}
-.cmp-img{width:76px;height:76px;background:#f7f8fa;border-radius:8px;display:grid;place-items:center}
+.cmp-img{width:76px;height:76px;background:#ffffff;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;}
+.cmp-img img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;margin:auto;}
 .cmp-name{font-size:12.5px;line-height:1.35;height:34px;overflow:hidden}
 
 /* ---------------------------------------------------------- buttons */

@@ -1,4 +1,4 @@
-﻿/* cart.js - Shopping Cart State and Operations for ElectroMart */
+/* cart.js - Shopping Cart State and Operations for ElectroMart */
 
 // Define products dataset for easy mockups
 const PRODUCTS = [
@@ -224,7 +224,7 @@ function renderCartPage() {
     // Render items list
     cartContainer.innerHTML = cart.map(item => `
         <div class="cart-item" style="display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) 0; border-bottom: 1px solid var(--border-color);">
-            <img src="${item.image}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <img src="${item.image}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: contain; background: #ffffff; padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
             <div style="flex-grow: 1;">
                 <h4 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-2xs);">${item.name}</h4>
                 <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: var(--space-2xs);">${item.specs}</p>

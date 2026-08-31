@@ -121,7 +121,7 @@ function trackOrder(orderId) {
     // Build items detail list
     const itemsDetailHTML = order.items.map(item => `
         <div style="display:flex; align-items:center; gap:var(--space-md); padding:var(--space-sm) 0; border-bottom: 1px solid var(--border-color);">
-            <img src="${item.image}" alt="${item.name}" style="width:50px; height:50px; object-fit:cover; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+            <img src="${item.image}" alt="${item.name}" style="width:50px; height:50px; object-fit:contain; background:#ffffff; padding:2px; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
             <div style="flex-grow:1;">
                 <h5 style="font-size:0.9rem; font-weight:600; margin-bottom: 2px;">${item.name}</h5>
                 <p style="font-size:0.75rem; color:var(--text-secondary);">${item.specs}</p>

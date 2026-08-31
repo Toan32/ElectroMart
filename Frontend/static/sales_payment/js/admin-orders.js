@@ -205,7 +205,7 @@ function showOrderDetailAdmin(orderId) {
 
     const itemsHTML = order.items.map(item => `
         <div style="display:flex; align-items:center; gap:var(--space-sm); padding:var(--space-2xs) 0; border-bottom: 1px solid var(--border-color);">
-            <img src="${item.image}" alt="${item.name}" style="width:40px; height:40px; object-fit:cover; border-radius:var(--radius-xs);">
+            <img src="${item.image}" alt="${item.name}" style="width:40px; height:40px; object-fit:contain; background:#ffffff; padding:2px; border-radius:var(--radius-xs); border:1px solid var(--border-color);">
             <div style="flex-grow:1;">
                 <div style="font-weight:600; font-size:0.85rem;">${item.name}</div>
                 <div style="font-size:0.75rem; color:var(--text-secondary);">${item.specs}</div>
