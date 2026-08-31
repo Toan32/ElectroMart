@@ -15,7 +15,6 @@ urlpatterns = [
     path('compare/clear/', views.compare_clear, name='compare_clear'),
     path('compare/<slug:slug>/', views.compare_toggle, name='compare_toggle'),
     path('wishlist/', views.wishlist, name='wishlist'),
-    path('wishlist/<slug:slug>/', views.wishlist_toggle, name='wishlist_toggle'),
     # ------------------------------------------------------- accounts (Loc)
     path('accounts/register/', accounts_views.register, name='accounts_register'),
     path('accounts/activate/<str:token>/', accounts_views.activate, name='accounts_activate'),
@@ -43,7 +42,6 @@ urlpatterns = [
     path('admin/users/', accounts_views.admin_manage_user, name='admin_manage_user'),
     path('admin/users/<str:user_id>/lock/', accounts_views.admin_toggle_lock, name='admin_toggle_lock'),
     path('admin/users/<str:profile_id>/wholesale-review/', accounts_views.admin_wholesale_review, name='admin_wholesale_review'),
-
     # ------------------------------------------------------- catalogue & content (Minh)
     path('news/', views.news, name='news'),
     path('feedback/', views.feedback, name='feedback'),
@@ -51,6 +49,14 @@ urlpatterns = [
     path('admin/categories/', views.admin_categories, name='admin_categories'),
     path('admin/products/', views.admin_products, name='admin_products'),
     path('admin/inventory/', views.admin_inventory, name='admin_inventory'),
+
+    # ------------------------------------------------------- sales & payment (Tin)
+    path('cart/', views.cart, name='cart'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('tracking/', views.tracking, name='tracking'),
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-orders/', views.admin_orders, name='admin_orders'),
+    path('admin-promotions/', views.admin_promotions, name='admin_promotions'),
 ]
 
 if settings.DEBUG:

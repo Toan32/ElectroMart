@@ -1,0 +1,158 @@
+﻿{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ElectroMart Promotions & Discounts</title>
+    <!-- CSS imports -->
+    <link rel="stylesheet" href="{% static 'sales_payment/css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'sales_payment/css/shared-components.css' %}">
+    <link rel="stylesheet" href="{% static 'sales_payment/css/layout.css' %}">
+    <style>
+        .promo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group-addon {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-left: none;
+            padding: 0.625rem var(--space-md);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .input-group .form-control {
+            border-radius: var(--radius-md) 0 0 var(--radius-md);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo-area">
+                <a href="/" class="logo">EM <span>ElectroMart</span></a>
+            </div>
+            <ul class="admin-menu">
+                <li class="admin-menu-item"><a href="/admin-dashboard/">Dashboard</a></li>
+                <li class="admin-menu-item"><a href="/admin-orders/">Order Management</a></li>
+                <li class="admin-menu-item"><a href="/admin-promotions/" class="active">Promotion Management</a></li>
+            </ul>
+            <div class="admin-sidebar-footer">
+                <a href="/" class="btn btn-secondary btn-sm btn-block" style="justify-content:center;">Shop Front</a>
+                <button class="btn btn-secondary btn-sm btn-block" onclick="seedDemoData()" style="justify-content:center; margin-top: var(--space-xs); background-color: var(--color-primary-light); color: var(--color-primary); border-color: var(--color-primary-light); font-weight: 700;">Seed Demo Data</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Navbar -->
+            <nav class="admin-navbar">
+                <div style="display:flex; align-items:center; gap:var(--space-md);">
+                    <button class="admin-toggle-btn">&#9776;</button>
+                    <h2 class="admin-page-title">Promotion Campaigns</h2>
+                </div>
+                <div class="admin-navbar-actions">
+                    <div style="display:flex; align-items:center; gap:var(--space-xs);">
+                        <div style="text-align:right;">
+                            <div style="font-weight:600; font-size:0.85rem;">Admin User</div>
+                            <div style="font-size:0.75rem; color:var(--text-secondary);">Sales Module</div>
+                        </div>
+                        <div style="width:36px; height:36px; border-radius:50%; background-color:var(--color-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.9rem;">
+                            AD
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Body -->
+            <main class="admin-content">
+                <!-- Header Actions -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-lg);">
+                    <div>
+                        <h3 style="font-size:1.15rem; font-weight:700;">Promo Codes List</h3>
+                        <p style="font-size:0.85rem; color:var(--text-secondary);">Create and manage voucher and discount codes applicable for customer checkouts.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('addPromoModal')">+ Create New Promotion</button>
+                </div>
+
+                <!-- Promotions Grid List -->
+                <div class="promo-grid" id="adminPromoList">
+                    <!-- Injected dynamically by admin-promotions.js?v=3 -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD PROMO CODE MODAL -->
+    <div class="modal" id="addPromoModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content" style="max-width: 500px; background-color: var(--bg-secondary);">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Promo Code</h3>
+                <button class="modal-close" type="button">&times;</button>
+            </div>
+            <form id="addPromoForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="promoCode">Promo Code (Uppercase, alphanumeric)</label>
+                        <input type="text" id="promoCode" class="form-control" placeholder="e.g. GIAM20" required style="font-family:monospace; text-transform:uppercase; letter-spacing:0.05em;">
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:var(--space-md);">
+                        <div class="form-group">
+                            <label class="form-label" for="promoType">Discount Type</label>
+                            <select id="promoType" class="form-select" required>
+                                <option value="percent">Percentage Discount</option>
+                                <option value="fixed">Fixed Amount Discount</option>
+                                <option value="freeship">Free Shipping</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="promoValue">Discount Value</label>
+                            <div class="input-group">
+                                <input type="number" id="promoValue" class="form-control" placeholder="e.g. 10" min="0" required>
+                                <span class="input-group-addon" id="promoValueSuffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="promoMinOrder">Minimum Order Requirement</label>
+                        <div class="input-group">
+                            <input type="number" id="promoMinOrder" class="form-control" placeholder="e.g. 2000000" min="0" required>
+                            <span class="input-group-addon">Ä‘</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="promoDesc">Promotion Description</label>
+                        <textarea id="promoDesc" class="form-control" placeholder="e.g. Get 10% off (up to 1,000,000Ä‘) for technology orders starting from 10 million VND" rows="3" required style="font-family:var(--font-sans); resize:none;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPromoModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Promotion</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS Scripts -->
+    <script src="{% static 'sales_payment/js/shared.js' %}?v=3"></script>
+    <script src="{% static 'sales_payment/js/admin-promotions.js' %}?v=3"></script>
+</body>
+</html>
+

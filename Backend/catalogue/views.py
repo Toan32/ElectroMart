@@ -355,3 +355,29 @@ def admin_products(request):
     
 def admin_inventory(request):
     return render(request, 'admin_inventory.html')
+
+
+# ------------------------------------------------------------- sales_payment module
+def cart(request):
+    return render(request, 'sales_payment/cart.html', {'page_title': 'Giỏ hàng - ElectroMart'})
+
+
+def checkout(request):
+    return render(request, 'sales_payment/checkout.html', {'page_title': 'Thanh toán - ElectroMart'})
+
+
+def tracking(request):
+    return render(request, 'sales_payment/tracking.html', {'page_title': 'Tra cứu đơn hàng - ElectroMart'})
+
+
+def admin_dashboard(request):
+    return render(request, 'sales_payment/admin-dashboard.html')
+
+
+def admin_orders(request):
+    return render(request, 'sales_payment/admin-orders.html')
+
+
+def admin_promotions(request):
+    return render(request, 'sales_payment/admin-promotions.html')
+

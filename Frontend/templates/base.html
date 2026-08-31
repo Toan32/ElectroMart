@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page_title|default:"ElectroMart" }}</title>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}?v=4">
 {% block extra_css %}{% endblock %}
 </head>
 <body>
 
 <div class="topbar">
   <div class="wrap topbar-in">
-    <span>Nationwide electronic component stores</span>
+    <span>Nationwide computer & laptop hardware stores</span>
     <span class="topbar-right">
-      <a href="#">Track order</a>
+      <a href="/tracking/">Track order</a>
       <a href="#">Business customers</a>
       <a href="#">Support 1800 6865</a>
     </span>
@@ -29,7 +29,7 @@
 
     <form class="search" action="{% url 'search' %}" method="get" autocomplete="off">
       <input type="text" name="q" id="q" value="{{ q|default:'' }}"
-             placeholder="What component are you looking for? (ESP32, DHT22, 10k resistor...)">
+             placeholder="Search for laptop, RAM, VGA (Asus, DDR5, RTX 4060...)">
       <button type="submit" aria-label="Search">
         <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor"
           d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"/></svg>
@@ -48,7 +48,7 @@
         <span class="hact-txt">Wishlist</span>
         <b class="badge {% if not wishlist_count %}hide{% endif %}" id="wish-badge">{{ wishlist_count }}</b>
       </a>
-      <a href="#" class="hact">
+      <a href="/cart/" class="hact">
         <span class="hact-ico">🛒</span>
         <span class="hact-txt">Cart</span>
       </a>
@@ -80,7 +80,7 @@
 <div class="navbar">
   <div class="wrap navbar-in">
     <div class="nav-cat">
-      <button class="nav-cat-btn" type="button">☰ All categories</button>
+      <button class="nav-cat-btn" type="button">&#9776; All categories</button>
       <ul class="nav-cat-list">
         {% for c in nav_categories %}
         <li><a href="{% url 'product_list' c.slug %}"><span>{{ c.icon }}</span>{{ c.name }}</a></li>
@@ -143,6 +143,8 @@
 </div>
 
 <script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'sales_payment/js/shared.js' %}?v=5"></script>
+<script src="{% static 'sales_payment/js/cart.js' %}?v=5"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

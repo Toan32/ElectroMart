@@ -4,11 +4,39 @@
   <button class="card-wish js-wish" data-slug="{{ p.slug }}" title="Add to wishlist">&#9829;</button>
 
   <a class="card-img" href="{% url 'product_detail' p.slug %}">
-    <span class="ph">{{ p.name|slice:":2"|upper }}</span>
+    {% if p.images and p.images.0 %}
+      <img src="{{ p.images.0 }}?v=3" alt="{{ p.name }}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--radius-md) var(--radius-md) 0 0;">
+    {% else %}
+      <span class="ph">{{ p.name|slice:":2"|upper }}</span>
+    {% endif %}
   </a>
 
-  <a class="card-name" href="{% url 'product_detail' p.slug %}">{{ p.name }}</a>
-  <div class="card-part">{{ p.part_number }}</div>
+  <div class="card-brand" style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--blue); margin-bottom: 2px; letter-spacing: 0.5px;">{{ p.brand_name }}</div>
+  <a class="card-name" href="{% url 'product_detail' p.slug %}" style="font-weight: 600;">{{ p.name }}</a>
+  <div class="card-specs" style="display: flex; gap: 4px; flex-wrap: wrap; margin: 4px 0; min-height: 18px;">
+    {% if p.specifications.cpu %}
+      <span style="font-size: 10px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; color: #475569; font-weight: 500;">{{ p.specifications.cpu }}</span>
+    {% endif %}
+    {% if p.specifications.ram_gb %}
+      <span style="font-size: 10px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; color: #475569; font-weight: 500;">{{ p.specifications.ram_gb }}GB RAM</span>
+    {% endif %}
+    {% if p.specifications.ssd_gb %}
+      <span style="font-size: 10px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; color: #475569; font-weight: 500;">{{ p.specifications.ssd_gb }}GB SSD</span>
+    {% endif %}
+    {% if p.specifications.ram_type %}
+      <span style="font-size: 10px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; color: #475569; font-weight: 500;">{{ p.specifications.ram_type }}</span>
+    {% endif %}
+    {% if p.specifications.capacity_gb %}
+      <span style="font-size: 10px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; color: #475569; font-weight: 500;">{{ p.specifications.capacity_gb }}GB</span>
+    {% endif %}
+    {% if p.specifications.gpu_brand %}
+      <span style="font-size: 10px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; color: #475569; font-weight: 500;">{{ p.specifications.gpu_brand }}</span>
+    {% endif %}
+    {% if p.specifications.vram_gb %}
+      <span style="font-size: 10px; background: #f1f5f9; padding: 1px 4px; border-radius: 3px; color: #475569; font-weight: 500;">{{ p.specifications.vram_gb }}GB VRAM</span>
+    {% endif %}
+  </div>
+  <div class="card-part" style="font-size: 11px; margin-bottom: 4px;">{{ p.part_number }}</div>
 
   <div class="card-price">
     <span class="price-now">{{ p.min_price|money }}</span>
@@ -26,7 +54,7 @@
 
   <div class="card-foot">
     {% if p.in_stock %}
-      <span class="tag tag-ok">In stock</span>
+      <button class="btn btn-primary btn-sm" onclick="event.preventDefault(); addToCartDirect('{{ p.part_number }}', '{{ p.name|escapejs }}', {{ p.min_price }}, '{{ p.images.0 }}', '{{ p.part_number }}')" style="padding: 3px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; border-radius: 4px; border: none; cursor: pointer; background: var(--blue); color: #ffffff; font-weight: 600;">Add 🛒</button>
     {% else %}
       <span class="tag tag-out">Out of stock</span>
     {% endif %}
