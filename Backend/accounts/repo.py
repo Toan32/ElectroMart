@@ -167,6 +167,17 @@ def get_address(address_id):
     return get_db()[ADDRESSES].find_one({'_id': _oid(address_id)})
 
 
+def get_default_address(user_id):
+    """Return the user's default shipping address, or None if they have
+    none saved yet.
+
+    Interface hook for CV53 (module Ban hang & Thanh toan, GD5, Viec 31):
+    the checkout flow calls this to prefill the shipping address instead
+    of re-querying the addresses collection directly.
+    """
+    return get_db()[ADDRESSES].find_one({'user_id': _oid(user_id), 'is_default': True})
+
+
 def add_address(user_id, receiver_name, phone, province, district, detail,
                  is_default=False):
     db = get_db()
