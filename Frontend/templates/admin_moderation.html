@@ -1,0 +1,1797 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a>
+  <span>&#8250;</span>
+  Admin
+  <span>&#8250;</span>
+  Moderation
+</nav>
+
+<section class="moderation-page">
+
+  <div class="moderation-head">
+    <div>
+      <span class="moderation-eyebrow">CV71 · REQ-09</span>
+      <h1>Content Moderation</h1>
+      <p>
+        Moderate product reviews, technical Q&amp;A and customer feedback.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      class="moderation-btn secondary"
+      id="moderation-refresh"
+    >
+      Refresh
+    </button>
+  </div>
+
+
+  <div class="moderation-tabs" role="tablist">
+
+    <button
+      type="button"
+      class="moderation-tab active"
+      data-section="reviews"
+    >
+      ★ Reviews
+    </button>
+
+    <button
+      type="button"
+      class="moderation-tab"
+      data-section="comments"
+    >
+      💬 Q&amp;A / Comments
+    </button>
+
+    <button
+      type="button"
+      class="moderation-tab"
+      data-section="feedback"
+    >
+      ✉ Feedback
+    </button>
+
+  </div>
+
+
+  <div class="moderation-toolbar">
+
+    <div class="moderation-filter">
+      <label for="moderation-product">Product</label>
+
+      <select id="moderation-product">
+        <option value="">All products</option>
+      </select>
+    </div>
+
+
+    <div class="moderation-filter">
+      <label for="moderation-status">Status</label>
+
+      <select id="moderation-status">
+        <option value="all">All</option>
+        <option value="visible">Visible</option>
+        <option value="hidden">Hidden</option>
+      </select>
+    </div>
+
+
+    <div class="moderation-filter moderation-search-wrap">
+      <label for="moderation-search">Search</label>
+
+      <input
+        type="search"
+        id="moderation-search"
+        placeholder="Search content, user, product..."
+        autocomplete="off"
+      >
+    </div>
+
+    <strong id="moderation-count">0 items</strong>
+
+  </div>
+
+
+  <div class="moderation-layout">
+
+    <section class="moderation-panel">
+
+      <div class="moderation-panel-head">
+        <div>
+          <h2 id="moderation-list-title">Reviews</h2>
+          <p id="moderation-list-help">
+            Select an item to inspect and moderate it.
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="moderation-list"
+        id="moderation-list"
+      >
+        <div class="moderation-empty">
+          Loading...
+        </div>
+      </div>
+
+    </section>
+
+
+    <section class="moderation-panel moderation-detail-panel">
+
+      <div
+        class="moderation-detail-empty"
+        id="moderation-detail-empty"
+      >
+        <div class="moderation-empty-icon">🛡</div>
+        <strong>Select an item</strong>
+        <span>
+          Moderation details and actions will appear here.
+        </span>
+      </div>
+
+
+      <div
+        class="moderation-detail"
+        id="moderation-detail"
+        hidden
+      >
+
+        <div class="moderation-detail-head">
+
+          <div>
+            <span
+              class="moderation-status visible"
+              id="moderation-detail-status"
+            >
+              Visible
+            </span>
+
+            <h2 id="moderation-detail-title">Item</h2>
+          </div>
+
+          <button
+            type="button"
+            class="moderation-btn warning"
+            id="moderation-visibility-btn"
+          >
+            Hide
+          </button>
+
+        </div>
+
+
+        <div
+          class="moderation-meta"
+          id="moderation-meta"
+        ></div>
+
+
+        <div
+          class="moderation-rating"
+          id="moderation-rating"
+          hidden
+        ></div>
+
+
+        <div class="moderation-content-box">
+          <span class="moderation-label">Content</span>
+
+          <p id="moderation-detail-content"></p>
+        </div>
+
+
+        <div
+          class="moderation-images"
+          id="moderation-images"
+          hidden
+        >
+          <span class="moderation-label">Review images</span>
+
+          <div
+            class="moderation-image-grid"
+            id="moderation-image-grid"
+          ></div>
+        </div>
+
+
+        <div
+          class="moderation-feedback-attachment"
+          id="moderation-feedback-attachment"
+          hidden
+        >
+          <span class="moderation-label">Attachment</span>
+
+          <a
+            id="moderation-feedback-attachment-link"
+            href="#"
+            target="_blank"
+            rel="noopener"
+          >
+            Open attachment
+          </a>
+        </div>
+
+
+        <div
+          class="moderation-comment-reply"
+          id="moderation-comment-reply"
+          hidden
+        >
+          <form id="moderation-reply-form">
+            {% csrf_token %}
+
+            <label for="moderation-reply-content">
+              Public Shop Reply
+            </label>
+
+            <textarea
+              id="moderation-reply-content"
+              rows="5"
+              maxlength="3000"
+              placeholder="Write ElectroMart's public technical reply..."
+              required
+            ></textarea>
+
+            <div class="moderation-reply-actions">
+              <small>
+                The reply will appear publicly under this question with the Shop Reply badge.
+              </small>
+
+              <button
+                type="submit"
+                class="moderation-btn primary"
+                id="moderation-reply-submit"
+              >
+                Post Shop Reply
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+
+        <div
+          class="moderation-feedback-actions"
+          id="moderation-feedback-actions"
+          hidden
+        >
+          <label for="moderation-feedback-status">
+            Feedback status
+          </label>
+
+          <div class="moderation-feedback-status-row">
+
+            <select id="moderation-feedback-status">
+              <option value="new">New</option>
+              <option value="processing">Processing</option>
+              <option value="resolved">Resolved</option>
+            </select>
+
+            <button
+              type="button"
+              class="moderation-btn primary"
+              id="moderation-feedback-save"
+            >
+              Save Status
+            </button>
+
+            <button
+              type="button"
+              class="moderation-btn success"
+              id="moderation-feedback-resolve"
+            >
+              Mark Resolved
+            </button>
+
+          </div>
+        </div>
+
+
+        <div
+          class="moderation-notice"
+          id="moderation-notice"
+          hidden
+        ></div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</section>
+
+
+<style>
+.moderation-page {
+  padding-bottom: 44px;
+}
+
+.moderation-head,
+.moderation-toolbar,
+.moderation-panel-head,
+.moderation-detail-head,
+.moderation-reply-actions,
+.moderation-feedback-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.moderation-head {
+  margin-bottom: 16px;
+}
+
+.moderation-head h1,
+.moderation-panel h2,
+.moderation-detail h2 {
+  margin: 0;
+}
+
+.moderation-head p,
+.moderation-panel-head p {
+  margin: 5px 0 0;
+  color: #667085;
+}
+
+.moderation-eyebrow {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.moderation-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 6px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.moderation-tab {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #475467;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.moderation-tab.active {
+  background: #1435c3;
+  color: #fff;
+}
+
+.moderation-toolbar {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.moderation-toolbar > strong {
+  margin-left: auto;
+  color: #475467;
+}
+
+.moderation-filter {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.moderation-filter label {
+  color: #475467;
+  font-weight: 700;
+}
+
+.moderation-filter select,
+.moderation-filter input,
+#moderation-feedback-status,
+#moderation-reply-content {
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 9px 10px;
+  color: #101828;
+  font: inherit;
+  outline: none;
+}
+
+.moderation-search-wrap input {
+  min-width: 260px;
+}
+
+.moderation-filter select:focus,
+.moderation-filter input:focus,
+#moderation-feedback-status:focus,
+#moderation-reply-content:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+}
+
+.moderation-layout {
+  display: grid;
+  grid-template-columns: minmax(330px, .85fr) minmax(0, 1.3fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.moderation-panel {
+  padding: 18px;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+}
+
+.moderation-panel-head {
+  margin-bottom: 14px;
+}
+
+.moderation-list {
+  display: grid;
+  gap: 9px;
+  max-height: 720px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+
+.moderation-item {
+  width: 100%;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.moderation-item:hover,
+.moderation-item.selected {
+  border-color: #2563eb;
+  background: #f8faff;
+}
+
+.moderation-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+}
+
+.moderation-item strong {
+  color: #101828;
+}
+
+.moderation-item p {
+  margin: 7px 0 0;
+  color: #475467;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.moderation-item small {
+  display: block;
+  margin-top: 6px;
+  color: #98a2b3;
+}
+
+.moderation-status {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.moderation-status.visible {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.moderation-status.hidden {
+  background: #f2f4f7;
+  color: #475467;
+}
+
+.moderation-status.new {
+  background: #eff8ff;
+  color: #175cd3;
+}
+
+.moderation-status.processing {
+  background: #fffaeb;
+  color: #b54708;
+}
+
+.moderation-status.resolved {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.moderation-detail-empty {
+  min-height: 390px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #667085;
+  text-align: center;
+}
+
+.moderation-detail-empty strong {
+  margin-top: 10px;
+  color: #344054;
+  font-size: 16px;
+}
+
+.moderation-detail-empty span {
+  max-width: 340px;
+  margin-top: 5px;
+}
+
+.moderation-empty-icon {
+  font-size: 38px;
+}
+
+.moderation-detail-head {
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.moderation-detail-head h2 {
+  margin-top: 8px;
+}
+
+.moderation-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin-bottom: 14px;
+}
+
+.moderation-meta-card {
+  padding: 10px 11px;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.moderation-meta-card span,
+.moderation-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.moderation-meta-card strong {
+  display: block;
+  overflow-wrap: anywhere;
+  color: #344054;
+  font-size: 13px;
+}
+
+.moderation-rating {
+  margin-bottom: 12px;
+  color: #f59e0b;
+  font-size: 22px;
+  letter-spacing: 2px;
+}
+
+.moderation-content-box,
+.moderation-images,
+.moderation-feedback-attachment,
+.moderation-comment-reply,
+.moderation-feedback-actions {
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid #e4e7ec;
+  border-radius: 10px;
+}
+
+.moderation-content-box p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+
+.moderation-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.moderation-image-grid a {
+  display: block;
+}
+
+.moderation-image-grid img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.moderation-feedback-attachment a {
+  color: #175cd3;
+  font-weight: 700;
+}
+
+.moderation-comment-reply label,
+.moderation-feedback-actions > label {
+  display: block;
+  margin-bottom: 7px;
+  color: #344054;
+  font-weight: 700;
+}
+
+#moderation-reply-content {
+  width: 100%;
+  resize: vertical;
+}
+
+.moderation-reply-actions {
+  align-items: flex-start;
+  margin-top: 9px;
+}
+
+.moderation-reply-actions small {
+  max-width: 420px;
+  color: #667085;
+}
+
+.moderation-feedback-status-row {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.moderation-btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 13px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.moderation-btn.primary {
+  background: #1435c3;
+  color: #fff;
+}
+
+.moderation-btn.secondary {
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #344054;
+}
+
+.moderation-btn.warning {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.moderation-btn.success {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.moderation-btn:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+
+.moderation-notice {
+  margin-top: 13px;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.moderation-notice.success {
+  display: block;
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.moderation-notice.error {
+  display: block;
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.moderation-empty {
+  padding: 35px 12px;
+  color: #667085;
+  text-align: center;
+}
+
+@media (max-width: 1050px) {
+  .moderation-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .moderation-list {
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 720px) {
+  .moderation-head,
+  .moderation-detail-head,
+  .moderation-reply-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .moderation-tabs {
+    overflow-x: auto;
+  }
+
+  .moderation-tab {
+    white-space: nowrap;
+  }
+
+  .moderation-filter {
+    width: 100%;
+  }
+
+  .moderation-filter select,
+  .moderation-filter input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .moderation-toolbar > strong {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .moderation-meta {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const tabs = Array.from(
+    document.querySelectorAll('.moderation-tab')
+  );
+
+  const productFilter =
+    document.getElementById('moderation-product');
+
+  const statusFilter =
+    document.getElementById('moderation-status');
+
+  const searchInput =
+    document.getElementById('moderation-search');
+
+  const refreshButton =
+    document.getElementById('moderation-refresh');
+
+  const countLabel =
+    document.getElementById('moderation-count');
+
+  const listTitle =
+    document.getElementById('moderation-list-title');
+
+  const listHelp =
+    document.getElementById('moderation-list-help');
+
+  const list =
+    document.getElementById('moderation-list');
+
+  const detailEmpty =
+    document.getElementById('moderation-detail-empty');
+
+  const detail =
+    document.getElementById('moderation-detail');
+
+  const detailStatus =
+    document.getElementById('moderation-detail-status');
+
+  const detailTitle =
+    document.getElementById('moderation-detail-title');
+
+  const visibilityButton =
+    document.getElementById('moderation-visibility-btn');
+
+  const meta =
+    document.getElementById('moderation-meta');
+
+  const rating =
+    document.getElementById('moderation-rating');
+
+  const detailContent =
+    document.getElementById('moderation-detail-content');
+
+  const imagesBox =
+    document.getElementById('moderation-images');
+
+  const imageGrid =
+    document.getElementById('moderation-image-grid');
+
+  const attachmentBox =
+    document.getElementById('moderation-feedback-attachment');
+
+  const attachmentLink =
+    document.getElementById('moderation-feedback-attachment-link');
+
+  const commentReplyBox =
+    document.getElementById('moderation-comment-reply');
+
+  const replyForm =
+    document.getElementById('moderation-reply-form');
+
+  const replyContent =
+    document.getElementById('moderation-reply-content');
+
+  const replySubmit =
+    document.getElementById('moderation-reply-submit');
+
+  const feedbackActions =
+    document.getElementById('moderation-feedback-actions');
+
+  const feedbackStatus =
+    document.getElementById('moderation-feedback-status');
+
+  const feedbackSave =
+    document.getElementById('moderation-feedback-save');
+
+  const feedbackResolve =
+    document.getElementById('moderation-feedback-resolve');
+
+  const notice =
+    document.getElementById('moderation-notice');
+
+  const csrfToken =
+    replyForm.querySelector(
+      '[name="csrfmiddlewaretoken"]'
+    ).value;
+
+  let section = 'reviews';
+  let items = [];
+  let products = [];
+  let selectedId = null;
+
+
+  function formatDate(value) {
+    if (!value) {
+      return '-';
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleString();
+  }
+
+
+  function showNotice(text, kind) {
+    notice.textContent = text;
+    notice.className =
+      'moderation-notice ' + kind;
+    notice.hidden = false;
+  }
+
+
+  function clearNotice() {
+    notice.textContent = '';
+    notice.className = 'moderation-notice';
+    notice.hidden = true;
+  }
+
+
+  function currentItem() {
+    return items.find(function (item) {
+      return item.id === selectedId;
+    }) || null;
+  }
+
+
+  function sectionTitle() {
+    if (section === 'comments') {
+      return 'Q&A / Comments';
+    }
+
+    if (section === 'feedback') {
+      return 'Feedback';
+    }
+
+    return 'Reviews';
+  }
+
+
+  function resetStatusOptions() {
+    statusFilter.innerHTML = '';
+
+    const values =
+      section === 'feedback'
+        ? [
+            ['all', 'All'],
+            ['new', 'New'],
+            ['processing', 'Processing'],
+            ['resolved', 'Resolved']
+          ]
+        : [
+            ['all', 'All'],
+            ['visible', 'Visible'],
+            ['hidden', 'Hidden']
+          ];
+
+    values.forEach(function (pair) {
+      const option = document.createElement('option');
+      option.value = pair[0];
+      option.textContent = pair[1];
+      statusFilter.appendChild(option);
+    });
+  }
+
+
+  function renderProductOptions() {
+    const previous = productFilter.value;
+
+    productFilter.innerHTML =
+      '<option value="">All products</option>';
+
+    products.forEach(function (product) {
+      const option =
+        document.createElement('option');
+
+      option.value = product.id;
+      option.textContent = product.name;
+
+      productFilter.appendChild(option);
+    });
+
+    if (
+      previous &&
+      products.some(function (product) {
+        return product.id === previous;
+      })
+    ) {
+      productFilter.value = previous;
+    }
+
+    productFilter.disabled =
+      section === 'feedback';
+
+    if (section === 'feedback') {
+      productFilter.value = '';
+    }
+  }
+
+
+  function rowSearchText(item) {
+    if (section === 'feedback') {
+      return [
+        item.name,
+        item.email,
+        item.subject_label,
+        item.message,
+        item.status
+      ].join(' ').toLowerCase();
+    }
+
+    return [
+      item.product && item.product.name,
+      item.user && item.user.name,
+      item.user && item.user.email,
+      item.title,
+      item.content,
+      item.status
+    ].join(' ').toLowerCase();
+  }
+
+
+  function renderList() {
+    const keyword =
+      searchInput.value.trim().toLowerCase();
+
+    const filtered = items.filter(function (item) {
+      return !keyword ||
+        rowSearchText(item).includes(keyword);
+    });
+
+    countLabel.textContent =
+      filtered.length +
+      (filtered.length === 1
+        ? ' item'
+        : ' items');
+
+    if (!filtered.length) {
+      list.innerHTML =
+        '<div class="moderation-empty">No matching items.</div>';
+      return;
+    }
+
+    list.innerHTML = '';
+
+    filtered.forEach(function (item) {
+      const button =
+        document.createElement('button');
+
+      button.type = 'button';
+      button.className =
+        'moderation-item' +
+        (
+          item.id === selectedId
+            ? ' selected'
+            : ''
+        );
+
+      button.dataset.id = item.id;
+
+      const head =
+        document.createElement('div');
+
+      head.className =
+        'moderation-item-head';
+
+      const title =
+        document.createElement('strong');
+
+      const status =
+        document.createElement('span');
+
+      status.className =
+        'moderation-status ' +
+        (item.status || 'visible');
+
+      status.textContent =
+        item.status || 'visible';
+
+      if (section === 'reviews') {
+        title.textContent =
+          (item.rating || 0) +
+          '★ · ' +
+          (
+            item.title ||
+            'Untitled review'
+          );
+      } else if (section === 'comments') {
+        title.textContent =
+          item.is_admin_reply
+            ? 'Shop Reply'
+            : 'Customer Q&A';
+      } else {
+        title.textContent =
+          item.subject_label ||
+          item.subject ||
+          'Feedback';
+      }
+
+      head.appendChild(title);
+      head.appendChild(status);
+
+      const body =
+        document.createElement('p');
+
+      body.textContent =
+        section === 'feedback'
+          ? (item.message || '')
+          : (item.content || '');
+
+      const foot =
+        document.createElement('small');
+
+      if (section === 'feedback') {
+        foot.textContent =
+          (item.name || 'Customer') +
+          ' · ' +
+          (item.email || '') +
+          ' · ' +
+          formatDate(item.created_at);
+      } else {
+        foot.textContent =
+          (
+            item.product
+              ? item.product.name
+              : 'Unknown product'
+          ) +
+          ' · ' +
+          (
+            item.user
+              ? item.user.name
+              : 'Unknown user'
+          ) +
+          ' · ' +
+          formatDate(item.created_at);
+      }
+
+      button.appendChild(head);
+      button.appendChild(body);
+      button.appendChild(foot);
+
+      list.appendChild(button);
+    });
+  }
+
+
+  function addMeta(label, value) {
+    const card =
+      document.createElement('div');
+
+    card.className =
+      'moderation-meta-card';
+
+    const labelNode =
+      document.createElement('span');
+
+    labelNode.textContent = label;
+
+    const valueNode =
+      document.createElement('strong');
+
+    valueNode.textContent =
+      value || '-';
+
+    card.appendChild(labelNode);
+    card.appendChild(valueNode);
+
+    meta.appendChild(card);
+  }
+
+
+  function renderDetail() {
+    const item = currentItem();
+
+    if (!item) {
+      detail.hidden = true;
+      detailEmpty.hidden = false;
+      return;
+    }
+
+    detailEmpty.hidden = true;
+    detail.hidden = false;
+
+    meta.innerHTML = '';
+    imageGrid.innerHTML = '';
+    clearNotice();
+
+    rating.hidden = true;
+    imagesBox.hidden = true;
+    attachmentBox.hidden = true;
+    commentReplyBox.hidden = true;
+    feedbackActions.hidden = true;
+    visibilityButton.hidden = false;
+
+    detailStatus.className =
+      'moderation-status ' +
+      (item.status || 'visible');
+
+    detailStatus.textContent =
+      item.status || 'visible';
+
+    if (section === 'reviews') {
+      detailTitle.textContent =
+        item.title || 'Product Review';
+
+      detailContent.textContent =
+        item.content || '';
+
+      rating.hidden = false;
+
+      const score =
+        Math.max(
+          0,
+          Math.min(
+            5,
+            Number(item.rating || 0)
+          )
+        );
+
+      rating.textContent =
+        '★'.repeat(score) +
+        '☆'.repeat(5 - score);
+
+      addMeta(
+        'Product',
+        item.product
+          ? item.product.name
+          : '-'
+      );
+
+      addMeta(
+        'Customer',
+        item.user
+          ? item.user.name
+          : '-'
+      );
+
+      addMeta(
+        'Created',
+        formatDate(item.created_at)
+      );
+
+      if (
+        Array.isArray(item.images) &&
+        item.images.length
+      ) {
+        imagesBox.hidden = false;
+
+        item.images.forEach(function (url) {
+          const link =
+            document.createElement('a');
+
+          link.href = url;
+          link.target = '_blank';
+          link.rel = 'noopener';
+
+          const image =
+            document.createElement('img');
+
+          image.src = url;
+          image.alt = 'Review image';
+
+          link.appendChild(image);
+          imageGrid.appendChild(link);
+        });
+      }
+
+      visibilityButton.textContent =
+        item.is_hidden
+          ? 'Unhide Review'
+          : 'Hide Review';
+
+    } else if (section === 'comments') {
+
+      detailTitle.textContent =
+        item.is_admin_reply
+          ? 'Shop Reply'
+          : 'Technical Q&A';
+
+      detailContent.textContent =
+        item.content || '';
+
+      addMeta(
+        'Product',
+        item.product
+          ? item.product.name
+          : '-'
+      );
+
+      addMeta(
+        item.is_admin_reply
+          ? 'Staff'
+          : 'Customer',
+        item.user
+          ? item.user.name
+          : '-'
+      );
+
+      addMeta(
+        'Created',
+        formatDate(item.created_at)
+      );
+
+      visibilityButton.textContent =
+        item.is_hidden
+          ? 'Unhide Comment'
+          : 'Hide Comment';
+
+      if (
+        !item.is_hidden &&
+        !item.is_admin_reply
+      ) {
+        commentReplyBox.hidden = false;
+      }
+
+    } else {
+
+      detailTitle.textContent =
+        item.subject_label ||
+        item.subject ||
+        'Feedback';
+
+      detailContent.textContent =
+        item.message || '';
+
+      addMeta(
+        'Customer',
+        item.name || '-'
+      );
+
+      addMeta(
+        'Email',
+        item.email || '-'
+      );
+
+      addMeta(
+        'Created',
+        formatDate(item.created_at)
+      );
+
+      visibilityButton.hidden = true;
+      feedbackActions.hidden = false;
+
+      feedbackStatus.value =
+        item.status || 'new';
+
+      if (
+        item.attachment &&
+        item.attachment.url
+      ) {
+        attachmentBox.hidden = false;
+        attachmentLink.href =
+          item.attachment.url;
+
+        attachmentLink.textContent =
+          item.attachment.original_name ||
+          'Open attachment';
+      }
+    }
+  }
+
+
+  async function loadData() {
+    list.innerHTML =
+      '<div class="moderation-empty">Loading...</div>';
+
+    clearNotice();
+
+    const params =
+      new URLSearchParams();
+
+    params.set('section', section);
+    params.set(
+      'status',
+      statusFilter.value || 'all'
+    );
+
+    if (
+      section !== 'feedback' &&
+      productFilter.value
+    ) {
+      params.set(
+        'product_id',
+        productFilter.value
+      );
+    }
+
+    try {
+      const response = await fetch(
+        '{% url "admin_moderation_data" %}?' +
+        params.toString(),
+        {
+          headers: {
+            'X-Requested-With':
+              'XMLHttpRequest'
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(
+          data.error ||
+          'Unable to load moderation data.'
+        );
+      }
+
+      items =
+        Array.isArray(data.items)
+          ? data.items
+          : [];
+
+      products =
+        Array.isArray(data.products)
+          ? data.products
+          : [];
+
+      if (
+        selectedId &&
+        !items.some(function (item) {
+          return item.id === selectedId;
+        })
+      ) {
+        selectedId = null;
+      }
+
+      renderProductOptions();
+      renderList();
+      renderDetail();
+
+    } catch (error) {
+      list.innerHTML =
+        '<div class="moderation-empty"></div>';
+
+      list.querySelector('div').textContent =
+        error.message;
+    }
+  }
+
+
+  async function postVisibility() {
+    const item = currentItem();
+
+    if (!item) {
+      return;
+    }
+
+    const targetHidden =
+      !Boolean(item.is_hidden);
+
+    const url =
+      section === 'reviews'
+        ? (
+          '/admin/moderation/reviews/' +
+          encodeURIComponent(item.id) +
+          '/hidden/'
+        )
+        : (
+          '/admin/moderation/comments/' +
+          encodeURIComponent(item.id) +
+          '/hidden/'
+        );
+
+    const payload = new FormData();
+
+    payload.append(
+      'hidden',
+      targetHidden ? 'true' : 'false'
+    );
+
+    visibilityButton.disabled = true;
+
+    try {
+      const response = await fetch(
+        url,
+        {
+          method: 'POST',
+          body: payload,
+          headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With':
+              'XMLHttpRequest'
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(
+          data.error ||
+          'Unable to change visibility.'
+        );
+      }
+
+      if (
+        section === 'reviews' &&
+        data.rating
+      ) {
+        showNotice(
+          (
+            targetHidden
+              ? 'Review hidden. '
+              : 'Review restored. '
+          ) +
+          'Product rating recalculated: ' +
+          data.rating.avg_rating +
+          ' / 5 (' +
+          data.rating.rating_count +
+          ' visible review(s)).',
+          'success'
+        );
+      } else {
+        showNotice(
+          targetHidden
+            ? 'Comment hidden successfully.'
+            : 'Comment restored successfully.',
+          'success'
+        );
+      }
+
+      await loadData();
+
+    } catch (error) {
+      showNotice(
+        error.message,
+        'error'
+      );
+
+    } finally {
+      visibilityButton.disabled = false;
+    }
+  }
+
+
+  async function saveFeedbackStatus(status) {
+    const item = currentItem();
+
+    if (!item || section !== 'feedback') {
+      return;
+    }
+
+    const payload = new FormData();
+    payload.append('status', status);
+
+    feedbackSave.disabled = true;
+    feedbackResolve.disabled = true;
+
+    try {
+      const response = await fetch(
+        '/admin/feedback/' +
+        encodeURIComponent(item.id) +
+        '/status/',
+        {
+          method: 'POST',
+          body: payload,
+          headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With':
+              'XMLHttpRequest'
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(
+          data.error ||
+          'Unable to update feedback status.'
+        );
+      }
+
+      showNotice(
+        status === 'resolved'
+          ? 'Feedback marked as resolved.'
+          : 'Feedback status updated.',
+        'success'
+      );
+
+      await loadData();
+
+    } catch (error) {
+      showNotice(
+        error.message,
+        'error'
+      );
+
+    } finally {
+      feedbackSave.disabled = false;
+      feedbackResolve.disabled = false;
+    }
+  }
+
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener(
+      'click',
+      function () {
+
+        section = tab.dataset.section;
+
+        tabs.forEach(function (other) {
+          other.classList.toggle(
+            'active',
+            other === tab
+          );
+        });
+
+        selectedId = null;
+        searchInput.value = '';
+
+        resetStatusOptions();
+        renderProductOptions();
+
+        listTitle.textContent =
+          sectionTitle();
+
+        if (section === 'comments') {
+          listHelp.textContent =
+            'Hide inappropriate comments or publish an official Shop Reply.';
+        } else if (section === 'feedback') {
+          listHelp.textContent =
+            'Track customer feedback and mark handled items as resolved.';
+        } else {
+          listHelp.textContent =
+            'Hide inappropriate reviews; ratings recalculate automatically.';
+        }
+
+        loadData();
+      }
+    );
+  });
+
+
+  list.addEventListener(
+    'click',
+    function (event) {
+      const button =
+        event.target.closest(
+          '.moderation-item'
+        );
+
+      if (!button) {
+        return;
+      }
+
+      selectedId =
+        button.dataset.id;
+
+      replyContent.value = '';
+
+      renderList();
+      renderDetail();
+    }
+  );
+
+
+  visibilityButton.addEventListener(
+    'click',
+    postVisibility
+  );
+
+
+  replyForm.addEventListener(
+    'submit',
+    async function (event) {
+
+      event.preventDefault();
+
+      const item = currentItem();
+
+      if (
+        !item ||
+        section !== 'comments'
+      ) {
+        return;
+      }
+
+      const content =
+        replyContent.value.trim();
+
+      if (!content) {
+        showNotice(
+          'Reply content cannot be empty.',
+          'error'
+        );
+        return;
+      }
+
+      replySubmit.disabled = true;
+
+      const payload = new FormData();
+      payload.append('content', content);
+
+      try {
+        const response = await fetch(
+          '/admin/moderation/comments/' +
+          encodeURIComponent(item.id) +
+          '/reply/',
+          {
+            method: 'POST',
+            body: payload,
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'X-Requested-With':
+                'XMLHttpRequest'
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(
+            data.error ||
+            'Unable to post Shop Reply.'
+          );
+        }
+
+        replyContent.value = '';
+
+        showNotice(
+          'Public Shop Reply posted successfully.',
+          'success'
+        );
+
+        await loadData();
+
+      } catch (error) {
+        showNotice(
+          error.message,
+          'error'
+        );
+
+      } finally {
+        replySubmit.disabled = false;
+      }
+    }
+  );
+
+
+  feedbackSave.addEventListener(
+    'click',
+    function () {
+      saveFeedbackStatus(
+        feedbackStatus.value
+      );
+    }
+  );
+
+
+  feedbackResolve.addEventListener(
+    'click',
+    function () {
+      feedbackStatus.value =
+        'resolved';
+
+      saveFeedbackStatus(
+        'resolved'
+      );
+    }
+  );
+
+
+  productFilter.addEventListener(
+    'change',
+    function () {
+      selectedId = null;
+      loadData();
+    }
+  );
+
+
+  statusFilter.addEventListener(
+    'change',
+    function () {
+      selectedId = null;
+      loadData();
+    }
+  );
+
+
+  searchInput.addEventListener(
+    'input',
+    renderList
+  );
+
+
+  refreshButton.addEventListener(
+    'click',
+    loadData
+  );
+
+
+  resetStatusOptions();
+  loadData();
+
+});
+</script>
+{% endblock %}

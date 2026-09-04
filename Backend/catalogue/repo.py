@@ -11,8 +11,17 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from django.conf import settings
 from django.utils.text import slugify
+from pymongo import ReturnDocument
 
-from .db import BRANDS, CATEGORIES, PRODUCTS, STOCK_MOVEMENTS, get_db
+from .db import (
+    BRANDS,
+    CATEGORIES,
+    PRODUCTS,
+    STOCK_MOVEMENTS,
+    NEWS,
+    SETTINGS,
+    get_db,
+)
 
 SORTS = {
     'popular': [('sold_count', -1)],
@@ -1513,3 +1522,316 @@ def category_map(products):
     if not ids:
         return {}
     return {c['_id']: c for c in get_db()[CATEGORIES].find({'_id': {'$in': list(ids)}})}
+
+# ============================================================
+# CV70 - News / FAQ content
+# ============================================================
+
+NEWS_TYPES = {
+    'product-news': 'Product News',
+    'announcement': 'Announcement',
+    'technical-guide': 'Technical Guide',
+}
+
+
+def _news_oid(value):
+    if isinstance(value, ObjectId):
+        return value
+    if not value:
+        return None
+    try:
+        return ObjectId(str(value))
+    except Exception:
+        return None
+
+
+def _normalize_news_type(value):
+    raw = str(value or '').strip().lower()
+    if raw in NEWS_TYPES:
+        return raw
+
+    for key, label in NEWS_TYPES.items():
+        if raw == label.lower():
+            return key
+
+    raise ValueError('Invalid news type.')
+
+
+def _clean_news_fields(title, news_type, summary, content, slug=None):
+    title = str(title or '').strip()
+    summary = str(summary or '').strip()
+    content = str(content or '').strip()
+    news_type = _normalize_news_type(news_type)
+    news_slug = slugify(str(slug or '').strip() or title)
+
+    if not title:
+        raise ValueError('News title is required.')
+    if not news_slug:
+        raise ValueError('News slug is required.')
+    if not summary:
+        raise ValueError('News summary is required.')
+    if not content:
+        raise ValueError('News content is required.')
+
+    return title, news_type, summary, content, news_slug
+
+
+def create_news(
+    title,
+    news_type,
+    summary,
+    content,
+    publish_at=None,
+    slug=None,
+    created_by=None,
+    is_hidden=False,
+):
+    """Create one news article.
+
+    Scheduled publishing does not need a background job: storefront queries
+    only return articles whose ``publish_at`` is less than or equal to now.
+    """
+    db = get_db()
+    title, news_type, summary, content, news_slug = _clean_news_fields(
+        title,
+        news_type,
+        summary,
+        content,
+        slug,
+    )
+
+    if db[NEWS].find_one({'slug': news_slug}):
+        raise ValueError(f'News slug "{news_slug}" already exists.')
+
+    now = datetime.now(timezone.utc)
+    publish_at = publish_at or now
+    if not isinstance(publish_at, datetime):
+        raise ValueError('publish_at must be a datetime.')
+    if publish_at.tzinfo is None:
+        publish_at = publish_at.replace(tzinfo=timezone.utc)
+
+    created_by_oid = _news_oid(created_by) if created_by else None
+
+    doc = {
+        'title': title,
+        'slug': news_slug,
+        'type': news_type,
+        'summary': summary,
+        'content': content,
+        'publish_at': publish_at,
+        'created_by': created_by_oid,
+        'is_hidden': bool(is_hidden),
+        'created_at': now,
+        'updated_at': now,
+    }
+
+    result = db[NEWS].insert_one(doc)
+    return db[NEWS].find_one({'_id': result.inserted_id})
+
+
+def list_public_news(news_type=None):
+    query = {
+        'is_hidden': False,
+        'publish_at': {'$lte': datetime.now(timezone.utc)},
+    }
+
+    if news_type and str(news_type).strip().lower() != 'all':
+        query['type'] = _normalize_news_type(news_type)
+
+    return list(
+        get_db()[NEWS]
+        .find(query)
+        .sort([('publish_at', -1), ('created_at', -1)])
+    )
+
+
+def get_public_news(slug):
+    return get_db()[NEWS].find_one({
+        'slug': str(slug or '').strip(),
+        'is_hidden': False,
+        'publish_at': {'$lte': datetime.now(timezone.utc)},
+    })
+
+
+def admin_list_news():
+    return list(
+        get_db()[NEWS]
+        .find({})
+        .sort([('publish_at', -1), ('created_at', -1)])
+    )
+
+
+def admin_get_news(news_id):
+    oid = _news_oid(news_id)
+    if not oid:
+        return None
+    return get_db()[NEWS].find_one({'_id': oid})
+
+
+def update_news(
+    news_id,
+    title,
+    news_type,
+    summary,
+    content,
+    publish_at,
+    slug=None,
+    is_hidden=None,
+):
+    db = get_db()
+    oid = _news_oid(news_id)
+    if not oid:
+        raise ValueError('Invalid news id.')
+
+    current = db[NEWS].find_one({'_id': oid})
+    if not current:
+        raise ValueError('News article does not exist.')
+
+    title, news_type, summary, content, news_slug = _clean_news_fields(
+        title,
+        news_type,
+        summary,
+        content,
+        slug or current.get('slug'),
+    )
+
+    duplicate = db[NEWS].find_one({
+        'slug': news_slug,
+        '_id': {'$ne': oid},
+    })
+    if duplicate:
+        raise ValueError(f'News slug "{news_slug}" already exists.')
+
+    if not isinstance(publish_at, datetime):
+        raise ValueError('publish_at must be a datetime.')
+    if publish_at.tzinfo is None:
+        publish_at = publish_at.replace(tzinfo=timezone.utc)
+
+    fields = {
+        'title': title,
+        'slug': news_slug,
+        'type': news_type,
+        'summary': summary,
+        'content': content,
+        'publish_at': publish_at,
+        'updated_at': datetime.now(timezone.utc),
+    }
+    if is_hidden is not None:
+        fields['is_hidden'] = bool(is_hidden)
+
+    db[NEWS].update_one({'_id': oid}, {'$set': fields})
+    return db[NEWS].find_one({'_id': oid})
+
+
+def set_news_hidden(news_id, hidden=True):
+    oid = _news_oid(news_id)
+    if not oid:
+        raise ValueError('Invalid news id.')
+
+    updated = get_db()[NEWS].find_one_and_update(
+        {'_id': oid},
+        {
+            '$set': {
+                'is_hidden': bool(hidden),
+                'updated_at': datetime.now(timezone.utc),
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+    if not updated:
+        raise ValueError('News article does not exist.')
+    return updated
+
+
+def delete_news(news_id):
+    oid = _news_oid(news_id)
+    if not oid:
+        raise ValueError('Invalid news id.')
+
+    result = get_db()[NEWS].delete_one({'_id': oid})
+    if result.deleted_count != 1:
+        raise ValueError('News article does not exist.')
+    return True
+
+
+def get_setting(key, default=None):
+    doc = get_db()[SETTINGS].find_one({'key': str(key or '').strip()})
+    return doc.get('value', default) if doc else default
+
+
+def set_setting(key, value):
+    key = str(key or '').strip()
+    if not key:
+        raise ValueError('Setting key is required.')
+
+    now = datetime.now(timezone.utc)
+    get_db()[SETTINGS].update_one(
+        {'key': key},
+        {
+            '$set': {
+                'value': value,
+                'updated_at': now,
+            },
+            '$setOnInsert': {
+                'created_at': now,
+            },
+        },
+        upsert=True,
+    )
+    return get_db()[SETTINGS].find_one({'key': key})
+
+
+def get_faq_items(active_only=True):
+    items = get_setting('faq', [])
+    if not isinstance(items, list):
+        return []
+
+    cleaned = []
+    for index, item in enumerate(items):
+        if not isinstance(item, dict):
+            continue
+        if active_only and not item.get('is_active', True):
+            continue
+
+        question = str(item.get('question', '')).strip()
+        answer = str(item.get('answer', '')).strip()
+        if not question or not answer:
+            continue
+
+        cleaned.append({
+            'question': question,
+            'answer': answer,
+            'display_order': int(item.get('display_order', index + 1)),
+            'is_active': bool(item.get('is_active', True)),
+        })
+
+    cleaned.sort(key=lambda item: (item['display_order'], item['question'].lower()))
+    return cleaned
+
+
+def set_faq_items(items):
+    if not isinstance(items, list):
+        raise ValueError('FAQ items must be a list.')
+
+    cleaned = []
+    for index, item in enumerate(items):
+        if not isinstance(item, dict):
+            raise ValueError(f'FAQ item #{index + 1} is invalid.')
+
+        question = str(item.get('question', '')).strip()
+        answer = str(item.get('answer', '')).strip()
+        if not question:
+            raise ValueError(f'FAQ item #{index + 1} requires a question.')
+        if not answer:
+            raise ValueError(f'FAQ item #{index + 1} requires an answer.')
+
+        cleaned.append({
+            'question': question,
+            'answer': answer,
+            'display_order': int(item.get('display_order', index + 1)),
+            'is_active': bool(item.get('is_active', True)),
+        })
+
+    set_setting('faq', cleaned)
+    return get_faq_items(active_only=False)
+

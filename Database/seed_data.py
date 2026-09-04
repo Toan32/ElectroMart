@@ -27,6 +27,8 @@ MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('MONGO_DB_NAME', 'electromart_db')
 
 CATEGORIES, BRANDS, PRODUCTS = 'categories', 'brands', 'products'
+NEWS = 'news'
+SETTINGS = 'settings'
 USERS = 'users'
 WHOLESALE_PROFILES = 'wholesale_profiles'
 STOCK_MOVEMENTS = 'stock_movements'
@@ -1164,6 +1166,17 @@ def ensure_indexes(db):
     p.create_index([('is_featured', ASCENDING), ('sold_count', DESCENDING)])
     p.create_index([('variants.sku', ASCENDING)])
 
+    # CV70 - News / FAQ content
+    news = db[NEWS]
+    news.create_index([('slug', ASCENDING)], unique=True)
+    news.create_index(
+        [('type', ASCENDING), ('is_hidden', ASCENDING), ('publish_at', DESCENDING)],
+        name='idx_news_type_hidden_publish',
+    )
+    news.create_index([('publish_at', DESCENDING)], name='idx_news_publish_at')
+
+    db[SETTINGS].create_index([('key', ASCENDING)], unique=True)
+
 
 import zlib
 
@@ -1353,6 +1366,135 @@ def generate_product_svg(name, part, cat_name):
 
 
 
+
+# --------------------------------------------------------------- CV70 content
+FAQ_DATA = [
+    {
+        'question': 'How do I know if a product is in stock?',
+        'answer': 'The product detail page displays the current stock quantity. Products marked "In stock" are available for ordering.',
+        'display_order': 1,
+        'is_active': True,
+    },
+    {
+        'question': 'Does ElectroMart provide VAT invoices?',
+        'answer': 'Yes. VAT invoices are available for eligible orders. Please provide the required billing information when ordering.',
+        'display_order': 2,
+        'is_active': True,
+    },
+    {
+        'question': 'Can I return a defective electronic component?',
+        'answer': "Products with confirmed manufacturing defects may be returned according to ElectroMart's return and warranty policy.",
+        'display_order': 3,
+        'is_active': True,
+    },
+    {
+        'question': 'How long does delivery usually take?',
+        'answer': 'Delivery time depends on the destination and shipping method. Estimated delivery information will be provided during checkout.',
+        'display_order': 4,
+        'is_active': True,
+    },
+    {
+        'question': 'Where can I find technical specifications?',
+        'answer': 'Technical specifications are available on each product detail page under the Specifications tab.',
+        'display_order': 5,
+        'is_active': True,
+    },
+    {
+        'question': 'Can I compare electronic components?',
+        'answer': 'Yes. Use the Compare option on product cards or product detail pages to add supported products to the comparison list.',
+        'display_order': 6,
+        'is_active': True,
+    },
+]
+
+NEWS_DATA = [
+    (
+        'ElectroMart launches new STM32 development kits',
+        'product-news',
+        datetime(2026, 8, 20, 9, 0, tzinfo=timezone.utc),
+        'Explore the latest STM32 development boards now available at ElectroMart.',
+    ),
+    (
+        'Scheduled system maintenance this weekend',
+        'announcement',
+        datetime(2026, 8, 18, 9, 0, tzinfo=timezone.utc),
+        'Some ElectroMart services may be temporarily unavailable during maintenance.',
+    ),
+    (
+        'How to choose the right capacitor for your project',
+        'technical-guide',
+        datetime(2026, 8, 15, 9, 0, tzinfo=timezone.utc),
+        'A practical guide to capacitance, voltage rating, tolerance and capacitor types.',
+    ),
+    (
+        'New sensor modules added to our catalogue',
+        'product-news',
+        datetime(2026, 8, 12, 9, 0, tzinfo=timezone.utc),
+        'Discover newly added temperature, humidity, pressure and motion sensors.',
+    ),
+    (
+        'Holiday shipping schedule update',
+        'announcement',
+        datetime(2026, 8, 10, 9, 0, tzinfo=timezone.utc),
+        'Important information about shipping and order processing during the holiday period.',
+    ),
+    (
+        'Understanding resistor color codes',
+        'technical-guide',
+        datetime(2026, 8, 8, 9, 0, tzinfo=timezone.utc),
+        'Learn how to quickly identify resistor values using standard color bands.',
+    ),
+]
+
+
+def seed_cv70_content(db):
+    now = NOW
+
+    # --keep must preserve any FAQ edited later by admin, so seed only when
+    # the setting does not exist yet. A normal seed clears SETTINGS first.
+    db[SETTINGS].update_one(
+        {'key': 'faq'},
+        {
+            '$setOnInsert': {
+                'value': FAQ_DATA,
+                'created_at': now,
+                'updated_at': now,
+            },
+        },
+        upsert=True,
+    )
+
+    inserted_news = 0
+    for title, news_type, publish_at, summary in NEWS_DATA:
+        news_slug = slugify(title)
+        result = db[NEWS].update_one(
+            {'slug': news_slug},
+            {
+                '$setOnInsert': {
+                    'title': title,
+                    'slug': news_slug,
+                    'type': news_type,
+                    'summary': summary,
+                    # Existing mock data only had a summary. Reuse it as
+                    # initial detail content rather than inventing article copy.
+                    'content': summary,
+                    'publish_at': publish_at,
+                    'created_by': None,
+                    'is_hidden': False,
+                    'created_at': now,
+                    'updated_at': now,
+                },
+            },
+            upsert=True,
+        )
+        if result.upserted_id is not None:
+            inserted_news += 1
+
+    print(
+        'CV70 content ready: %d new news article(s), FAQ settings available.'
+        % inserted_news
+    )
+
 def seed_accounts(db):
     """Insert the 12 CV43 demo accounts and 4 wholesale profiles."""
     hasher = PBKDF2PasswordHasher()
@@ -1421,7 +1563,7 @@ def seed(keep=False):
     db = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)[DB_NAME]
 
     if not keep:
-        for c in (CATEGORIES, BRANDS, PRODUCTS, WHOLESALE_PROFILES, USERS, STOCK_MOVEMENTS):
+        for c in (CATEGORIES, BRANDS, PRODUCTS, WHOLESALE_PROFILES, USERS, STOCK_MOVEMENTS, NEWS, SETTINGS):
             db[c].delete_many({})
         print('Cleared existing documents.')
 
@@ -1429,6 +1571,7 @@ def seed(keep=False):
     print('Indexes ready.')
 
     seed_accounts(db)
+    seed_cv70_content(db)
 
     names = sorted({p[2] for c in CATEGORY_DATA for p in c['products']})
     brand_ids = {n: db[BRANDS].insert_one(

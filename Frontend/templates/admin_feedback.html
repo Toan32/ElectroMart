@@ -1,0 +1,618 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a>
+  <span>&#8250;</span>
+  Admin
+  <span>&#8250;</span>
+  Feedback
+</nav>
+
+<div class="admin-feedback-page">
+
+  <div class="admin-feedback-header">
+    <div>
+      <span class="admin-feedback-eyebrow">CV70 · Customer Support</span>
+      <h1>Manage Feedback</h1>
+      <p>Review customer feedback, inspect attachments and reply by email.</p>
+    </div>
+
+    <button type="button" class="admin-feedback-secondary-btn" id="admin-feedback-refresh">
+      Refresh
+    </button>
+  </div>
+
+  <div class="admin-feedback-toolbar">
+
+    <div class="admin-feedback-filter-group">
+      <label for="admin-feedback-status-filter">Status</label>
+      <select id="admin-feedback-status-filter">
+        <option value="">All</option>
+        <option value="new">New</option>
+        <option value="processing">Processing</option>
+        <option value="resolved">Resolved</option>
+      </select>
+    </div>
+
+    <div class="admin-feedback-filter-group admin-feedback-search-group">
+      <label for="admin-feedback-search">Search</label>
+      <input
+        type="search"
+        id="admin-feedback-search"
+        placeholder="Name, email, subject..."
+        autocomplete="off"
+      >
+    </div>
+
+    <strong id="admin-feedback-count">0 feedback</strong>
+  </div>
+
+  <div class="admin-feedback-layout">
+
+    <section class="admin-feedback-panel">
+      <div class="admin-feedback-panel-head">
+        <div>
+          <h2>Feedback Inbox</h2>
+          <p>Select an item to view details and reply.</p>
+        </div>
+      </div>
+
+      <div class="admin-feedback-list" id="admin-feedback-list">
+        <div class="admin-feedback-empty">Loading feedback...</div>
+      </div>
+    </section>
+
+    <section class="admin-feedback-panel">
+
+      <div class="admin-feedback-detail-empty" id="admin-feedback-detail-empty">
+        <div class="admin-feedback-detail-empty-icon">✉</div>
+        <strong>Select a feedback item</strong>
+        <span>Customer details, attachment and reply tools will appear here.</span>
+      </div>
+
+      <div class="admin-feedback-detail" id="admin-feedback-detail" hidden>
+
+        <div class="admin-feedback-detail-head">
+          <div>
+            <span class="admin-feedback-status new" id="admin-feedback-detail-status">New</span>
+            <h2 id="admin-feedback-detail-subject">Feedback</h2>
+          </div>
+
+          <select id="admin-feedback-detail-status-select">
+            <option value="new">New</option>
+            <option value="processing">Processing</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+
+        <div class="admin-feedback-customer">
+          <div>
+            <span>Name</span>
+            <strong id="admin-feedback-detail-name">-</strong>
+          </div>
+
+          <div>
+            <span>Email</span>
+            <strong id="admin-feedback-detail-email">-</strong>
+          </div>
+
+          <div>
+            <span>Received</span>
+            <strong id="admin-feedback-detail-date">-</strong>
+          </div>
+        </div>
+
+        <div class="admin-feedback-message-card">
+          <span class="admin-feedback-section-label">Customer message</span>
+          <p id="admin-feedback-detail-message"></p>
+        </div>
+
+        <div class="admin-feedback-attachment" id="admin-feedback-attachment" hidden>
+          <span class="admin-feedback-section-label">Attachment</span>
+          <a id="admin-feedback-attachment-link" href="#" target="_blank" rel="noopener">
+            Open attachment
+          </a>
+          <small id="admin-feedback-attachment-meta"></small>
+        </div>
+
+        <div class="admin-feedback-existing-reply" id="admin-feedback-existing-reply" hidden>
+          <span class="admin-feedback-section-label">Latest admin reply</span>
+          <p id="admin-feedback-existing-reply-message"></p>
+          <small id="admin-feedback-existing-reply-meta"></small>
+        </div>
+
+        <form id="admin-feedback-reply-form">
+          {% csrf_token %}
+
+          <label for="admin-feedback-reply-message">Reply by email</label>
+
+          <textarea
+            id="admin-feedback-reply-message"
+            name="message"
+            rows="7"
+            maxlength="5000"
+            placeholder="Write the reply that will be emailed to the customer..."
+            required
+          ></textarea>
+
+          <div class="admin-feedback-reply-actions">
+            <span>
+              Successful email delivery automatically marks the feedback as Resolved.
+            </span>
+
+            <button
+              type="submit"
+              class="admin-feedback-primary-btn"
+              id="admin-feedback-reply-submit"
+            >
+              Send Email Reply
+            </button>
+          </div>
+        </form>
+
+        <div class="admin-feedback-notice" id="admin-feedback-notice" hidden></div>
+
+      </div>
+
+    </section>
+
+  </div>
+</div>
+
+<style>
+.admin-feedback-page{padding-bottom:45px}
+.admin-feedback-header,.admin-feedback-toolbar,.admin-feedback-panel-head,
+.admin-feedback-detail-head,.admin-feedback-reply-actions{
+  display:flex;align-items:center;justify-content:space-between;gap:16px
+}
+.admin-feedback-header{margin-bottom:18px}
+.admin-feedback-header h1,.admin-feedback-panel h2,.admin-feedback-detail h2{margin:0}
+.admin-feedback-header p,.admin-feedback-panel-head p{margin:5px 0 0;color:#667085}
+.admin-feedback-eyebrow{
+  display:inline-block;margin-bottom:5px;color:#2563eb;font-size:12px;
+  font-weight:700;letter-spacing:.07em;text-transform:uppercase
+}
+.admin-feedback-toolbar{
+  justify-content:flex-start;flex-wrap:wrap;margin-bottom:16px;padding:14px 16px;
+  border:1px solid #e4e7ec;border-radius:12px;background:#fff
+}
+.admin-feedback-toolbar strong{margin-left:auto;color:#475467}
+.admin-feedback-filter-group{display:flex;align-items:center;gap:8px}
+.admin-feedback-filter-group label{color:#475467;font-weight:600}
+.admin-feedback-filter-group select,.admin-feedback-filter-group input,
+.admin-feedback-detail-head select,#admin-feedback-reply-message{
+  border:1px solid #d0d5dd;border-radius:8px;background:#fff;padding:9px 11px;
+  color:#101828;font:inherit;outline:none
+}
+.admin-feedback-search-group input{min-width:260px}
+.admin-feedback-filter-group select:focus,.admin-feedback-filter-group input:focus,
+.admin-feedback-detail-head select:focus,#admin-feedback-reply-message:focus{
+  border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.10)
+}
+.admin-feedback-layout{
+  display:grid;grid-template-columns:minmax(330px,.8fr) minmax(0,1.35fr);
+  gap:18px;align-items:start
+}
+.admin-feedback-panel{
+  background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:18px;
+  box-shadow:0 1px 3px rgba(16,24,40,.06)
+}
+.admin-feedback-panel-head{margin-bottom:14px}
+.admin-feedback-list{
+  display:grid;gap:9px;max-height:720px;overflow-y:auto;padding-right:3px
+}
+.admin-feedback-item{
+  width:100%;border:1px solid #e4e7ec;border-radius:10px;background:#fff;
+  padding:12px;text-align:left;cursor:pointer
+}
+.admin-feedback-item:hover,.admin-feedback-item.selected{
+  border-color:#2563eb;background:#f8faff
+}
+.admin-feedback-item-top{
+  display:flex;align-items:center;justify-content:space-between;gap:10px
+}
+.admin-feedback-item strong{color:#101828}
+.admin-feedback-item p{margin:7px 0 0;color:#475467;font-size:13px;line-height:1.5}
+.admin-feedback-item small{display:block;margin-top:6px;color:#98a2b3}
+.admin-feedback-status{
+  display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;
+  font-weight:700;text-transform:capitalize
+}
+.admin-feedback-status.new{background:#eff8ff;color:#175cd3}
+.admin-feedback-status.processing{background:#fffaeb;color:#b54708}
+.admin-feedback-status.resolved{background:#ecfdf3;color:#027a48}
+.admin-feedback-detail-empty{
+  min-height:380px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;color:#667085;text-align:center
+}
+.admin-feedback-detail-empty strong{margin-top:10px;color:#344054;font-size:16px}
+.admin-feedback-detail-empty span{max-width:330px;margin-top:5px}
+.admin-feedback-detail-empty-icon{font-size:38px}
+.admin-feedback-detail-head{align-items:flex-start;margin-bottom:16px}
+.admin-feedback-detail-head h2{margin-top:8px}
+.admin-feedback-customer{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px
+}
+.admin-feedback-customer>div{padding:10px 12px;border-radius:8px;background:#f9fafb}
+.admin-feedback-customer span,.admin-feedback-section-label{
+  display:block;margin-bottom:4px;color:#667085;font-size:12px;font-weight:600
+}
+.admin-feedback-customer strong{
+  display:block;overflow-wrap:anywhere;color:#344054;font-size:13px
+}
+.admin-feedback-message-card,.admin-feedback-attachment,.admin-feedback-existing-reply{
+  margin-bottom:14px;padding:14px;border:1px solid #e4e7ec;border-radius:10px
+}
+.admin-feedback-message-card p,.admin-feedback-existing-reply p{
+  margin:0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65
+}
+.admin-feedback-attachment a{color:#175cd3;font-weight:600}
+.admin-feedback-attachment small,.admin-feedback-existing-reply small{
+  display:block;margin-top:5px;color:#667085
+}
+#admin-feedback-reply-form label{
+  display:block;margin-bottom:7px;color:#344054;font-weight:700
+}
+#admin-feedback-reply-message{width:100%;resize:vertical}
+.admin-feedback-reply-actions{align-items:flex-start;margin-top:10px}
+.admin-feedback-reply-actions span{max-width:420px;color:#667085;font-size:12px}
+.admin-feedback-primary-btn,.admin-feedback-secondary-btn{
+  border:0;border-radius:8px;padding:9px 13px;font:inherit;font-weight:600;cursor:pointer
+}
+.admin-feedback-primary-btn{background:#1435c3;color:#fff}
+.admin-feedback-primary-btn:hover{background:#0f2a9c}
+.admin-feedback-secondary-btn{
+  border:1px solid #d0d5dd;background:#fff;color:#344054
+}
+.admin-feedback-notice{margin-top:13px;padding:10px 12px;border-radius:8px}
+.admin-feedback-notice.success{display:block;background:#ecfdf3;color:#027a48}
+.admin-feedback-notice.error{display:block;background:#fef3f2;color:#b42318}
+.admin-feedback-empty{padding:35px 12px;color:#667085;text-align:center}
+@media(max-width:1050px){
+  .admin-feedback-layout{grid-template-columns:1fr}
+  .admin-feedback-list{max-height:430px}
+}
+@media(max-width:720px){
+  .admin-feedback-header,.admin-feedback-detail-head,.admin-feedback-reply-actions{
+    align-items:stretch;flex-direction:column
+  }
+  .admin-feedback-toolbar strong{width:100%;margin-left:0}
+  .admin-feedback-filter-group{width:100%}
+  .admin-feedback-filter-group select,.admin-feedback-filter-group input{
+    flex:1;min-width:0
+  }
+  .admin-feedback-customer{grid-template-columns:1fr}
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const list=document.getElementById('admin-feedback-list');
+  const countLabel=document.getElementById('admin-feedback-count');
+  const statusFilter=document.getElementById('admin-feedback-status-filter');
+  const searchInput=document.getElementById('admin-feedback-search');
+  const refreshButton=document.getElementById('admin-feedback-refresh');
+
+  const detailEmpty=document.getElementById('admin-feedback-detail-empty');
+  const detail=document.getElementById('admin-feedback-detail');
+  const detailStatus=document.getElementById('admin-feedback-detail-status');
+  const detailStatusSelect=document.getElementById('admin-feedback-detail-status-select');
+  const detailSubject=document.getElementById('admin-feedback-detail-subject');
+  const detailName=document.getElementById('admin-feedback-detail-name');
+  const detailEmail=document.getElementById('admin-feedback-detail-email');
+  const detailDate=document.getElementById('admin-feedback-detail-date');
+  const detailMessage=document.getElementById('admin-feedback-detail-message');
+
+  const attachmentBox=document.getElementById('admin-feedback-attachment');
+  const attachmentLink=document.getElementById('admin-feedback-attachment-link');
+  const attachmentMeta=document.getElementById('admin-feedback-attachment-meta');
+
+  const existingReply=document.getElementById('admin-feedback-existing-reply');
+  const existingReplyMessage=document.getElementById('admin-feedback-existing-reply-message');
+  const existingReplyMeta=document.getElementById('admin-feedback-existing-reply-meta');
+
+  const replyForm=document.getElementById('admin-feedback-reply-form');
+  const replyMessage=document.getElementById('admin-feedback-reply-message');
+  const replySubmit=document.getElementById('admin-feedback-reply-submit');
+  const notice=document.getElementById('admin-feedback-notice');
+
+  const csrfToken=replyForm.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+  let feedbackItems=[];
+  let selectedId=null;
+
+  function formatDate(value){
+    if(!value)return '-';
+    const date=new Date(value);
+    return Number.isNaN(date.getTime())?value:date.toLocaleString();
+  }
+
+  function formatSize(bytes){
+    const value=Number(bytes||0);
+    if(!value)return '';
+    if(value>=1024*1024)return (value/(1024*1024)).toFixed(1)+' MB';
+    return Math.ceil(value/1024)+' KB';
+  }
+
+  function showNotice(text,kind){
+    notice.textContent=text;
+    notice.className='admin-feedback-notice '+kind;
+    notice.hidden=false;
+  }
+
+  function clearNotice(){
+    notice.textContent='';
+    notice.className='admin-feedback-notice';
+    notice.hidden=true;
+  }
+
+  function statusText(status){
+    if(status==='processing')return 'Processing';
+    if(status==='resolved')return 'Resolved';
+    return 'New';
+  }
+
+  function currentItem(){
+    return feedbackItems.find(function(item){return item.id===selectedId;})||null;
+  }
+
+  function renderList(){
+    const keyword=searchInput.value.trim().toLowerCase();
+
+    const filtered=feedbackItems.filter(function(item){
+      if(!keyword)return true;
+      return [item.name,item.email,item.subject_label,item.message]
+        .join(' ').toLowerCase().includes(keyword);
+    });
+
+    countLabel.textContent=filtered.length+' feedback';
+
+    if(!filtered.length){
+      list.innerHTML='<div class="admin-feedback-empty">No feedback found.</div>';
+      return;
+    }
+
+    list.innerHTML='';
+
+    filtered.forEach(function(item){
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='admin-feedback-item'+(item.id===selectedId?' selected':'');
+      button.dataset.id=item.id;
+
+      const top=document.createElement('div');
+      top.className='admin-feedback-item-top';
+
+      const name=document.createElement('strong');
+      name.textContent=item.name||'Customer';
+
+      const status=document.createElement('span');
+      status.className='admin-feedback-status '+(item.status||'new');
+      status.textContent=statusText(item.status);
+
+      top.appendChild(name);
+      top.appendChild(status);
+
+      const subject=document.createElement('p');
+      subject.textContent=item.subject_label||item.subject||'Feedback';
+
+      const date=document.createElement('small');
+      date.textContent=(item.email||'')+' · '+formatDate(item.created_at);
+
+      button.appendChild(top);
+      button.appendChild(subject);
+      button.appendChild(date);
+      list.appendChild(button);
+    });
+  }
+
+  function renderDetail(){
+    const item=currentItem();
+
+    if(!item){
+      detail.hidden=true;
+      detailEmpty.hidden=false;
+      return;
+    }
+
+    detailEmpty.hidden=true;
+    detail.hidden=false;
+
+    detailStatus.className='admin-feedback-status '+(item.status||'new');
+    detailStatus.textContent=statusText(item.status);
+    detailStatusSelect.value=item.status||'new';
+
+    detailSubject.textContent=item.subject_label||item.subject||'Feedback';
+    detailName.textContent=item.name||'-';
+    detailEmail.textContent=item.email||'-';
+    detailDate.textContent=formatDate(item.created_at);
+    detailMessage.textContent=item.message||'';
+
+    if(item.attachment&&item.attachment.url){
+      attachmentBox.hidden=false;
+      attachmentLink.href=item.attachment.url;
+      attachmentLink.textContent=item.attachment.original_name||'Open attachment';
+
+      const parts=[];
+      if(item.attachment.content_type)parts.push(item.attachment.content_type);
+      const size=formatSize(item.attachment.size);
+      if(size)parts.push(size);
+      attachmentMeta.textContent=parts.join(' · ');
+    }else{
+      attachmentBox.hidden=true;
+      attachmentLink.removeAttribute('href');
+      attachmentMeta.textContent='';
+    }
+
+    if(item.admin_reply){
+      existingReply.hidden=false;
+      existingReplyMessage.textContent=item.admin_reply.message||'';
+      existingReplyMeta.textContent=
+        (item.admin_reply.email_sent?'Email sent':'Email not sent')+
+        (item.admin_reply.replied_at?' · '+formatDate(item.admin_reply.replied_at):'');
+    }else{
+      existingReply.hidden=true;
+      existingReplyMessage.textContent='';
+      existingReplyMeta.textContent='';
+    }
+
+    clearNotice();
+  }
+
+  async function loadFeedback(){
+    const selectedStatus=statusFilter.value;
+    let url='{% url "admin_feedback_data" %}';
+
+    if(selectedStatus){
+      url+='?status='+encodeURIComponent(selectedStatus);
+    }
+
+    list.innerHTML='<div class="admin-feedback-empty">Loading feedback...</div>';
+
+    try{
+      const response=await fetch(url,{
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+      });
+      const data=await response.json();
+
+      if(!response.ok||!data.ok){
+        throw new Error(data.error||'Unable to load feedback.');
+      }
+
+      feedbackItems=Array.isArray(data.feedback)?data.feedback:[];
+
+      if(selectedId&&!feedbackItems.some(function(item){return item.id===selectedId;})){
+        selectedId=null;
+      }
+
+      renderList();
+      renderDetail();
+    }catch(error){
+      list.innerHTML='<div class="admin-feedback-empty"></div>';
+      list.querySelector('div').textContent=error.message;
+    }
+  }
+
+  list.addEventListener('click',function(event){
+    const button=event.target.closest('.admin-feedback-item');
+    if(!button)return;
+    selectedId=button.dataset.id;
+    renderList();
+    renderDetail();
+  });
+
+  searchInput.addEventListener('input',renderList);
+  statusFilter.addEventListener('change',loadFeedback);
+  refreshButton.addEventListener('click',loadFeedback);
+
+  detailStatusSelect.addEventListener('change',async function(){
+    const item=currentItem();
+    if(!item)return;
+
+    clearNotice();
+
+    const payload=new FormData();
+    payload.append('status',detailStatusSelect.value);
+
+    try{
+      const response=await fetch(
+        '/admin/feedback/'+encodeURIComponent(item.id)+'/status/',
+        {
+          method:'POST',
+          body:payload,
+          headers:{
+            'X-CSRFToken':csrfToken,
+            'X-Requested-With':'XMLHttpRequest'
+          }
+        }
+      );
+
+      const data=await response.json();
+
+      if(!response.ok||!data.ok){
+        throw new Error(data.error||'Unable to update status.');
+      }
+
+      const index=feedbackItems.findIndex(function(row){return row.id===item.id;});
+      if(index>=0)feedbackItems[index]=data.feedback;
+
+      renderList();
+      renderDetail();
+      showNotice('Feedback status updated successfully.','success');
+    }catch(error){
+      detailStatusSelect.value=item.status||'new';
+      showNotice(error.message,'error');
+    }
+  });
+
+  replyForm.addEventListener('submit',async function(event){
+    event.preventDefault();
+
+    const item=currentItem();
+    if(!item)return;
+
+    const message=replyMessage.value.trim();
+
+    if(!message){
+      showNotice('Reply message cannot be empty.','error');
+      return;
+    }
+
+    clearNotice();
+    replySubmit.disabled=true;
+
+    const payload=new FormData();
+    payload.append('message',message);
+
+    try{
+      const response=await fetch(
+        '/admin/feedback/'+encodeURIComponent(item.id)+'/reply/',
+        {
+          method:'POST',
+          body:payload,
+          headers:{
+            'X-CSRFToken':csrfToken,
+            'X-Requested-With':'XMLHttpRequest'
+          }
+        }
+      );
+
+      const data=await response.json();
+
+      if(!response.ok||!data.ok){
+        if(data.feedback){
+          const index=feedbackItems.findIndex(function(row){return row.id===item.id;});
+          if(index>=0)feedbackItems[index]=data.feedback;
+          renderList();
+          renderDetail();
+        }
+        throw new Error(data.error||'Unable to send email reply.');
+      }
+
+      const index=feedbackItems.findIndex(function(row){return row.id===item.id;});
+      if(index>=0)feedbackItems[index]=data.feedback;
+
+      replyMessage.value='';
+      renderList();
+      renderDetail();
+
+      showNotice(
+        'Email reply sent successfully. Feedback marked as Resolved.',
+        'success'
+      );
+    }catch(error){
+      showNotice(error.message,'error');
+    }finally{
+      replySubmit.disabled=false;
+    }
+  });
+
+  loadFeedback();
+});
+</script>
+{% endblock %}

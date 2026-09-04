@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <nav class="crumb">
   <a href="{% url 'home' %}">Home</a>
   <span>&#8250;</span>
@@ -10,21 +11,31 @@
 </nav>
 
 <article class="news-detail">
+
   <div class="news-page-head">
     <div>
       <span class="news-page-label">{{ item.type }}</span>
+
       <h1>{{ item.title }}</h1>
+
       <p class="muted">{{ item.date }}</p>
     </div>
   </div>
 
   <div class="news-card">
     <div class="news-card-body">
-      <p class="news-summary">{{ item.summary }}</p>
+
+      <p class="news-summary">
+        {{ item.summary }}
+      </p>
+
       <div class="news-detail-content">
         {{ item.content|linebreaks }}
       </div>
+
     </div>
   </div>
+
 </article>
+
 {% endblock %}

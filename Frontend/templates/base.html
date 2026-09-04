@@ -76,6 +76,21 @@
         <span class="hact-ico">🏭</span>
         <span class="hact-txt">Inventory</span>
       </a>
+
+      <a href="{% url 'admin_news' %}" class="hact">
+        <span class="hact-ico">📰</span>
+        <span class="hact-txt">News</span>
+      </a>
+
+      <a href="{% url 'admin_feedback' %}" class="hact">
+        <span class="hact-ico">✉</span>
+        <span class="hact-txt">Feedback</span>
+      </a>
+
+      <a href="{% url 'admin_moderation' %}" class="hact">
+        <span class="hact-ico">🛡</span>
+        <span class="hact-txt">Moderation</span>
+      </a>
       {% endif %}
 
       <a href="{% url 'accounts_logout' %}" class="hact">

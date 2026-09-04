@@ -4353,3 +4353,48 @@ body.modal-open {
 .qa-real-reply-btn:hover {
   text-decoration: underline;
 }
+
+/* =========================================================
+   CV69 - MULTI LEVEL PRODUCT Q&A
+   ========================================================= */
+
+.qa-thread-item {
+  position: relative;
+}
+
+/* Customer replies: keep the thread visual lightweight. */
+.qa-thread-reply {
+  padding: 16px 0 16px 16px;
+  border-left: 2px solid #e2e8f0;
+  border-top: 0;
+  background: transparent;
+}
+
+.qa-thread-reply + .qa-thread-reply {
+  margin-top: 0;
+}
+
+/* Do not paint a full-width grey block when hovering a normal reply. */
+.qa-thread-item:not(.qa-admin):hover {
+  background: transparent;
+}
+
+/* Official shop replies remain visually distinct. */
+.qa-thread-item.qa-admin {
+  padding: 16px;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #1d4ed8;
+  border-radius: 9px;
+  background: #eff6ff;
+}
+
+@media (max-width: 650px) {
+  .qa-thread-item {
+    margin-left: 0 !important;
+  }
+
+  .qa-thread-reply {
+    margin-left: 12px !important;
+  }
+}
+

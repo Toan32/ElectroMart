@@ -1,8 +1,8 @@
 ﻿"""MongoDB connection shared by the whole process.
 
 MongoClient already keeps an internal connection pool, so one instance per
-process is enough. Index creation lives in Database/create_indexes.py so that
-the Database folder owns the schema.
+process is enough. Index creation lives in Database/create_indexes.py and
+Database/seed_data.py so that the Database folder owns the schema.
 """
 from django.conf import settings
 from pymongo import MongoClient
@@ -15,6 +15,10 @@ BRANDS = 'brands'
 PRODUCTS = 'products'
 STOCK_MOVEMENTS = 'stock_movements'
 
+# CV70 - Content
+NEWS = 'news'
+SETTINGS = 'settings'
+
 
 def get_client():
     global _client
@@ -25,4 +29,3 @@ def get_client():
 
 def get_db():
     return get_client()[settings.MONGO_DB_NAME]
-

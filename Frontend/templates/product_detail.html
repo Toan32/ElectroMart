@@ -328,119 +328,183 @@
 
 </div>
 
-    <!-- Question list -->
-<div class="qa-list">
+    <!-- =========================
+         CV69 - MULTI LEVEL Q&A
+         ========================= -->
+    <div class="qa-list">
 
-  {% for question in questions %}
-  <article class="qa-item">
+      {% for comment in comment_threads %}
 
-    <div class="qa-user">
-      <div class="qa-avatar">
-        CU
-      </div>
-
-      <div>
-        <strong>Customer</strong>
-
-        <div class="qa-date">
-          {{ question.created_at|date:"d/m/Y H:i" }}
-        </div>
-      </div>
-    </div>
-
-    <div class="qa-content">
-      {{ question.content }}
-    </div>
-
-    <div class="qa-actions">
-      <button
-        type="button"
-        class="qa-reply-btn qa-real-reply-btn"
-        data-target="reply-form-{{ question.id }}"
-        style="font-weight:600;"
+      <article
+        class="qa-item qa-thread-item {% if comment.depth > 0 %}qa-thread-reply{% endif %} {% if comment.is_admin_reply %}qa-admin{% endif %}"
+        style="margin-left: {{ comment.indent_px }}px;{% if comment.is_hidden %} opacity: .58; background: #f8fafc;{% endif %}"
       >
-        Reply
-      </button>
-    </div>
-
-    <div class="qa-reply-form" id="reply-form-{{ question.id }}">
-
-      <form method="post" action="{% url 'submit_comment' product_slug=p.slug %}">
-        {% csrf_token %}
-
-        <input
-          type="hidden"
-          name="parent_id"
-          value="{{ question.id }}"
-        >
-
-        <textarea
-          name="content"
-          rows="3"
-          placeholder="Write your reply..."
-          required
-        ></textarea>
-
-        <div class="qa-reply-form-actions">
-          <button type="submit" class="btn btn-red">
-            Send reply
-          </button>
-
-          <button
-            type="button"
-            class="btn btn-outline qa-real-cancel-reply"
-            data-target="reply-form-{{ question.id }}"
-          >
-            Cancel
-          </button>
-        </div>
-
-      </form>
-
-    </div>
-
-
-    {% if question.replies %}
-    <div class="qa-replies">
-
-      {% for reply in question.replies %}
-      <div class="qa-reply">
 
         <div class="qa-user">
-          <div class="qa-avatar">
-            CU
+          <div class="qa-avatar {% if comment.is_admin_reply %}qa-avatar-admin{% endif %}">
+            {% if comment.is_admin_reply %}EM{% else %}CU{% endif %}
           </div>
 
           <div>
-            <strong>Customer</strong>
+            <strong>{{ comment.author_name }}</strong>
+
+            {% if comment.is_admin_reply %}
+            <span class="qa-admin-badge">SHOP</span>
+            {% endif %}
+
+            {% if comment.is_hidden and comment.is_owner %}
+            <span class="muted" style="margin-left:8px;font-size:12px;font-weight:600;">
+              Hidden - only you can see this
+            </span>
+            {% endif %}
 
             <div class="qa-date">
-              {{ reply.created_at|date:"d/m/Y H:i" }}
+              {{ comment.created_at|date:"d/m/Y H:i" }}
             </div>
           </div>
         </div>
 
         <div class="qa-content">
-          {{ reply.content }}
+          {{ comment.content|linebreaksbr }}
         </div>
 
-      </div>
+        <div class="qa-actions">
+
+          {% if comment.is_hidden and comment.is_owner %}
+
+          <form
+            method="post"
+            action="{% url 'unhide_comment' product_slug=p.slug comment_id=comment.id %}"
+            style="display:inline;"
+          >
+            {% csrf_token %}
+            <button type="submit" class="qa-reply-btn">
+              Unhide
+            </button>
+          </form>
+
+          {% else %}
+
+          <button
+            type="button"
+            class="qa-reply-btn qa-real-reply-btn"
+            data-target="reply-form-{{ comment.id }}"
+          >
+            Reply
+          </button>
+
+          {% if comment.is_owner %}
+          <button
+            type="button"
+            class="qa-reply-btn qa-edit-btn"
+            data-target="edit-form-{{ comment.id }}"
+            style="margin-left: 12px;"
+          >
+            Edit
+          </button>
+
+          <form
+            method="post"
+            action="{% url 'hide_comment' product_slug=p.slug comment_id=comment.id %}"
+            style="display:inline;margin-left:12px;"
+          >
+            {% csrf_token %}
+            <button type="submit" class="qa-reply-btn">
+              Hide
+            </button>
+          </form>
+          {% endif %}
+
+          {% endif %}
+
+        </div>
+
+        {% if comment.is_owner and not comment.is_hidden %}
+        <div
+          class="qa-reply-form qa-edit-form"
+          id="edit-form-{{ comment.id }}"
+        >
+          <form
+            method="post"
+            action="{% url 'edit_comment' product_slug=p.slug comment_id=comment.id %}"
+          >
+            {% csrf_token %}
+
+            <textarea
+              name="content"
+              rows="3"
+              required
+            >{{ comment.content }}</textarea>
+
+            <div class="qa-reply-form-actions">
+              <button type="submit" class="btn btn-red">
+                Save changes
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline qa-cancel-edit"
+                data-target="edit-form-{{ comment.id }}"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+
+        {% if not comment.is_hidden %}
+        <div
+          class="qa-reply-form"
+          id="reply-form-{{ comment.id }}"
+        >
+          <form
+            method="post"
+            action="{% url 'submit_comment' product_slug=p.slug %}"
+          >
+            {% csrf_token %}
+
+            <input
+              type="hidden"
+              name="parent_id"
+              value="{{ comment.id }}"
+            >
+
+            <textarea
+              name="content"
+              rows="3"
+              placeholder="Write your reply..."
+              required
+            ></textarea>
+
+            <div class="qa-reply-form-actions">
+              <button type="submit" class="btn btn-red">
+                Send reply
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-outline qa-real-cancel-reply"
+                data-target="reply-form-{{ comment.id }}"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+
+      </article>
+
+      {% empty %}
+
+      <p class="muted">
+        No questions yet. Be the first to ask about this product.
+      </p>
+
       {% endfor %}
 
     </div>
-    {% endif %}
-
-  </article>
-
-  {% empty %}
-
-  <p class="muted">
-    No questions yet. Be the first to ask about this product.
-  </p>
-
-  {% endfor %}
-
-</div>
 
   </div>
 </div>
@@ -663,6 +727,83 @@ document.querySelectorAll('.review-helpful-btn').forEach(function (button) {
 });
 
 /* =========================
+   CV68 - REVIEW FILTER
+   ========================= */
+
+(function () {
+  const reviewList = document.querySelector('.customer-reviews');
+
+  if (!reviewList) return;
+
+  const reviewCards = Array.from(
+    reviewList.querySelectorAll('.review-card[data-rating]')
+  );
+
+  if (!reviewCards.length) return;
+
+  const reviewHead = reviewList.querySelector('.customer-reviews-head');
+
+  const filterBar = document.createElement('div');
+  filterBar.className = 'review-filter-bar';
+  filterBar.style.display = 'flex';
+  filterBar.style.flexWrap = 'wrap';
+  filterBar.style.gap = '8px';
+  filterBar.style.marginBottom = '18px';
+
+  const filters = [
+    ['all', 'All reviews'],
+    ['5', '5 ★'],
+    ['4', '4 ★'],
+    ['3', '3 ★'],
+    ['2', '2 ★'],
+    ['1', '1 ★']
+  ];
+
+  filters.forEach(function (filter, index) {
+    const button = document.createElement('button');
+
+    button.type = 'button';
+    button.className =
+      index === 0 ? 'btn btn-red btn-sm' : 'btn btn-outline btn-sm';
+
+    button.dataset.rating = filter[0];
+    button.textContent = filter[1];
+
+    button.addEventListener('click', function () {
+
+      filterBar.querySelectorAll('button').forEach(function (btn) {
+        btn.className = 'btn btn-outline btn-sm';
+      });
+
+      button.className = 'btn btn-red btn-sm';
+
+      reviewCards.forEach(function (card) {
+
+        const rating = String(card.dataset.rating);
+
+        if (
+          filter[0] === 'all' ||
+          rating === filter[0]
+        ) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+
+      });
+
+    });
+
+    filterBar.appendChild(button);
+  });
+
+  if (reviewHead) {
+    reviewHead.insertAdjacentElement('afterend', filterBar);
+  }
+
+})();
+
+/* =========================
    Q&A REAL INTERACTION - CV42
    ========================= */
 
@@ -691,6 +832,202 @@ document.querySelectorAll('.qa-real-cancel-reply').forEach(function (button) {
     }
   });
 });
+
+/* =========================
+   CV69 - EDIT OWN COMMENT / REPLY
+   ========================= */
+
+document.querySelectorAll('.qa-edit-btn').forEach(function (button) {
+  button.addEventListener('click', function () {
+    const form = document.getElementById(button.dataset.target);
+
+    if (form) {
+      form.classList.toggle('show');
+    }
+  });
+});
+
+document.querySelectorAll('.qa-cancel-edit').forEach(function (button) {
+  button.addEventListener('click', function () {
+    const form = document.getElementById(button.dataset.target);
+
+    if (form) {
+      form.classList.remove('show');
+    }
+  });
+});
+
+/* =========================
+   CV68 - EDIT OWN REVIEW
+   ========================= */
+
+(function () {
+
+  const reviewFormBox = document.querySelector('#tab-rev .review-form');
+
+  if (!reviewFormBox) return;
+
+  const form = reviewFormBox.querySelector('form');
+  const heading = reviewFormBox.querySelector('h2');
+  const titleInput = document.getElementById('review-title');
+  const contentInput = document.getElementById('review-content');
+  const imageInput = document.getElementById('review-images');
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  fetch("{% url 'my_review' product_slug=p.slug %}")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+
+if (
+  !data.authenticated ||
+  !data.exists ||
+  !data.review
+) {
+  return;
+}
+
+const review = data.review;
+
+if (review.is_hidden) {
+
+  reviewFormBox.innerHTML = `
+    <h2>Your review</h2>
+
+    <div style="
+      opacity:0.6;
+      border:1px solid #ddd;
+      border-radius:8px;
+      padding:16px;
+      background:#f8f9fa;
+    ">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:8px;
+      ">
+        <strong>Your hidden review</strong>
+
+        <span style="
+          background:#6c757d;
+          color:white;
+          padding:3px 8px;
+          border-radius:12px;
+          font-size:12px;
+        ">
+          Hidden
+        </span>
+      </div>
+
+      <div style="
+        color:#f59e0b;
+        font-size:20px;
+        margin-bottom:8px;
+      ">
+        ${'★'.repeat(Number(review.rating))}
+        ${'☆'.repeat(5 - Number(review.rating))}
+      </div>
+
+      ${
+        review.title
+          ? `<strong>${review.title}</strong>`
+          : ''
+      }
+
+      <p style="margin-top:8px;">
+        ${review.content || ''}
+      </p>
+
+      <p class="muted" style="margin-top:10px;">
+        This review is hidden from other customers.
+      </p>
+
+      <form
+        method="post"
+        action="{% url 'unhide_review' product_slug=p.slug %}"
+        style="margin-top:12px;"
+      >
+        {% csrf_token %}
+
+        <button type="submit" class="btn btn-outline">
+          Unhide review
+        </button>
+      </form>
+
+    </div>
+  `;
+
+  return;
+}
+
+      heading.textContent = 'Edit your review';
+
+      titleInput.value = review.title || '';
+      contentInput.value = review.content || '';
+
+      selectedRating = Number(review.rating);
+      ratingInput.value = selectedRating;
+
+      showRating(selectedRating);
+
+      form.action = "{% url 'edit_review' product_slug=p.slug %}";
+
+      submitButton.textContent = 'Save changes';
+
+      const hideButton = document.createElement('button');
+
+hideButton.type = 'button';
+hideButton.className = 'btn btn-outline';
+hideButton.textContent = 'Hide review';
+hideButton.style.marginLeft = '10px';
+
+submitButton.insertAdjacentElement('afterend', hideButton);
+
+hideButton.addEventListener('click', function () {
+
+  if (!confirm('Hide your review?')) {
+    return;
+  }
+
+  const csrfToken = form.querySelector(
+    'input[name="csrfmiddlewaretoken"]'
+  );
+
+  const hideForm = document.createElement('form');
+
+  hideForm.method = 'post';
+  hideForm.action = "{% url 'hide_review' product_slug=p.slug %}";
+  hideForm.style.display = 'none';
+
+  if (csrfToken) {
+    const csrfInput = document.createElement('input');
+
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken.value;
+
+    hideForm.appendChild(csrfInput);
+  }
+
+  document.body.appendChild(hideForm);
+  hideForm.submit();
+
+});
+
+      if (imageInput) {
+        const imageGroup = imageInput.closest('.form-group');
+
+        if (imageGroup) {
+          imageGroup.style.display = 'none';
+        }
+      }
+
+  });
+
+})();
 
 </script>
 {% endblock %}

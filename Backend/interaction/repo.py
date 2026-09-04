@@ -94,6 +94,24 @@ def list_reviews(product_id, include_hidden=False):
     )
 
 
+
+def admin_list_reviews(product_id=None, is_hidden=None):
+    # CV71 moderation list.
+    query = {}
+
+    if product_id:
+        query['product_id'] = _oid(product_id)
+
+    if is_hidden is not None:
+        query['is_hidden'] = bool(is_hidden)
+
+    return list(
+        get_db()[REVIEWS]
+        .find(query)
+        .sort('created_at', -1)
+    )
+
+
 def update_review(review_id, rating=None, title=None, content=None, images=None):
     fields = {
         'updated_at': now_utc()
@@ -146,14 +164,15 @@ def create_comment(
     product_id,
     user_id,
     content,
-    parent_id=None
+    parent_id=None,
+    is_admin_reply=False
 ):
     db = get_db()
 
     product_oid = _oid(product_id)
     parent_oid = _oid(parent_id)
 
-    # Nếu là reply thì comment cha phải tồn tại.
+    # If this is a reply, the parent comment must exist.
     if parent_oid is not None:
         parent = db[COMMENTS].find_one({
             '_id': parent_oid
@@ -164,7 +183,7 @@ def create_comment(
                 'Parent comment does not exist.'
             )
 
-        # Không cho reply comment của product khác.
+        # Do not allow replying to a comment from another product.
         if parent.get('product_id') != product_oid:
             raise ValueError(
                 'Parent comment belongs to another product.'
@@ -175,6 +194,7 @@ def create_comment(
         user_id=_oid(user_id),
         content=content,
         parent_id=parent_oid,
+        is_admin_reply=is_admin_reply,
     )
 
     result = db[COMMENTS].insert_one(doc)
@@ -204,9 +224,73 @@ def list_comments(product_id, include_hidden=False):
     )
 
 
+
+def admin_list_comments(product_id=None, is_hidden=None):
+    # CV71 moderation list for technical Q&A/comments.
+    query = {}
+
+    if product_id:
+        query['product_id'] = _oid(product_id)
+
+    if is_hidden is not None:
+        query['is_hidden'] = bool(is_hidden)
+
+    return list(
+        get_db()[COMMENTS]
+        .find(query)
+        .sort('created_at', -1)
+    )
+
+
+def update_comment(comment_id, user_id, product_id, content):
+    content = (content or '').strip()
+
+    if not content:
+        raise ValueError(
+            'Comment content cannot be empty.'
+        )
+
+    return get_db()[COMMENTS].find_one_and_update(
+        {
+            '_id': _oid(comment_id),
+            'user_id': _oid(user_id),
+            'product_id': _oid(product_id),
+        },
+        {
+            '$set': {
+                'content': content,
+                'updated_at': now_utc(),
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+
+
 def set_comment_hidden(comment_id, is_hidden=True):
     return get_db()[COMMENTS].find_one_and_update(
         {'_id': _oid(comment_id)},
+        {
+            '$set': {
+                'is_hidden': bool(is_hidden),
+                'updated_at': now_utc(),
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+
+
+def set_own_comment_hidden(
+    comment_id,
+    user_id,
+    product_id,
+    is_hidden=True
+):
+    return get_db()[COMMENTS].find_one_and_update(
+        {
+            '_id': _oid(comment_id),
+            'user_id': _oid(user_id),
+            'product_id': _oid(product_id),
+        },
         {
             '$set': {
                 'is_hidden': bool(is_hidden),
@@ -300,7 +384,8 @@ def create_feedback(
     email,
     subject,
     message,
-    user_id=None
+    user_id=None,
+    attachment=None,
 ):
     db = get_db()
 
@@ -310,12 +395,19 @@ def create_feedback(
         subject=subject,
         message=message,
         user_id=_oid(user_id),
+        attachment=attachment,
     )
 
     result = db[FEEDBACK].insert_one(doc)
 
     doc['_id'] = result.inserted_id
     return doc
+
+
+def get_feedback(feedback_id):
+    return get_db()[FEEDBACK].find_one({
+        '_id': _oid(feedback_id)
+    })
 
 
 def list_feedback(status=None):
@@ -328,6 +420,36 @@ def list_feedback(status=None):
         get_db()[FEEDBACK]
         .find(query)
         .sort('created_at', -1)
+    )
+
+
+def save_feedback_reply(
+    feedback_id,
+    message,
+    replied_by=None,
+    email_sent=False,
+):
+    message = str(message or '').strip()
+
+    if not message:
+        raise ValueError('Reply message cannot be empty.')
+
+    reply = {
+        'message': message,
+        'replied_by': _oid(replied_by) if replied_by else None,
+        'replied_at': now_utc(),
+        'email_sent': bool(email_sent),
+    }
+
+    return get_db()[FEEDBACK].find_one_and_update(
+        {'_id': _oid(feedback_id)},
+        {
+            '$set': {
+                'admin_reply': reply,
+                'updated_at': now_utc(),
+            }
+        },
+        return_document=ReturnDocument.AFTER,
     )
 
 

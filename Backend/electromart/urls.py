@@ -6,7 +6,11 @@ from accounts import views as accounts_views
 from catalogue import views as catalogue_views
 from interaction import views as interaction_views
 
+
 urlpatterns = [
+    # ============================================================
+    # STOREFRONT
+    # ============================================================
     path('', catalogue_views.home, name='home'),
     path('category/<slug:slug>/', catalogue_views.product_list, name='product_list'),
     path('product/<slug:slug>/', catalogue_views.product_detail, name='product_detail'),
@@ -17,7 +21,9 @@ urlpatterns = [
     path('compare/<slug:slug>/', catalogue_views.compare_toggle, name='compare_toggle'),
     path('wishlist/', catalogue_views.wishlist, name='wishlist'),
 
-    # Accounts - Loc
+    # ============================================================
+    # ACCOUNTS - LOC
+    # ============================================================
     path('accounts/register/', accounts_views.register, name='accounts_register'),
     path('accounts/activate/<str:token>/', accounts_views.activate, name='accounts_activate'),
     path('accounts/login/', accounts_views.login_view, name='accounts_login'),
@@ -40,10 +46,42 @@ urlpatterns = [
     path('admin/users/<str:user_id>/lock/', accounts_views.admin_toggle_lock, name='admin_toggle_lock'),
     path('admin/users/<str:profile_id>/wholesale-review/', accounts_views.admin_wholesale_review, name='admin_wholesale_review'),
 
-    # Catalogue & Content - Minh
+    # ============================================================
+    # MINH
+    # ============================================================
+
+    # CV70 - News / FAQ / Feedback
     path('news/', catalogue_views.news, name='news'),
+    path('news/<slug:slug>/', catalogue_views.news_detail, name='news_detail'),
     path('feedback/', catalogue_views.feedback, name='feedback'),
     path('faq/', catalogue_views.faq, name='faq'),
+
+    # CV70 - Admin News
+    path('admin/news/', catalogue_views.admin_news, name='admin_news'),
+    path('admin/news/data/', catalogue_views.admin_news_data, name='admin_news_data'),
+    path('admin/news/create/', catalogue_views.admin_news_create, name='admin_news_create'),
+    path('admin/news/<str:news_id>/update/', catalogue_views.admin_news_update, name='admin_news_update'),
+    path('admin/news/<str:news_id>/hidden/', catalogue_views.admin_news_hidden, name='admin_news_hidden'),
+    path('admin/news/<str:news_id>/delete/', catalogue_views.admin_news_delete, name='admin_news_delete'),
+
+    # CV70 - Admin Feedback
+    path('admin/feedback/', catalogue_views.admin_feedback, name='admin_feedback'),
+    path('admin/feedback/data/', catalogue_views.admin_feedback_data, name='admin_feedback_data'),
+    path('admin/feedback/<str:feedback_id>/status/', catalogue_views.admin_feedback_status, name='admin_feedback_status'),
+    path('admin/feedback/<str:feedback_id>/reply/', catalogue_views.admin_feedback_reply, name='admin_feedback_reply'),
+
+    # CV71 - Admin Moderation
+    path('admin/moderation/', catalogue_views.admin_moderation, name='admin_moderation'),
+    path('admin/moderation/data/', catalogue_views.admin_moderation_data, name='admin_moderation_data'),
+    path('admin/moderation/reviews/<str:review_id>/hidden/', catalogue_views.admin_moderation_review_hidden, name='admin_moderation_review_hidden'),
+    path('admin/moderation/comments/<str:comment_id>/hidden/', catalogue_views.admin_moderation_comment_hidden, name='admin_moderation_comment_hidden'),
+    path('admin/moderation/comments/<str:comment_id>/reply/', catalogue_views.admin_moderation_comment_reply, name='admin_moderation_comment_reply'),
+
+    # CV42 / CV69 - Interaction
+    path('product/<slug:product_slug>/comment/', interaction_views.submit_comment, name='submit_comment'),
+    path('product/<slug:product_slug>/comment/<str:comment_id>/edit/', interaction_views.edit_comment, name='edit_comment'),
+    path('product/<slug:product_slug>/comment/<str:comment_id>/hide/', interaction_views.hide_comment, name='hide_comment'),
+    path('product/<slug:product_slug>/comment/<str:comment_id>/unhide/', interaction_views.unhide_comment, name='unhide_comment'),
 
     # CV65 - Admin Category + Dynamic Spec Template
     path('admin/categories/', catalogue_views.admin_categories, name='admin_categories'),
@@ -66,17 +104,23 @@ urlpatterns = [
     path('admin/products/<str:product_id>/variants/', catalogue_views.admin_product_variants, name='admin_product_variants'),
     path('admin/categories/<str:category_id>/spec-template/', catalogue_views.admin_category_spec_template, name='admin_category_spec_template'),
 
-    # CV67 - Admin Inventory + Stock Movements
+    # CV67 - Admin Inventory
     path('admin/inventory/', catalogue_views.admin_inventory, name='admin_inventory'),
     path('admin/inventory/data/', catalogue_views.admin_inventory_data, name='admin_inventory_data'),
     path('admin/inventory/low-stock/', catalogue_views.admin_inventory_low_stock, name='admin_inventory_low_stock'),
     path('admin/inventory/adjust/', catalogue_views.admin_inventory_adjust, name='admin_inventory_adjust'),
     path('admin/inventory/movements/', catalogue_views.admin_inventory_movements, name='admin_inventory_movements'),
 
+    # CV68 - Review / Rating
     path('product/<slug:product_slug>/review/', interaction_views.submit_review, name='submit_review'),
-    path('product/<slug:product_slug>/comment/', interaction_views.submit_comment, name='submit_comment'),
+    path('product/<slug:product_slug>/review/me/', interaction_views.my_review, name='my_review'),
+    path('product/<slug:product_slug>/review/edit/', interaction_views.edit_review, name='edit_review'),
+    path('product/<slug:product_slug>/review/hide/', interaction_views.hide_review, name='hide_review'),
+    path('product/<slug:product_slug>/review/unhide/', interaction_views.unhide_review, name='unhide_review'),
 
-    # Sales & Payment - Tin
+    # ============================================================
+    # SALES & PAYMENT - TIN
+    # ============================================================
     path('cart/', catalogue_views.cart, name='cart'),
     path('checkout/', catalogue_views.checkout, name='checkout'),
     path('tracking/', catalogue_views.tracking, name='tracking'),
@@ -84,6 +128,7 @@ urlpatterns = [
     path('admin-orders/', catalogue_views.admin_orders, name='admin_orders'),
     path('admin-promotions/', catalogue_views.admin_promotions, name='admin_promotions'),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,15 +1,23 @@
 """Storefront views: home, category listing, product detail, search, compare, wishlist."""
 import json
+from datetime import timezone as datetime_timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from uuid import uuid4
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
-from django.http import Http404, JsonResponse
+from django.core.validators import validate_email
+from django.http import Http404, HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone as django_timezone
+from django.utils.dateparse import parse_datetime
 
 from . import repo
+from .db import PRODUCTS, get_db as get_catalogue_db
+from accounts import mailer as accounts_mailer
+from accounts import repo as accounts_repo
 from interaction import repo as interaction_repo
 
 COMPARE_KEY = 'compare'
@@ -64,6 +72,57 @@ def _format_spec(v):
     if isinstance(v, float) and v == int(v):
         return int(v)
     return v
+
+
+def _build_comment_threads(comments):
+    """
+    Convert the flat MongoDB comment list into display order
+    while preserving unlimited parent/reply levels.
+
+    Each comment receives:
+    - id: string version of MongoDB _id
+    - depth: nesting level (0 = root question)
+    - indent_px: indentation prepared for the storefront UI
+    """
+    children_map = {}
+
+    for comment in comments:
+        comment['id'] = str(comment['_id'])
+
+        parent_id = comment.get('parent_id')
+
+        children_map.setdefault(
+            parent_id,
+            []
+        ).append(comment)
+
+    threaded_comments = []
+
+    def walk(parent_id=None, depth=0):
+        children = children_map.get(
+            parent_id,
+            []
+        )
+
+        for comment in children:
+            comment['depth'] = depth
+
+            # Limit visual indentation only; real depth is preserved.
+            comment['indent_px'] = min(
+                depth,
+                5
+            ) * 36
+
+            threaded_comments.append(comment)
+
+            walk(
+                comment['_id'],
+                depth + 1
+            )
+
+    walk()
+
+    return threaded_comments
 
 
 def home(request):
@@ -165,7 +224,59 @@ def product_detail(request, slug):
 
     related = _decorate(repo.related_products(p))
     reviews = interaction_repo.list_reviews(p['_id'])
-    comments = interaction_repo.list_comments(p['_id'])
+
+    # CV69: public users never receive hidden comments.
+    # The owner still receives their own hidden comments so they can unhide them.
+    all_comments = interaction_repo.list_comments(
+        p['_id'],
+        include_hidden=True,
+    )
+
+    current_user_id = request.session.get('user_id')
+    comments = []
+    author_cache = {}
+
+    for comment in all_comments:
+        is_owner = (
+            bool(current_user_id)
+            and str(comment.get('user_id')) == str(current_user_id)
+        )
+
+        if comment.get('is_hidden', False) and not is_owner:
+            continue
+
+        user_id = comment.get('user_id')
+        user_key = str(user_id)
+
+        if user_key not in author_cache:
+            author_cache[user_key] = (
+                accounts_repo.find_user_by_id(user_id)
+                if user_id is not None
+                else None
+            )
+
+        author = author_cache.get(user_key)
+        is_admin_reply = bool(
+            comment.get('is_admin_reply', False)
+        )
+
+        comment['is_owner'] = is_owner
+        comment['is_admin_reply'] = is_admin_reply
+        comment['author_name'] = (
+            'ElectroMart Shop'
+            if is_admin_reply
+            else (
+                author.get('full_name', 'Customer')
+                if author
+                else 'Customer'
+            )
+        )
+
+        comments.append(comment)
+
+    comment_threads = _build_comment_threads(
+        comments
+    )
 
     questions = [
         comment for comment in comments
@@ -216,6 +327,7 @@ def product_detail(request, slug):
         'reviews': reviews,
         'comments': comments,
         'questions': questions,
+        'comment_threads': comment_threads,
         'average_rating': average_rating,
         'rating_distribution': rating_distribution,
         'in_compare': p['slug'] in request.session.get(COMPARE_KEY, []),
@@ -317,85 +429,1253 @@ def wishlist(request):
     return render(request, 'wishlist.html',
                   {'products': items, 'page_title': 'Wishlist'})
 
-def news(request):
-    selected_type = request.GET.get('type', 'all')
+# -------------------------------------------------------------- CV70 News
 
-    news_items = [
-        {
-            'title': 'ElectroMart launches new STM32 development kits',
-            'type': 'Product News',
-            'date': 'August 20, 2026',
-            'summary': 'Explore the latest STM32 development boards now available at ElectroMart.',
-            'image_text': 'STM32',
-        },
-        {
-            'title': 'Scheduled system maintenance this weekend',
-            'type': 'Announcement',
-            'date': 'August 18, 2026',
-            'summary': 'Some ElectroMart services may be temporarily unavailable during maintenance.',
-            'image_text': 'NOTICE',
-        },
-        {
-            'title': 'How to choose the right capacitor for your project',
-            'type': 'Technical Guide',
-            'date': 'August 15, 2026',
-            'summary': 'A practical guide to capacitance, voltage rating, tolerance and capacitor types.',
-            'image_text': 'GUIDE',
-        },
-        {
-            'title': 'New sensor modules added to our catalogue',
-            'type': 'Product News',
-            'date': 'August 12, 2026',
-            'summary': 'Discover newly added temperature, humidity, pressure and motion sensors.',
-            'image_text': 'SENSOR',
-        },
-        {
-            'title': 'Holiday shipping schedule update',
-            'type': 'Announcement',
-            'date': 'August 10, 2026',
-            'summary': 'Important information about shipping and order processing during the holiday period.',
-            'image_text': 'UPDATE',
-        },
-        {
-            'title': 'Understanding resistor color codes',
-            'type': 'Technical Guide',
-            'date': 'August 8, 2026',
-            'summary': 'Learn how to quickly identify resistor values using standard color bands.',
-            'image_text': 'RESISTOR',
-        },
-    ]
+def _news_aware_datetime(value):
+    if value is not None and django_timezone.is_naive(value):
+        return django_timezone.make_aware(value, datetime_timezone.utc)
+    return value
 
-    news_types = [
-        'All',
-        'Product News',
-        'Announcement',
-        'Technical Guide',
-    ]
 
-    if selected_type != 'all':
-        filtered_items = [
-            item for item in news_items
-            if item['type'].lower().replace(' ', '-') == selected_type
-        ]
+def _news_display_item(item):
+    """Prepare one MongoDB news document for storefront templates."""
+    item = dict(item)
+    type_key = item.get('type', '')
+    item['type_key'] = type_key
+    item['type'] = repo.NEWS_TYPES.get(type_key, type_key)
+
+    publish_at = _news_aware_datetime(item.get('publish_at'))
+    if publish_at:
+        publish_at = django_timezone.localtime(publish_at)
+        item['date'] = publish_at.strftime('%B %d, %Y')
     else:
-        filtered_items = news_items
+        item['date'] = ''
+
+    return item
+
+
+def _parse_news_publish_at(raw_value, default=None):
+    """Parse the HTML datetime-local value using the project timezone."""
+    raw_value = str(raw_value or '').strip()
+    if not raw_value:
+        return default if default is not None else django_timezone.now()
+
+    value = parse_datetime(raw_value)
+    if value is None:
+        raise ValueError('Publish date/time is invalid.')
+
+    if django_timezone.is_naive(value):
+        value = django_timezone.make_aware(
+            value,
+            django_timezone.get_current_timezone(),
+        )
+
+    return value
+
+
+def _news_bool(value, default=False):
+    if value is None:
+        return default
+    return str(value).strip().lower() in ('1', 'true', 'yes', 'on')
+
+
+def _admin_news_user(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return None
+
+    try:
+        user = accounts_repo.find_user_by_id(user_id)
+    except Exception:
+        return None
+
+    if not user or user.get('role') != accounts_repo.ROLE_ADMIN:
+        return None
+
+    return user
+
+
+def _serialize_news(item):
+    publish_at = _news_aware_datetime(item.get('publish_at'))
+    local_publish_at = (
+        django_timezone.localtime(publish_at)
+        if publish_at
+        else None
+    )
+
+    if item.get('is_hidden', False):
+        status = 'hidden'
+    elif publish_at and publish_at > django_timezone.now():
+        status = 'scheduled'
+    else:
+        status = 'published'
+
+    return {
+        'id': str(item.get('_id', '')),
+        'title': item.get('title', ''),
+        'slug': item.get('slug', ''),
+        'type': item.get('type', ''),
+        'type_label': repo.NEWS_TYPES.get(item.get('type', ''), item.get('type', '')),
+        'summary': item.get('summary', ''),
+        'content': item.get('content', ''),
+        'publish_at': local_publish_at.isoformat() if local_publish_at else '',
+        'is_hidden': bool(item.get('is_hidden', False)),
+        'status': status,
+        'created_by': str(item.get('created_by') or ''),
+        'created_at': item.get('created_at').isoformat() if item.get('created_at') else '',
+        'updated_at': item.get('updated_at').isoformat() if item.get('updated_at') else '',
+    }
+
+
+def news(request):
+    selected_type = str(request.GET.get('type', 'all') or 'all').strip().lower()
+
+    try:
+        news_items = repo.list_public_news(selected_type)
+    except ValueError:
+        selected_type = 'all'
+        news_items = repo.list_public_news()
+
+    news_items = [_news_display_item(item) for item in news_items]
 
     return render(request, 'news.html', {
         'page_title': 'News - ElectroMart',
-        'news_items': filtered_items,
-        'news_types': news_types,
+        'news_items': news_items,
+        'news_types': repo.NEWS_TYPES,
         'selected_type': selected_type,
     })
 
-def feedback(request):
-    return render(request, 'feedback.html', {
-        'page_title': 'Feedback - ElectroMart',
+
+def news_detail(request, slug):
+    item = repo.get_public_news(slug)
+    if not item:
+        raise Http404('News article not found')
+
+    item = _news_display_item(item)
+    return render(request, 'news_detail.html', {
+        'page_title': item.get('title', 'News') + ' - ElectroMart',
+        'item': item,
     })
 
+
+def admin_news(request):
+    if not _admin_news_user(request):
+        return HttpResponseForbidden('Admin access required.')
+
+    return render(request, 'admin_news.html', {
+        'page_title': 'Manage News - ElectroMart',
+    })
+
+
+def admin_news_data(request):
+    if request.method != 'GET':
+        return JsonResponse({'ok': False, 'error': 'GET method required.'}, status=405)
+
+    if not _admin_news_user(request):
+        return JsonResponse({'ok': False, 'error': 'Admin access required.'}, status=403)
+
+    items = repo.admin_list_news()
+    return JsonResponse({
+        'ok': True,
+        'news': [_serialize_news(item) for item in items],
+        'types': repo.NEWS_TYPES,
+        'count': len(items),
+    })
+
+
+def admin_news_create(request):
+    if request.method != 'POST':
+        return JsonResponse({'ok': False, 'error': 'POST method required.'}, status=405)
+
+    admin_user = _admin_news_user(request)
+    if not admin_user:
+        return JsonResponse({'ok': False, 'error': 'Admin access required.'}, status=403)
+
+    try:
+        item = repo.create_news(
+            title=request.POST.get('title'),
+            news_type=request.POST.get('type'),
+            summary=request.POST.get('summary'),
+            content=request.POST.get('content'),
+            publish_at=_parse_news_publish_at(request.POST.get('publish_at')),
+            slug=request.POST.get('slug') or None,
+            created_by=admin_user.get('_id'),
+            is_hidden=_news_bool(request.POST.get('is_hidden'), False),
+        )
+        return JsonResponse({'ok': True, 'news': _serialize_news(item)}, status=201)
+    except ValueError as exc:
+        return JsonResponse({'ok': False, 'error': str(exc)}, status=400)
+    except Exception:
+        return JsonResponse({'ok': False, 'error': 'Unable to create news article.'}, status=500)
+
+
+def admin_news_update(request, news_id):
+    if request.method != 'POST':
+        return JsonResponse({'ok': False, 'error': 'POST method required.'}, status=405)
+
+    if not _admin_news_user(request):
+        return JsonResponse({'ok': False, 'error': 'Admin access required.'}, status=403)
+
+    try:
+        current = repo.admin_get_news(news_id)
+        if not current:
+            return JsonResponse({'ok': False, 'error': 'News article does not exist.'}, status=404)
+
+        publish_at = _parse_news_publish_at(
+            request.POST.get('publish_at'),
+            default=current.get('publish_at'),
+        )
+
+        item = repo.update_news(
+            news_id=news_id,
+            title=request.POST.get('title', current.get('title', '')),
+            news_type=request.POST.get('type', current.get('type', '')),
+            summary=request.POST.get('summary', current.get('summary', '')),
+            content=request.POST.get('content', current.get('content', '')),
+            publish_at=publish_at,
+            slug=request.POST.get('slug') or current.get('slug'),
+            is_hidden=(
+                _news_bool(request.POST.get('is_hidden'))
+                if 'is_hidden' in request.POST
+                else current.get('is_hidden', False)
+            ),
+        )
+        return JsonResponse({'ok': True, 'news': _serialize_news(item)})
+    except ValueError as exc:
+        return JsonResponse({'ok': False, 'error': str(exc)}, status=400)
+    except Exception:
+        return JsonResponse({'ok': False, 'error': 'Unable to update news article.'}, status=500)
+
+
+def admin_news_hidden(request, news_id):
+    if request.method != 'POST':
+        return JsonResponse({'ok': False, 'error': 'POST method required.'}, status=405)
+
+    if not _admin_news_user(request):
+        return JsonResponse({'ok': False, 'error': 'Admin access required.'}, status=403)
+
+    try:
+        item = repo.set_news_hidden(
+            news_id,
+            _news_bool(request.POST.get('hidden'), True),
+        )
+        return JsonResponse({'ok': True, 'news': _serialize_news(item)})
+    except ValueError as exc:
+        return JsonResponse({'ok': False, 'error': str(exc)}, status=400)
+    except Exception:
+        return JsonResponse({'ok': False, 'error': 'Unable to change news visibility.'}, status=500)
+
+
+def admin_news_delete(request, news_id):
+    if request.method != 'POST':
+        return JsonResponse({'ok': False, 'error': 'POST method required.'}, status=405)
+
+    if not _admin_news_user(request):
+        return JsonResponse({'ok': False, 'error': 'Admin access required.'}, status=403)
+
+    try:
+        repo.delete_news(news_id)
+        return JsonResponse({'ok': True})
+    except ValueError as exc:
+        return JsonResponse({'ok': False, 'error': str(exc)}, status=400)
+    except Exception:
+        return JsonResponse({'ok': False, 'error': 'Unable to delete news article.'}, status=500)
+
+
+_CV70_FEEDBACK_EXTENSIONS = {
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.pdf',
+    '.doc',
+    '.docx',
+}
+_CV70_FEEDBACK_MAX_BYTES = 10 * 1024 * 1024
+_CV70_FEEDBACK_SUBJECTS = {
+    'product',
+    'website',
+    'order',
+    'technical',
+    'suggestion',
+    'other',
+}
+
+
+def _feedback_context(form=None, error=''):
+    return {
+        'page_title': 'Feedback - ElectroMart',
+        'feedback_form': form or {},
+        'feedback_error': error,
+    }
+
+
+def feedback(request):
+    if request.method == 'GET':
+        context = _feedback_context()
+        context['feedback_success'] = (
+            request.GET.get('sent') == '1'
+        )
+        return render(request, 'feedback.html', context)
+
+    if request.method != 'POST':
+        return JsonResponse({
+            'ok': False,
+            'error': 'GET or POST method required.',
+        }, status=405)
+
+    name = str(request.POST.get('name') or '').strip()
+    email = str(request.POST.get('email') or '').strip().lower()
+    subject = str(request.POST.get('subject') or '').strip().lower()
+    message = str(request.POST.get('content') or '').strip()
+    attachment = request.FILES.get('attachment')
+
+    form_values = {
+        'name': name,
+        'email': email,
+        'subject': subject,
+        'content': message,
+    }
+
+    saved_name = None
+
+    try:
+        if not name:
+            raise ValueError('Full name is required.')
+
+        if len(name) > 120:
+            raise ValueError('Full name must not exceed 120 characters.')
+
+        if not email:
+            raise ValueError('Email is required.')
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise ValueError('Please enter a valid email address.')
+
+        if subject not in _CV70_FEEDBACK_SUBJECTS:
+            raise ValueError('Please select a valid feedback subject.')
+
+        if not message:
+            raise ValueError('Feedback message is required.')
+
+        if len(message) > 1000:
+            raise ValueError(
+                'Feedback message must not exceed 1000 characters.'
+            )
+
+        attachment_meta = None
+
+        if attachment:
+            extension = Path(
+                attachment.name or ''
+            ).suffix.lower()
+
+            if extension not in _CV70_FEEDBACK_EXTENSIONS:
+                raise ValueError(
+                    'Attachment must be JPG, JPEG, PNG, PDF, DOC or DOCX.'
+                )
+
+            if attachment.size > _CV70_FEEDBACK_MAX_BYTES:
+                raise ValueError(
+                    'Attachment must not exceed 10 MB.'
+                )
+
+            saved_name = default_storage.save(
+                f'feedback/{uuid4().hex}{extension}',
+                attachment,
+            )
+
+            attachment_meta = {
+                'original_name': str(attachment.name or ''),
+                'storage_name': saved_name,
+                'url': default_storage.url(saved_name),
+                'content_type': str(
+                    getattr(attachment, 'content_type', '') or ''
+                ),
+                'size': int(attachment.size or 0),
+            }
+
+        interaction_repo.create_feedback(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message,
+            user_id=request.session.get('user_id'),
+            attachment=attachment_meta,
+        )
+
+        return redirect('/feedback/?sent=1')
+
+    except ValueError as exc:
+        if saved_name and default_storage.exists(saved_name):
+            default_storage.delete(saved_name)
+
+        return render(
+            request,
+            'feedback.html',
+            _feedback_context(
+                form=form_values,
+                error=str(exc),
+            ),
+            status=400,
+        )
+
+    except Exception:
+        if saved_name and default_storage.exists(saved_name):
+            default_storage.delete(saved_name)
+
+        return render(
+            request,
+            'feedback.html',
+            _feedback_context(
+                form=form_values,
+                error='Unable to submit feedback. Please try again.',
+            ),
+            status=500,
+        )
+
 def faq(request):
+    faq_items = repo.get_faq_items()
+
     return render(request, 'faq.html', {
         'page_title': 'FAQ - ElectroMart',
+        'faq_items': faq_items,
     })
+
+# ============================================================
+# CV70 - Admin Feedback / Email Reply
+# ============================================================
+
+_CV70_FEEDBACK_STATUSES = {
+    'new',
+    'processing',
+    'resolved',
+}
+
+_CV70_FEEDBACK_SUBJECT_LABELS = {
+    'product': 'Product feedback',
+    'website': 'Website experience',
+    'order': 'Order or delivery',
+    'technical': 'Technical support',
+    'suggestion': 'Suggestion',
+    'other': 'Other',
+}
+
+
+def _admin_feedback_user(request):
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return None
+
+    try:
+        user = accounts_repo.find_user_by_id(user_id)
+    except Exception:
+        return None
+
+    if not user or user.get('role') != accounts_repo.ROLE_ADMIN:
+        return None
+
+    return user
+
+
+def _serialize_feedback(item):
+    attachment = item.get('attachment') or {}
+    admin_reply = item.get('admin_reply') or {}
+
+    created_at = item.get('created_at')
+    updated_at = item.get('updated_at')
+    replied_at = admin_reply.get('replied_at')
+
+    return {
+        'id': str(item.get('_id', '')),
+        'user_id': str(item.get('user_id') or ''),
+        'name': item.get('name', ''),
+        'email': item.get('email', ''),
+        'subject': item.get('subject', ''),
+        'subject_label': _CV70_FEEDBACK_SUBJECT_LABELS.get(
+            item.get('subject', ''),
+            item.get('subject', ''),
+        ),
+        'message': item.get('message', ''),
+        'status': item.get('status', 'new'),
+        'attachment': {
+            'original_name': attachment.get('original_name', ''),
+            'url': attachment.get('url', ''),
+            'content_type': attachment.get('content_type', ''),
+            'size': int(attachment.get('size', 0) or 0),
+        } if attachment else None,
+        'admin_reply': {
+            'message': admin_reply.get('message', ''),
+            'replied_by': str(admin_reply.get('replied_by') or ''),
+            'replied_at': replied_at.isoformat() if replied_at else '',
+            'email_sent': bool(admin_reply.get('email_sent', False)),
+        } if admin_reply else None,
+        'created_at': created_at.isoformat() if created_at else '',
+        'updated_at': updated_at.isoformat() if updated_at else '',
+    }
+
+
+def admin_feedback(request):
+    if not _admin_feedback_user(request):
+        return HttpResponseForbidden('Admin access required.')
+
+    return render(request, 'admin_feedback.html', {
+        'page_title': 'Manage Feedback - ElectroMart',
+    })
+
+
+def admin_feedback_data(request):
+    if request.method != 'GET':
+        return JsonResponse({
+            'ok': False,
+            'error': 'GET method required.',
+        }, status=405)
+
+    if not _admin_feedback_user(request):
+        return JsonResponse({
+            'ok': False,
+            'error': 'Admin access required.',
+        }, status=403)
+
+    status = str(
+        request.GET.get('status') or ''
+    ).strip().lower()
+
+    if status and status not in _CV70_FEEDBACK_STATUSES:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Invalid feedback status.',
+        }, status=400)
+
+    items = interaction_repo.list_feedback(
+        status=status or None
+    )
+
+    return JsonResponse({
+        'ok': True,
+        'feedback': [
+            _serialize_feedback(item)
+            for item in items
+        ],
+        'count': len(items),
+    })
+
+
+def admin_feedback_status(request, feedback_id):
+    if request.method != 'POST':
+        return JsonResponse({
+            'ok': False,
+            'error': 'POST method required.',
+        }, status=405)
+
+    if not _admin_feedback_user(request):
+        return JsonResponse({
+            'ok': False,
+            'error': 'Admin access required.',
+        }, status=403)
+
+    status = str(
+        request.POST.get('status') or ''
+    ).strip().lower()
+
+    try:
+        updated = interaction_repo.update_feedback_status(
+            feedback_id,
+            status,
+        )
+
+        if not updated:
+            return JsonResponse({
+                'ok': False,
+                'error': 'Feedback does not exist.',
+            }, status=404)
+
+        return JsonResponse({
+            'ok': True,
+            'feedback': _serialize_feedback(updated),
+        })
+
+    except ValueError as exc:
+        return JsonResponse({
+            'ok': False,
+            'error': str(exc),
+        }, status=400)
+
+    except Exception:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Unable to update feedback status.',
+        }, status=400)
+
+
+def admin_feedback_reply(request, feedback_id):
+    if request.method != 'POST':
+        return JsonResponse({
+            'ok': False,
+            'error': 'POST method required.',
+        }, status=405)
+
+    admin_user = _admin_feedback_user(request)
+
+    if not admin_user:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Admin access required.',
+        }, status=403)
+
+    reply_message = str(
+        request.POST.get('message') or ''
+    ).strip()
+
+    if not reply_message:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Reply message cannot be empty.',
+        }, status=400)
+
+    if len(reply_message) > 5000:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Reply message must not exceed 5000 characters.',
+        }, status=400)
+
+    try:
+        feedback_item = interaction_repo.get_feedback(
+            feedback_id
+        )
+    except Exception:
+        feedback_item = None
+
+    if not feedback_item:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Feedback does not exist.',
+        }, status=404)
+
+    to_email = str(
+        feedback_item.get('email') or ''
+    ).strip().lower()
+
+    if not to_email:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Feedback has no reply email address.',
+        }, status=400)
+
+    subject_label = _CV70_FEEDBACK_SUBJECT_LABELS.get(
+        feedback_item.get('subject', ''),
+        feedback_item.get('subject', '') or 'Feedback',
+    )
+
+    email_sent = accounts_mailer.send_mail(
+        to_email=to_email,
+        subject=f'Re: Your ElectroMart feedback - {subject_label}',
+        template_name='feedback_reply_email.html',
+        context={
+            'customer_name': feedback_item.get('name', 'Customer'),
+            'feedback_subject': subject_label,
+            'feedback_message': feedback_item.get('message', ''),
+            'reply_message': reply_message,
+        },
+    )
+
+    try:
+        updated = interaction_repo.save_feedback_reply(
+            feedback_id=feedback_id,
+            message=reply_message,
+            replied_by=admin_user.get('_id'),
+            email_sent=email_sent,
+        )
+
+        if email_sent:
+            updated = interaction_repo.update_feedback_status(
+                feedback_id,
+                'resolved',
+            ) or updated
+
+    except Exception:
+        return JsonResponse({
+            'ok': False,
+            'error': (
+                'Email was sent but the feedback reply could not be saved.'
+                if email_sent
+                else 'Unable to save the feedback reply.'
+            ),
+            'email_sent': bool(email_sent),
+        }, status=500)
+
+    if not email_sent:
+        return JsonResponse({
+            'ok': False,
+            'error': (
+                'The reply could not be sent by email. '
+                'It was saved for retry and the feedback was not marked resolved.'
+            ),
+            'email_sent': False,
+            'feedback': _serialize_feedback(updated),
+        }, status=502)
+
+    return JsonResponse({
+        'ok': True,
+        'email_sent': True,
+        'feedback': _serialize_feedback(updated),
+    })
+
+
+
+# ============================================================
+# CV71 - Admin Moderation
+# Review / Comment / Feedback
+# ============================================================
+
+_CV71_CONTENT_SECTIONS = {
+    'reviews',
+    'comments',
+    'feedback',
+}
+
+
+def _cv71_admin_user(request):
+    # Reuse the exact admin/session rule already used by CV70 Feedback.
+    return _admin_feedback_user(request)
+
+
+def _cv71_hidden_filter(status):
+    value = str(status or '').strip().lower()
+
+    if value in ('', 'all'):
+        return None
+
+    if value == 'visible':
+        return False
+
+    if value == 'hidden':
+        return True
+
+    raise ValueError(
+        'Status must be all, visible or hidden.'
+    )
+
+
+def _cv71_user_summary(user_id):
+    if not user_id:
+        return {
+            'id': '',
+            'name': 'Unknown user',
+            'email': '',
+            'role': '',
+        }
+
+    try:
+        user = accounts_repo.find_user_by_id(user_id)
+    except Exception:
+        user = None
+
+    if not user:
+        return {
+            'id': str(user_id),
+            'name': 'Unknown user',
+            'email': '',
+            'role': '',
+        }
+
+    return {
+        'id': str(user.get('_id', '')),
+        'name': user.get('full_name', '') or 'User',
+        'email': user.get('email', ''),
+        'role': user.get('role', ''),
+    }
+
+
+def _cv71_product_map():
+    return {
+        item['_id']: item
+        for item in repo.admin_list_products()
+    }
+
+
+def _cv71_product_summary(product_id, product_map=None):
+    product_map = (
+        product_map
+        if product_map is not None
+        else _cv71_product_map()
+    )
+
+    product = product_map.get(product_id)
+
+    if not product:
+        return {
+            'id': str(product_id or ''),
+            'name': 'Unknown product',
+            'slug': '',
+        }
+
+    return {
+        'id': str(product.get('_id', '')),
+        'name': product.get('name', ''),
+        'slug': product.get('slug', ''),
+    }
+
+
+def _cv71_recalculate_product_rating(product_id):
+    visible_reviews = interaction_repo.list_reviews(
+        product_id,
+        include_hidden=False,
+    )
+
+    rating_count = len(visible_reviews)
+
+    avg_rating = (
+        round(
+            sum(
+                int(review.get('rating', 0))
+                for review in visible_reviews
+            ) / rating_count,
+            1,
+        )
+        if rating_count
+        else 0
+    )
+
+    get_catalogue_db()[PRODUCTS].update_one(
+        {'_id': product_id},
+        {
+            '$set': {
+                'avg_rating': avg_rating,
+                'rating_count': rating_count,
+            }
+        },
+    )
+
+    return {
+        'avg_rating': avg_rating,
+        'rating_count': rating_count,
+    }
+
+
+def _cv71_serialize_review(item, product_map=None):
+    product = _cv71_product_summary(
+        item.get('product_id'),
+        product_map,
+    )
+    user = _cv71_user_summary(
+        item.get('user_id')
+    )
+
+    created_at = item.get('created_at')
+    updated_at = item.get('updated_at')
+
+    return {
+        'id': str(item.get('_id', '')),
+        'kind': 'review',
+        'product': product,
+        'user': user,
+        'rating': int(item.get('rating', 0) or 0),
+        'title': item.get('title', ''),
+        'content': item.get('content', ''),
+        'images': list(item.get('images') or []),
+        'is_hidden': bool(item.get('is_hidden', False)),
+        'status': (
+            'hidden'
+            if item.get('is_hidden')
+            else 'visible'
+        ),
+        'created_at': (
+            created_at.isoformat()
+            if created_at
+            else ''
+        ),
+        'updated_at': (
+            updated_at.isoformat()
+            if updated_at
+            else ''
+        ),
+    }
+
+
+def _cv71_serialize_comment(item, product_map=None):
+    product = _cv71_product_summary(
+        item.get('product_id'),
+        product_map,
+    )
+    user = _cv71_user_summary(
+        item.get('user_id')
+    )
+
+    created_at = item.get('created_at')
+    updated_at = item.get('updated_at')
+
+    return {
+        'id': str(item.get('_id', '')),
+        'kind': 'comment',
+        'product': product,
+        'user': user,
+        'parent_id': str(item.get('parent_id') or ''),
+        'content': item.get('content', ''),
+        'is_admin_reply': bool(
+            item.get('is_admin_reply', False)
+        ),
+        'is_hidden': bool(item.get('is_hidden', False)),
+        'status': (
+            'hidden'
+            if item.get('is_hidden')
+            else 'visible'
+        ),
+        'created_at': (
+            created_at.isoformat()
+            if created_at
+            else ''
+        ),
+        'updated_at': (
+            updated_at.isoformat()
+            if updated_at
+            else ''
+        ),
+    }
+
+
+def admin_moderation(request):
+    if not _cv71_admin_user(request):
+        return HttpResponseForbidden('Admin access required.')
+
+    return render(request, 'admin_moderation.html', {
+        'page_title': 'Content Moderation - ElectroMart',
+    })
+
+
+def admin_moderation_data(request):
+    if request.method != 'GET':
+        return JsonResponse({
+            'ok': False,
+            'error': 'GET method required.',
+        }, status=405)
+
+    if not _cv71_admin_user(request):
+        return JsonResponse({
+            'ok': False,
+            'error': 'Admin access required.',
+        }, status=403)
+
+    section = str(
+        request.GET.get('section') or 'reviews'
+    ).strip().lower()
+
+    if section not in _CV71_CONTENT_SECTIONS:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Invalid moderation section.',
+        }, status=400)
+
+    product_id = str(
+        request.GET.get('product_id') or ''
+    ).strip()
+
+    status = str(
+        request.GET.get('status') or ''
+    ).strip().lower()
+
+    product_map = _cv71_product_map()
+
+    products = [
+        {
+            'id': str(item['_id']),
+            'name': item.get('name', ''),
+            'slug': item.get('slug', ''),
+        }
+        for item in product_map.values()
+    ]
+
+    try:
+        if section == 'reviews':
+            hidden = _cv71_hidden_filter(status)
+
+            items = interaction_repo.admin_list_reviews(
+                product_id=product_id or None,
+                is_hidden=hidden,
+            )
+
+            rows = [
+                _cv71_serialize_review(
+                    item,
+                    product_map,
+                )
+                for item in items
+            ]
+
+        elif section == 'comments':
+            hidden = _cv71_hidden_filter(status)
+
+            items = interaction_repo.admin_list_comments(
+                product_id=product_id or None,
+                is_hidden=hidden,
+            )
+
+            rows = [
+                _cv71_serialize_comment(
+                    item,
+                    product_map,
+                )
+                for item in items
+            ]
+
+        else:
+            if product_id:
+                return JsonResponse({
+                    'ok': False,
+                    'error': (
+                        'Product filter is not applicable '
+                        'to feedback.'
+                    ),
+                }, status=400)
+
+            if status not in (
+                '',
+                'all',
+                'new',
+                'processing',
+                'resolved',
+            ):
+                return JsonResponse({
+                    'ok': False,
+                    'error': 'Invalid feedback status.',
+                }, status=400)
+
+            items = interaction_repo.list_feedback(
+                status=(
+                    None
+                    if status in ('', 'all')
+                    else status
+                )
+            )
+
+            rows = [
+                _serialize_feedback(item)
+                for item in items
+            ]
+
+        return JsonResponse({
+            'ok': True,
+            'section': section,
+            'items': rows,
+            'products': products,
+            'count': len(rows),
+        })
+
+    except ValueError as exc:
+        return JsonResponse({
+            'ok': False,
+            'error': str(exc),
+        }, status=400)
+
+    except Exception:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Unable to load moderation data.',
+        }, status=500)
+
+
+def admin_moderation_review_hidden(
+    request,
+    review_id,
+):
+    if request.method != 'POST':
+        return JsonResponse({
+            'ok': False,
+            'error': 'POST method required.',
+        }, status=405)
+
+    if not _cv71_admin_user(request):
+        return JsonResponse({
+            'ok': False,
+            'error': 'Admin access required.',
+        }, status=403)
+
+    try:
+        review = interaction_repo.get_review(
+            review_id
+        )
+
+        if not review:
+            return JsonResponse({
+                'ok': False,
+                'error': 'Review does not exist.',
+            }, status=404)
+
+        hidden = _news_bool(
+            request.POST.get('hidden'),
+            True,
+        )
+
+        updated = interaction_repo.set_review_hidden(
+            review_id,
+            hidden,
+        )
+
+        stats = _cv71_recalculate_product_rating(
+            review['product_id']
+        )
+
+        return JsonResponse({
+            'ok': True,
+            'review': _cv71_serialize_review(
+                updated,
+                _cv71_product_map(),
+            ),
+            'rating': stats,
+        })
+
+    except ValueError as exc:
+        return JsonResponse({
+            'ok': False,
+            'error': str(exc),
+        }, status=400)
+
+    except Exception:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Unable to change review visibility.',
+        }, status=500)
+
+
+def admin_moderation_comment_hidden(
+    request,
+    comment_id,
+):
+    if request.method != 'POST':
+        return JsonResponse({
+            'ok': False,
+            'error': 'POST method required.',
+        }, status=405)
+
+    if not _cv71_admin_user(request):
+        return JsonResponse({
+            'ok': False,
+            'error': 'Admin access required.',
+        }, status=403)
+
+    try:
+        comment = interaction_repo.get_comment(
+            comment_id
+        )
+
+        if not comment:
+            return JsonResponse({
+                'ok': False,
+                'error': 'Comment does not exist.',
+            }, status=404)
+
+        hidden = _news_bool(
+            request.POST.get('hidden'),
+            True,
+        )
+
+        updated = interaction_repo.set_comment_hidden(
+            comment_id,
+            hidden,
+        )
+
+        return JsonResponse({
+            'ok': True,
+            'comment': _cv71_serialize_comment(
+                updated,
+                _cv71_product_map(),
+            ),
+        })
+
+    except ValueError as exc:
+        return JsonResponse({
+            'ok': False,
+            'error': str(exc),
+        }, status=400)
+
+    except Exception:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Unable to change comment visibility.',
+        }, status=500)
+
+
+def admin_moderation_comment_reply(
+    request,
+    comment_id,
+):
+    if request.method != 'POST':
+        return JsonResponse({
+            'ok': False,
+            'error': 'POST method required.',
+        }, status=405)
+
+    admin_user = _cv71_admin_user(request)
+
+    if not admin_user:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Admin access required.',
+        }, status=403)
+
+    content = str(
+        request.POST.get('content') or ''
+    ).strip()
+
+    if not content:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Reply content cannot be empty.',
+        }, status=400)
+
+    if len(content) > 3000:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Reply content must not exceed 3000 characters.',
+        }, status=400)
+
+    try:
+        parent = interaction_repo.get_comment(
+            comment_id
+        )
+
+        if not parent:
+            return JsonResponse({
+                'ok': False,
+                'error': 'Comment does not exist.',
+            }, status=404)
+
+        if parent.get('is_hidden'):
+            return JsonResponse({
+                'ok': False,
+                'error': 'Cannot reply to a hidden comment.',
+            }, status=400)
+
+        reply = interaction_repo.create_comment(
+            product_id=parent['product_id'],
+            user_id=admin_user['_id'],
+            content=content,
+            parent_id=parent['_id'],
+            is_admin_reply=True,
+        )
+
+        return JsonResponse({
+            'ok': True,
+            'reply': _cv71_serialize_comment(
+                reply,
+                _cv71_product_map(),
+            ),
+        }, status=201)
+
+    except ValueError as exc:
+        return JsonResponse({
+            'ok': False,
+            'error': str(exc),
+        }, status=400)
+
+    except Exception:
+        return JsonResponse({
+            'ok': False,
+            'error': 'Unable to post shop reply.',
+        }, status=500)
+
 
 def _serialize_admin_category(category):
     return {

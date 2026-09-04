@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ElectroMart Feedback Reply</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;color:#1f2937;">
+  <div style="max-width:640px;margin:0 auto;padding:28px 16px;">
+
+    <div style="background:#1435c3;color:#fff;padding:18px 22px;border-radius:10px 10px 0 0;">
+      <strong style="font-size:20px;">ElectroMart</strong>
+    </div>
+
+    <div style="background:#fff;padding:24px 22px;border-radius:0 0 10px 10px;">
+      <p style="margin-top:0;">Hello {{ customer_name }},</p>
+
+      <p>
+        Thank you for contacting ElectroMart. Our team has replied to your feedback.
+      </p>
+
+      <div style="margin:20px 0;padding:14px 16px;background:#f8fafc;border-left:4px solid #94a3b8;">
+        <strong>Topic:</strong> {{ feedback_subject }}
+        <p style="margin:8px 0 0;white-space:pre-line;">{{ feedback_message }}</p>
+      </div>
+
+      <div style="margin:20px 0;padding:16px;background:#eff6ff;border-left:4px solid #2563eb;">
+        <strong>ElectroMart reply</strong>
+        <p style="margin:9px 0 0;white-space:pre-line;">{{ reply_message }}</p>
+      </div>
+
+      <p style="margin-bottom:0;color:#64748b;font-size:13px;">
+        This email was sent in response to feedback submitted through ElectroMart.
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>

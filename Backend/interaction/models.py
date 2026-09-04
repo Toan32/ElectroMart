@@ -30,12 +30,19 @@ def review_document(product_id, user_id, rating, title='', content='', images=No
     }
 
 
-def comment_document(product_id, user_id, content, parent_id=None):
+def comment_document(
+    product_id,
+    user_id,
+    content,
+    parent_id=None,
+    is_admin_reply=False
+):
     return {
         'product_id': product_id,
         'user_id': user_id,
         'parent_id': parent_id,
         'content': content.strip(),
+        'is_admin_reply': bool(is_admin_reply),
         'is_hidden': False,
         'created_at': now_utc(),
         'updated_at': now_utc(),
@@ -51,13 +58,28 @@ def wishlist_document(user_id):
     }
 
 
-def feedback_document(name, email, subject, message, user_id=None):
+def feedback_document(
+    name,
+    email,
+    subject,
+    message,
+    user_id=None,
+    attachment=None,
+):
+    """Build a CV70 feedback document.
+
+    ``attachment`` is metadata for one uploaded file. The physical file is
+    stored through Django's default_storage by the view layer; MongoDB only
+    stores the metadata/path needed to display or download it later.
+    """
     return {
         'user_id': user_id,
         'name': name.strip(),
         'email': email.strip().lower(),
         'subject': subject.strip(),
         'message': message.strip(),
+        'attachment': dict(attachment) if attachment else None,
+        'admin_reply': None,
         'status': 'new',
         'created_at': now_utc(),
         'updated_at': now_utc(),
