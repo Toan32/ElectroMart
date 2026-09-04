@@ -11,7 +11,7 @@ def now_utc():
     return datetime.now(timezone.utc)
 
 
-def review_document(product_id, user_id, rating, content=''):
+def review_document(product_id, user_id, rating, title='', content='', images=None):
     rating = int(rating)
 
     if rating < 1 or rating > 5:
@@ -21,7 +21,9 @@ def review_document(product_id, user_id, rating, content=''):
         'product_id': product_id,
         'user_id': user_id,
         'rating': rating,
+        'title': title.strip(),
         'content': content.strip(),
+        'images': list(images or []),
         'is_hidden': False,
         'created_at': now_utc(),
         'updated_at': now_utc(),

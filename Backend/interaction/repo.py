@@ -43,14 +43,16 @@ def _oid(value):
 # Review
 # ============================================================
 
-def create_review(product_id, user_id, rating, content=''):
+def create_review(product_id, user_id, rating, title='', content='', images=None):
     db = get_db()
 
     doc = review_document(
         product_id=_oid(product_id),
         user_id=_oid(user_id),
         rating=rating,
+        title=title,
         content=content,
+        images=images,
     )
 
     try:
@@ -92,7 +94,7 @@ def list_reviews(product_id, include_hidden=False):
     )
 
 
-def update_review(review_id, rating=None, content=None):
+def update_review(review_id, rating=None, title=None, content=None, images=None):
     fields = {
         'updated_at': now_utc()
     }
@@ -107,8 +109,14 @@ def update_review(review_id, rating=None, content=None):
 
         fields['rating'] = rating
 
+    if title is not None:
+        fields['title'] = title.strip()
+
     if content is not None:
         fields['content'] = content.strip()
+
+    if images is not None:
+        fields['images'] = list(images)
 
     return get_db()[REVIEWS].find_one_and_update(
         {'_id': _oid(review_id)},

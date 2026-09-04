@@ -35,8 +35,10 @@
     <div class="detail-sub">
       <span>Part number: <b>{{ p.part_number }}</b></span>
       <span>Brand: <b>{{ p.brand_name }}</b></span>
-      {% if p.rating_count %}
-      <span class="stars">{{ p.avg_rating|stars }} <i>({{ p.rating_count }} reviews)</i></span>
+      {% if reviews %}
+      <span class="stars">{{ average_rating|stars }} <i>({{ reviews|length }} reviews)</i></span>
+      {% else %}
+      <span class="muted">No reviews yet</span>
       {% endif %}
     </div>
 
@@ -88,7 +90,7 @@
   <div class="tab-head">
   <button class="tab-btn on" data-tab="spec">Specifications</button>
   <button class="tab-btn" data-tab="desc">Description</button>
-  <button class="tab-btn" data-tab="rev">Reviews ({{ p.rating_count|default:0 }})</button>
+  <button class="tab-btn" data-tab="rev">Reviews ({{ reviews|length }})</button>
 
   <button class="tab-btn" data-tab="qa">
     Q&amp;A
@@ -115,60 +117,30 @@
 
       <div class="review-score">
         <div class="review-score-number">
-          {{ p.avg_rating|default:"0.0" }}
+          {{ average_rating|default:"0.0" }}
         </div>
 
         <div class="stars">
-          {{ p.avg_rating|default:0|stars }}
+          {{ average_rating|default:0|stars }}
         </div>
 
         <p class="muted">
-          Based on {{ p.rating_count|default:0 }} reviews
+          Based on {{ reviews|length }} reviews
         </p>
       </div>
 
 
       <div class="review-distribution">
 
+        {% for item in rating_distribution %}
         <div class="review-row">
-          <span>5 ★</span>
+          <span>{{ item.star }} ★</span>
           <div class="review-bar">
-            <div class="review-fill" style="width: 80%"></div>
+            <div class="review-fill" style="width: {{ item.percent }}%"></div>
           </div>
-          <span>80</span>
+          <span>{{ item.count }}</span>
         </div>
-
-        <div class="review-row">
-          <span>4 ★</span>
-          <div class="review-bar">
-            <div class="review-fill" style="width: 45%"></div>
-          </div>
-          <span>45</span>
-        </div>
-
-        <div class="review-row">
-          <span>3 ★</span>
-          <div class="review-bar">
-            <div class="review-fill" style="width: 25%"></div>
-          </div>
-          <span>25</span>
-        </div>
-
-        <div class="review-row">
-          <span>2 ★</span>
-          <div class="review-bar">
-            <div class="review-fill" style="width: 10%"></div>
-          </div>
-          <span>10</span>
-        </div>
-
-        <div class="review-row">
-          <span>1 ★</span>
-          <div class="review-bar">
-            <div class="review-fill" style="width: 5%"></div>
-          </div>
-          <span>5</span>
-        </div>
+        {% endfor %}
 
       </div>
 
@@ -178,8 +150,8 @@
     <div class="review-form">
 
       <h2>Write a review</h2>
-
-      <form>
+      <form method="post" enctype="multipart/form-data" action="{% url 'submit_review' product_slug=p.slug %}">
+        {% csrf_token %}
 
         <div class="form-group">
           <label>Your rating</label>
@@ -256,208 +228,52 @@
         See what customers think about this product.
       </p>
     </div>
-
-    <div class="review-sort">
-      <label for="review-sort">Sort by</label>
-
-      <select id="review-sort">
-        <option value="newest">Newest</option>
-        <option value="highest">Highest rating</option>
-        <option value="lowest">Lowest rating</option>
-        <option value="helpful">Most helpful</option>
-      </select>
-    </div>
   </div>
 
-
-  <!-- Review 1 -->
-  <article class="review-card" data-rating="5">
+  {% for review in reviews %}
+  <article class="review-card" data-rating="{{ review.rating }}">
 
     <div class="review-card-head">
-
       <div class="review-user">
-
-        <div class="review-avatar">
-          NA
-        </div>
+        <div class="review-avatar">CU</div>
 
         <div>
-          <div class="review-user-name">
-            Nguyen Van A
-
-            <span class="verified-badge">
-              Verified purchase
-            </span>
-          </div>
-
+          <div class="review-user-name">Customer</div>
           <div class="review-date">
-            August 18, 2026
+            {{ review.created_at|date:"F j, Y" }}
           </div>
         </div>
-
       </div>
-
 
       <div class="review-card-rating">
-        ★★★★★
+        {{ review.rating|stars }}
       </div>
-
     </div>
 
-
+    {% if review.title %}
     <h3 class="review-card-title">
-      Great development board
+      {{ review.title }}
     </h3>
+    {% endif %}
 
     <p class="review-card-content">
-      The board works perfectly and was detected immediately.
-      Wi-Fi connection is stable and the packaging was very secure.
-      Good choice for electronics projects.
+      {{ review.content|linebreaksbr }}
     </p>
 
-
+    {% if review.images %}
     <div class="review-card-images">
-
+      {% for image in review.images %}
       <div class="review-card-image">
-        ESP32
+        <img src="{{ image }}" alt="Review image" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">
       </div>
-
-      <div class="review-card-image">
-        BOARD
-      </div>
-
+      {% endfor %}
     </div>
-
-
-    <div class="review-card-actions">
-
-      <button type="button" class="review-helpful-btn">
-        ♡ Helpful
-        <span>12</span>
-      </button>
-
-      <button type="button" class="review-action-btn">
-        Reply
-      </button>
-
-    </div>
+    {% endif %}
 
   </article>
-
-
-  <!-- Review 2 -->
-  <article class="review-card" data-rating="4">
-
-    <div class="review-card-head">
-
-      <div class="review-user">
-
-        <div class="review-avatar">
-          TB
-        </div>
-
-        <div>
-          <div class="review-user-name">
-            Tran Minh B
-          </div>
-
-          <div class="review-date">
-            August 16, 2026
-          </div>
-        </div>
-
-      </div>
-
-
-      <div class="review-card-rating">
-        ★★★★☆
-      </div>
-
-    </div>
-
-
-    <h3 class="review-card-title">
-      Good product for the price
-    </h3>
-
-    <p class="review-card-content">
-      Product quality is good and all pins work normally.
-      Delivery was quick. Documentation could be a little more detailed,
-      but overall I am satisfied.
-    </p>
-
-
-    <div class="review-card-actions">
-
-      <button type="button" class="review-helpful-btn">
-        ♡ Helpful
-        <span>6</span>
-      </button>
-
-      <button type="button" class="review-action-btn">
-        Reply
-      </button>
-
-    </div>
-
-  </article>
-
-
-  <!-- Review 3 -->
-  <article class="review-card" data-rating="3">
-
-    <div class="review-card-head">
-
-      <div class="review-user">
-
-        <div class="review-avatar">
-          LH
-        </div>
-
-        <div>
-          <div class="review-user-name">
-            Le Hoang
-          </div>
-
-          <div class="review-date">
-            August 12, 2026
-          </div>
-        </div>
-
-      </div>
-
-
-      <div class="review-card-rating">
-        ★★★☆☆
-      </div>
-
-    </div>
-
-
-    <h3 class="review-card-title">
-      Works as expected
-    </h3>
-
-    <p class="review-card-content">
-      It works fine for basic projects. The product is good,
-      although the package arrived with a small dent.
-    </p>
-
-
-    <div class="review-card-actions">
-
-      <button type="button" class="review-helpful-btn">
-        ♡ Helpful
-        <span>3</span>
-      </button>
-
-      <button type="button" class="review-action-btn">
-        Reply
-      </button>
-
-    </div>
-
-  </article>
+  {% empty %}
+  <p class="muted">No reviews yet.</p>
+  {% endfor %}
 
 </div>
 
@@ -479,7 +295,7 @@
       </div>
 
       <div class="qa-count">
-        24 questions
+        {{ questions|length }} questions
       </div>
     </div>
 
@@ -487,231 +303,147 @@
     <!-- Ask question -->
     <div class="qa-form">
 
-      <h3>Ask a question</h3>
+  <h3>Ask a question</h3>
 
-      <div class="form-group">
-        <label for="qa-question">Your question</label>
+  <form method="post" action="{% url 'submit_comment' product_slug=p.slug %}">
+    {% csrf_token %}
 
-        <textarea
-          id="qa-question"
-          rows="4"
-          placeholder="What would you like to know about this product?"
-        ></textarea>
-      </div>
+    <div class="form-group">
+      <label for="qa-question">Your question</label>
 
-      <button type="button" class="btn btn-red" id="qa-submit">
-        Ask question
-      </button>
-
+      <textarea
+        id="qa-question"
+        name="content"
+        rows="4"
+        placeholder="What would you like to know about this product?"
+        required
+      ></textarea>
     </div>
 
-
-    <!-- Question list -->
-    <div class="qa-list">
-
-      <!-- Question 1 -->
-      <article class="qa-item">
-
-        <div class="qa-user">
-
-          <div class="qa-avatar">
-            NA
-          </div>
-
-          <div>
-            <strong>Nguyen Van A</strong>
-
-            <div class="qa-date">
-              August 19, 2026
-            </div>
-          </div>
-
-        </div>
-
-
-        <div class="qa-content">
-          Does this board support 5V input voltage?
-        </div>
-
-
-        <div class="qa-actions">
-
-          <button type="button" class="qa-reply-btn">
-            Reply
-          </button>
-
-        </div>
-
-
-        <!-- Reply form -->
-        <div class="qa-reply-form">
-
-          <textarea
-            rows="3"
-            placeholder="Write your reply..."
-          ></textarea>
-
-          <div class="qa-reply-form-actions">
-
-            <button type="button" class="btn btn-red qa-send-reply">
-              Send reply
-            </button>
-
-            <button type="button" class="btn btn-outline qa-cancel-reply">
-              Cancel
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <!-- Nested replies -->
-        <div class="qa-replies">
-
-          <!-- Admin reply -->
-          <div class="qa-reply qa-admin">
-
-            <div class="qa-user">
-
-              <div class="qa-avatar qa-avatar-admin">
-                EM
-              </div>
-
-              <div>
-                <strong>
-                  ElectroMart Admin
-                </strong>
-
-                <span class="qa-admin-badge">
-                  Admin
-                </span>
-
-                <div class="qa-date">
-                  August 19, 2026
-                </div>
-              </div>
-
-            </div>
-
-
-            <div class="qa-content">
-              Yes. This product supports 5V input through its supported
-              power interface. Please check the pin specification before
-              connecting external power.
-            </div>
-
-
-            <div class="qa-actions">
-              <button type="button" class="qa-reply-btn">
-                Reply
-              </button>
-            </div>
-
-          </div>
-
-
-          <!-- Customer reply -->
-          <div class="qa-reply">
-
-            <div class="qa-user">
-
-              <div class="qa-avatar">
-                TB
-              </div>
-
-              <div>
-                <strong>Tran Minh B</strong>
-
-                <div class="qa-date">
-                  August 20, 2026
-                </div>
-              </div>
-
-            </div>
-
-
-            <div class="qa-content">
-              I am currently using it with 5V and it works normally.
-            </div>
-
-
-            <div class="qa-actions">
-              <button type="button" class="qa-reply-btn">
-                Reply
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-      <!-- Question 2 -->
-      <article class="qa-item">
-
-        <div class="qa-user">
-
-          <div class="qa-avatar">
-            LH
-          </div>
-
-          <div>
-            <strong>Le Hoang</strong>
-
-            <div class="qa-date">
-              August 17, 2026
-            </div>
-          </div>
-
-        </div>
-
-
-        <div class="qa-content">
-          Is the USB cable included in the package?
-        </div>
-
-
-        <div class="qa-actions">
-
-          <button type="button" class="qa-reply-btn">
-            Reply
-          </button>
-
-        </div>
-
-
-        <div class="qa-reply-form">
-
-          <textarea
-            rows="3"
-            placeholder="Write your reply..."
-          ></textarea>
-
-          <div class="qa-reply-form-actions">
-
-            <button type="button" class="btn btn-red qa-send-reply">
-              Send reply
-            </button>
-
-            <button type="button" class="btn btn-outline qa-cancel-reply">
-              Cancel
-            </button>
-
-          </div>
-
-        </div>
-
-      </article>
-
-    </div>
-
-  </div>
+    <button type="submit" class="btn btn-red">
+      Ask question
+    </button>
+
+  </form>
 
 </div>
 
+    <!-- Question list -->
+<div class="qa-list">
+
+  {% for question in questions %}
+  <article class="qa-item">
+
+    <div class="qa-user">
+      <div class="qa-avatar">
+        CU
+      </div>
+
+      <div>
+        <strong>Customer</strong>
+
+        <div class="qa-date">
+          {{ question.created_at|date:"d/m/Y H:i" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="qa-content">
+      {{ question.content }}
+    </div>
+
+    <div class="qa-actions">
+      <button
+        type="button"
+        class="qa-reply-btn qa-real-reply-btn"
+        data-target="reply-form-{{ question.id }}"
+        style="font-weight:600;"
+      >
+        Reply
+      </button>
+    </div>
+
+    <div class="qa-reply-form" id="reply-form-{{ question.id }}">
+
+      <form method="post" action="{% url 'submit_comment' product_slug=p.slug %}">
+        {% csrf_token %}
+
+        <input
+          type="hidden"
+          name="parent_id"
+          value="{{ question.id }}"
+        >
+
+        <textarea
+          name="content"
+          rows="3"
+          placeholder="Write your reply..."
+          required
+        ></textarea>
+
+        <div class="qa-reply-form-actions">
+          <button type="submit" class="btn btn-red">
+            Send reply
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-outline qa-real-cancel-reply"
+            data-target="reply-form-{{ question.id }}"
+          >
+            Cancel
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+
+    {% if question.replies %}
+    <div class="qa-replies">
+
+      {% for reply in question.replies %}
+      <div class="qa-reply">
+
+        <div class="qa-user">
+          <div class="qa-avatar">
+            CU
+          </div>
+
+          <div>
+            <strong>Customer</strong>
+
+            <div class="qa-date">
+              {{ reply.created_at|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+        </div>
+
+        <div class="qa-content">
+          {{ reply.content }}
+        </div>
+
+      </div>
+      {% endfor %}
+
+    </div>
+    {% endif %}
+
+  </article>
+
+  {% empty %}
+
+  <p class="muted">
+    No questions yet. Be the first to ask about this product.
+  </p>
+
+  {% endfor %}
+
+</div>
+
+  </div>
+</div>
 </div>
 
 {% if related %}
@@ -723,6 +455,8 @@
 {% endblock %}
 
 {% block extra_js %}
+
+
 <script>
 /* =========================
    PRODUCT DETAIL TABS
@@ -929,328 +663,33 @@ document.querySelectorAll('.review-helpful-btn').forEach(function (button) {
 });
 
 /* =========================
-   Q&A REPLY FORM - CV31
+   Q&A REAL INTERACTION - CV42
    ========================= */
 
-document.querySelectorAll('.qa-reply-btn').forEach(function (button) {
-
+document.querySelectorAll('.qa-real-reply-btn').forEach(function (button) {
   button.addEventListener('click', function () {
+    const form = document.getElementById(button.dataset.target);
 
-    const container = button.closest('.qa-item, .qa-reply');
-
-    if (!container) {
-      return;
+    if (form) {
+      form.classList.toggle('show');
     }
-
-    const replyForm = Array.from(container.children).find(function (child) {
-      return child.classList.contains('qa-reply-form');
-    });
-
-    if (!replyForm) {
-
-      const newForm = document.createElement('div');
-
-      newForm.className = 'qa-reply-form show';
-
-      newForm.innerHTML = `
-        <textarea
-          rows="3"
-          placeholder="Write your reply..."
-        ></textarea>
-
-        <div class="qa-reply-form-actions">
-
-          <button type="button" class="btn btn-red qa-send-reply">
-            Send reply
-          </button>
-
-          <button type="button" class="btn btn-outline qa-cancel-reply">
-            Cancel
-          </button>
-
-        </div>
-      `;
-
-      button.closest('.qa-actions').after(newForm);
-
-      return;
-    }
-
-    replyForm.classList.toggle('show');
-
   });
-
 });
 
-/* Cancel reply */
-document.addEventListener('click', function (event) {
+document.querySelectorAll('.qa-real-cancel-reply').forEach(function (button) {
+  button.addEventListener('click', function () {
+    const form = document.getElementById(button.dataset.target);
 
-  const cancelButton = event.target.closest('.qa-cancel-reply');
+    if (form) {
+      form.classList.remove('show');
 
-  if (!cancelButton) {
-    return;
-  }
+      const textarea = form.querySelector('textarea');
 
-  const replyForm = cancelButton.closest('.qa-reply-form');
-
-  if (replyForm) {
-    replyForm.classList.remove('show');
-
-    const textarea = replyForm.querySelector('textarea');
-
-    if (textarea) {
-      textarea.value = '';
+      if (textarea) {
+        textarea.value = '';
+      }
     }
-  }
-
-});
-
-/* =========================
-   Q&A MOCK INTERACTION - CV31
-   ========================= */
-
-const qaSubmitButton = document.getElementById('qa-submit');
-const qaQuestionInput = document.getElementById('qa-question');
-const qaList = document.querySelector('.qa-list');
-
-
-/* ---------- Ask new question ---------- */
-
-if (qaSubmitButton && qaQuestionInput && qaList) {
-
-  qaSubmitButton.addEventListener('click', function () {
-
-    const question = qaQuestionInput.value.trim();
-
-    if (!question) {
-      qaQuestionInput.focus();
-      return;
-    }
-
-    const newQuestion = document.createElement('article');
-
-    newQuestion.className = 'qa-item';
-
-    newQuestion.innerHTML = `
-      <div class="qa-user">
-
-        <div class="qa-avatar">
-          YOU
-        </div>
-
-        <div>
-          <strong>You</strong>
-
-          <div class="qa-date">
-            Just now
-          </div>
-        </div>
-
-      </div>
-
-      <div class="qa-content"></div>
-
-      <div class="qa-actions">
-        <button type="button" class="qa-reply-btn">
-          Reply
-        </button>
-      </div>
-
-      <div class="qa-reply-form">
-
-        <textarea
-          rows="3"
-          placeholder="Write your reply..."
-        ></textarea>
-
-        <div class="qa-reply-form-actions">
-
-          <button type="button" class="btn btn-red qa-send-reply">
-            Send reply
-          </button>
-
-          <button type="button" class="btn btn-outline qa-cancel-reply">
-            Cancel
-          </button>
-
-        </div>
-
-      </div>
-
-      <div class="qa-replies"></div>
-    `;
-
-    newQuestion.querySelector('.qa-content').textContent = question;
-
-    qaList.prepend(newQuestion);
-
-    qaQuestionInput.value = '';
   });
-
-}
-
-
-/* ---------- Open reply form ---------- */
-
-/*
-  Dùng event delegation để cả những câu hỏi/reply
-  được tạo sau này cũng hoạt động.
-*/
-document.addEventListener('click', function (event) {
-
-  const replyButton = event.target.closest('.qa-reply-btn');
-
-  if (!replyButton) {
-    return;
-  }
-
-  const container = replyButton.closest('.qa-item, .qa-reply');
-
-  if (!container) {
-    return;
-  }
-
-  let replyForm = Array.from(container.children).find(function (child) {
-    return child.classList.contains('qa-reply-form');
-  });
-
-  if (!replyForm) {
-
-    replyForm = document.createElement('div');
-
-    replyForm.className = 'qa-reply-form';
-
-    replyForm.innerHTML = `
-      <textarea
-        rows="3"
-        placeholder="Write your reply..."
-      ></textarea>
-
-      <div class="qa-reply-form-actions">
-
-        <button type="button" class="btn btn-red qa-send-reply">
-          Send reply
-        </button>
-
-        <button type="button" class="btn btn-outline qa-cancel-reply">
-          Cancel
-        </button>
-
-      </div>
-    `;
-
-    replyButton.closest('.qa-actions').after(replyForm);
-  }
-
-  replyForm.classList.toggle('show');
-
-});
-
-/* ---------- Send reply ---------- */
-
-document.addEventListener('click', function (event) {
-
-  const sendButton = event.target.closest('.qa-send-reply');
-
-  if (!sendButton) {
-    return;
-  }
-
-  const replyForm = sendButton.closest('.qa-reply-form');
-
-  if (!replyForm) {
-    return;
-  }
-
-  const textarea = replyForm.querySelector('textarea');
-  const replyText = textarea.value.trim();
-
-  if (!replyText) {
-    textarea.focus();
-    return;
-  }
-
-  const parentContainer = replyForm.closest('.qa-item, .qa-reply');
-
-  if (!parentContainer) {
-    return;
-  }
-
-  const newReply = document.createElement('div');
-
-  newReply.className = 'qa-reply';
-
-  newReply.innerHTML = `
-    <div class="qa-user">
-
-      <div class="qa-avatar">
-        YOU
-      </div>
-
-      <div>
-        <strong>You</strong>
-
-        <div class="qa-date">
-          Just now
-        </div>
-      </div>
-
-    </div>
-
-    <div class="qa-content"></div>
-
-    <div class="qa-actions">
-      <button type="button" class="qa-reply-btn">
-        Reply
-      </button>
-    </div>
-  `;
-
-  newReply.querySelector('.qa-content').textContent = replyText;
-
-  let repliesContainer = Array.from(parentContainer.children).find(function (child) {
-    return child.classList.contains('qa-replies');
-  });
-
-
-  if (!repliesContainer) {
-
-    repliesContainer = document.createElement('div');
-    repliesContainer.className = 'qa-replies';
-
-    parentContainer.appendChild(repliesContainer);
-  }
-
-
-  repliesContainer.appendChild(newReply);
-
-  textarea.value = '';
-  replyForm.classList.remove('show');
-
-});
-
-document.addEventListener('click', function (event) {
-
-  const cancelButton = event.target.closest('.qa-cancel-reply');
-
-  if (!cancelButton) {
-    return;
-  }
-
-  const replyForm = cancelButton.closest('.qa-reply-form');
-
-  if (!replyForm) {
-    return;
-  }
-
-  const textarea = replyForm.querySelector('textarea');
-
-  if (textarea) {
-    textarea.value = '';
-  }
-
-  replyForm.classList.remove('show');
-
 });
 
 </script>

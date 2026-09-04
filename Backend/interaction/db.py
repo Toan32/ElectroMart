@@ -1,7 +1,10 @@
 """MongoDB connection for the Interaction module.
 
-Reuses the same connect-once pattern as catalogue/db.py and accounts/db.py.
-Index creation is handled in Database/create_indexes.py.
+MongoClient keeps its own connection pool, so one shared client
+per process is enough.
+
+Indexes for these collections are created in:
+Database/create_indexes.py
 """
 
 from django.conf import settings
@@ -10,7 +13,11 @@ from pymongo import MongoClient
 
 _client = None
 
-# Collection names
+
+# ============================================================
+# Interaction collection names - CV42
+# ============================================================
+
 REVIEWS = 'reviews'
 COMMENTS = 'comments'
 WISHLISTS = 'wishlists'

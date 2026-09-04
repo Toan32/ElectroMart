@@ -18,7 +18,7 @@ instead of scattered across the codebase.
 """
 import os
 
-from pymongo import ASCENDING, MongoClient
+from pymongo import ASCENDING, DESCENDING, MongoClient
 
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('MONGO_DB_NAME', 'electromart_db')
@@ -50,92 +50,80 @@ def ensure_accounts_indexes(db):
 def ensure_interaction_indexes(db):
     """Interaction module - CV42."""
 
-    # --------------------------------------------------------
-    # Reviews
-    # One user can review one product only once.
-    # --------------------------------------------------------
     reviews = db['reviews']
-
     reviews.create_index(
-        [
-            ('product_id', ASCENDING),
-            ('user_id', ASCENDING),
-        ],
+        [('product_id', ASCENDING), ('user_id', ASCENDING)],
         unique=True,
         name='uniq_review_product_user',
     )
-
     reviews.create_index(
         [('product_id', ASCENDING)],
         name='idx_reviews_product',
     )
-
     reviews.create_index(
         [('user_id', ASCENDING)],
         name='idx_reviews_user',
     )
 
-    # --------------------------------------------------------
-    # Comments
-    # parent_id references another comment for replies.
-    # --------------------------------------------------------
     comments = db['comments']
-
     comments.create_index(
         [('product_id', ASCENDING)],
         name='idx_comments_product',
     )
-
     comments.create_index(
         [('user_id', ASCENDING)],
         name='idx_comments_user',
     )
-
     comments.create_index(
         [('parent_id', ASCENDING)],
         name='idx_comments_parent',
     )
 
-    # --------------------------------------------------------
-    # Wishlist
-    # One wishlist document per user.
-    # --------------------------------------------------------
     wishlists = db['wishlists']
-
     wishlists.create_index(
         [('user_id', ASCENDING)],
         unique=True,
         name='uniq_wishlist_user',
     )
 
-    # --------------------------------------------------------
-    # Feedback
-    # --------------------------------------------------------
     feedback = db['feedback']
-
     feedback.create_index(
         [('user_id', ASCENDING)],
         name='idx_feedback_user',
     )
-
     feedback.create_index(
         [('status', ASCENDING)],
         name='idx_feedback_status',
     )
 
-    # --------------------------------------------------------
-    # Announcements
-    # --------------------------------------------------------
     announcements = db['announcements']
-
     announcements.create_index(
         [('is_active', ASCENDING)],
         name='idx_announcements_active',
     )
-
     announcements.create_index(
         [('created_at', ASCENDING)],
         name='idx_announcements_created_at',
+    )
+
+
+def ensure_inventory_indexes(db):
+    """Catalogue inventory module - CV67."""
+    movements = db['stock_movements']
+
+    movements.create_index(
+        [('sku', ASCENDING), ('created_at', DESCENDING)],
+        name='idx_stock_movements_sku_created',
+    )
+
+    movements.create_index(
+        [('product_id', ASCENDING), ('created_at', DESCENDING)],
+        name='idx_stock_movements_product_created',
+    )
+
+    movements.create_index(
+        [('type', ASCENDING), ('created_at', DESCENDING)],
+        name='idx_stock_movements_type_created',
     )
 
 
@@ -145,9 +133,11 @@ def main():
 
     ensure_accounts_indexes(db)
     ensure_interaction_indexes(db)
+    ensure_inventory_indexes(db)
 
     print('Accounts & B2B indexes created on database "%s".' % DB_NAME)
     print('Interaction indexes created on database "%s".' % DB_NAME)
+    print('Inventory indexes created on database "%s".' % DB_NAME)
 
 
 if __name__ == '__main__':

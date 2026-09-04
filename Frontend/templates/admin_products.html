@@ -15,6 +15,65 @@
     </div>
 
 
+
+    <!-- PRODUCT LIST -->
+    <section class="admin-product-panel admin-product-list-panel">
+
+        <div class="admin-product-panel-header admin-product-list-header">
+            <div>
+                <h2>Products</h2>
+                <p>Choose a product to edit, manage variants, or hide/unhide it.</p>
+            </div>
+
+            <div class="admin-product-list-tools">
+                <input
+                    type="search"
+                    id="admin-product-search"
+                    placeholder="Search name or SKU..."
+                    autocomplete="off"
+                >
+
+                <button
+                    type="button"
+                    class="admin-product-refresh-btn"
+                    id="admin-product-refresh-btn"
+                >
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-product-list-meta">
+            <span id="admin-product-list-count">0 products</span>
+            <span>
+                Hidden products stay in MongoDB and are not shown to customers.
+            </span>
+        </div>
+
+        <div class="admin-product-list-table-wrapper">
+            <table class="admin-product-list-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="admin-product-list-body">
+                    <tr class="admin-product-list-empty">
+                        <td colspan="7">Loading products...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
     <div class="admin-product-layout">
 
         <!-- PRODUCT FORM -->
@@ -22,12 +81,13 @@
 
             <div class="admin-product-panel-header">
                 <div>
-                    <h2>Product Information</h2>
-                    <p>Create or update product information.</p>
+                    <h2 id="admin-product-form-title">Create Product</h2>
+                    <p id="admin-product-form-description">Create a new product.</p>
                 </div>
             </div>
 
-            <form class="admin-product-form" id="admin-product-form">
+            <form class="admin-product-form" id="admin-product-form" enctype="multipart/form-data">
+                {% csrf_token %}
 
     <div class="admin-product-form-grid">
 
@@ -40,6 +100,7 @@
                 type="text"
                 id="product-name"
                 placeholder="Enter product name"
+                required
             >
         </div>
 
@@ -53,6 +114,7 @@
                 type="text"
                 id="product-sku"
                 placeholder="Example: ESP32-DEVKIT-V1"
+                required
             >
         </div>
 
@@ -62,32 +124,8 @@
                 Category
             </label>
 
-            <select id="product-category">
-
-                <option value="">
-                    Select category
-                </option>
-
-                <option value="microcontrollers-kits">
-                    Microcontrollers & Kits
-                </option>
-
-                <option value="sensors">
-                    Sensors
-                </option>
-
-                <option value="resistors">
-                    Resistors
-                </option>
-
-                <option value="capacitors">
-                    Capacitors
-                </option>
-
-                <option value="power-regulators">
-                    Power & Regulators
-                </option>
-
+            <select id="product-category" required>
+                <option value="">Loading categories...</option>
             </select>
         </div>
 
@@ -98,27 +136,7 @@
             </label>
 
             <select id="product-brand">
-
-                <option value="">
-                    Select brand
-                </option>
-
-                <option value="espressif">
-                    Espressif
-                </option>
-
-                <option value="arduino">
-                    Arduino
-                </option>
-
-                <option value="st">
-                    STMicroelectronics
-                </option>
-
-                <option value="texas-instruments">
-                    Texas Instruments
-                </option>
-
+                <option value="">Loading brands...</option>
             </select>
         </div>
 
@@ -173,6 +191,72 @@
     </div>
 
 
+    <!-- PRODUCT MEDIA -->
+    <div class="admin-product-spec-section admin-product-media-section">
+        <div class="admin-product-spec-header">
+            <div>
+                <h3>Product Media</h3>
+                <p>Upload multiple product images and one PDF datasheet.</p>
+            </div>
+        </div>
+
+        <div class="admin-product-form-grid">
+            <div class="admin-product-form-group">
+                <label for="product-images">Product Images</label>
+                <input
+                    type="file"
+                    id="product-images"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    multiple
+                >
+                <small>JPG, PNG, WEBP or GIF. Maximum 10 MB per image.</small>
+            </div>
+
+            <div class="admin-product-form-group">
+                <label for="product-datasheet">Datasheet PDF</label>
+                <input
+                    type="file"
+                    id="product-datasheet"
+                    accept="application/pdf,.pdf"
+                >
+                <small>Optional. One PDF file, maximum 20 MB.</small>
+                <div id="product-datasheet-name" class="admin-product-file-name"></div>
+            </div>
+        </div>
+
+
+        <div
+            id="admin-product-existing-media"
+            class="admin-product-existing-media"
+            hidden
+        >
+            <div class="admin-product-existing-media-title">
+                Existing Media
+            </div>
+
+            <div
+                id="admin-product-existing-images"
+                class="admin-product-existing-images"
+            ></div>
+
+            <div
+                id="admin-product-existing-datasheet"
+                class="admin-product-existing-datasheet"
+            ></div>
+
+            <small>
+                New images are appended. Uploading a new PDF replaces the current datasheet.
+            </small>
+        </div>
+
+        <div
+            id="product-image-preview"
+            class="admin-product-image-preview"
+            hidden
+        ></div>
+    </div>
+
+
     <!-- DYNAMIC SPECIFICATIONS -->
     <div class="admin-product-spec-section">
 
@@ -211,6 +295,7 @@
         <button
             type="submit"
             class="admin-product-save-btn"
+            id="admin-product-save-btn"
         >
             Save Product
         </button>
@@ -222,7 +307,7 @@
         id="admin-product-success"
         hidden
     >
-        Product saved successfully. GUI mock-up only.
+        Product saved successfully.
     </div>
 
 </form>
@@ -244,14 +329,18 @@
 
     <div>
         <span class="admin-variant-count">
-            2 variants
+            0 variants
         </span>
+        <small id="variant-product-label" class="admin-variant-product-label">
+            Save a product first to manage its variants.
+        </small>
     </div>
 
     <button
         type="button"
         class="admin-add-variant-btn"
         id="add-variant-btn"
+        disabled
     >
         + Add Variant
     </button>
@@ -275,88 +364,11 @@
         </thead>
 
         <tbody id="variant-table-body">
-
-            <tr>
-                <td>
-                    <code>ESP32-DEV-V1</code>
-                </td>
-
-                <td>
-                    ESP32 DevKit V1
-                </td>
-
-                <td>
-                    $12.50
-                </td>
-
-                <td>
-                    120
-                </td>
-
-                <td>
-                    <span class="admin-variant-status active">
-                        Active
-                    </span>
-                </td>
-
-                <td>
-                    <button
-                        type="button"
-                        class="admin-variant-edit-btn"
-                    >
-                        Edit
-                    </button>
-
-                    <button
-                        type="button"
-                        class="admin-variant-delete-btn"
-                    >
-                        Delete
-                    </button>
+            <tr class="admin-variant-empty-row">
+                <td colspan="6">
+                    Save a product first to manage variants.
                 </td>
             </tr>
-
-
-            <tr>
-                <td>
-                    <code>ESP32-DEV-V2</code>
-                </td>
-
-                <td>
-                    ESP32 DevKit V2
-                </td>
-
-                <td>
-                    $14.00
-                </td>
-
-                <td>
-                    65
-                </td>
-
-                <td>
-                    <span class="admin-variant-status active">
-                        Active
-                    </span>
-                </td>
-
-                <td>
-                    <button
-                        type="button"
-                        class="admin-variant-edit-btn"
-                    >
-                        Edit
-                    </button>
-
-                    <button
-                        type="button"
-                        class="admin-variant-delete-btn"
-                    >
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
         </tbody>
 
     </table>
@@ -469,8 +481,32 @@
                 </select>
             </div>
 
-            <div class="category-modal-note">
-                GUI mock-up only. Variants are not saved to MongoDB.
+            
+            <div class="category-form-group admin-tier-pricing-group">
+                <div class="admin-tier-pricing-header">
+                    <div>
+                        <label>Tier Pricing</label>
+                        <small>Set a price for each minimum quantity.</small>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="admin-add-tier-btn"
+                        id="add-tier-btn"
+                    >
+                        + Add Price Tier
+                    </button>
+                </div>
+
+                <div id="variant-tier-list" class="admin-tier-list">
+                    <div class="admin-tier-empty">
+                        No tier pricing. Retail price will be used.
+                    </div>
+                </div>
+            </div>
+
+<div class="category-modal-note">
+                Variants and tier pricing are saved directly to the selected MongoDB product.
             </div>
 
             <div class="category-modal-footer">
@@ -499,6 +535,362 @@
 
 </div>
 
+
+<style>
+.admin-product-media-section small {
+    display: block;
+    margin-top: 6px;
+    color: #667085;
+    font-size: 12px;
+}
+
+.admin-product-image-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.admin-product-image-preview[hidden] {
+    display: none;
+}
+
+.admin-product-image-preview-item {
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.admin-product-image-preview-item img {
+    width: 100%;
+    height: 100px;
+    display: block;
+    object-fit: cover;
+}
+
+.admin-product-image-preview-name {
+    padding: 7px 8px;
+    font-size: 11px;
+    color: #475467;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-product-file-name {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #344054;
+    word-break: break-word;
+}
+
+.admin-variant-product-label {
+    display: block;
+    margin-top: 4px;
+    color: #667085;
+    font-size: 12px;
+}
+
+.admin-add-variant-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.admin-variant-empty-row td {
+    text-align: center;
+    padding: 24px 12px;
+    color: #667085;
+}
+
+.admin-tier-pricing-group {
+    margin-top: 14px;
+}
+
+.admin-tier-pricing-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.admin-tier-pricing-header label {
+    margin-bottom: 2px;
+}
+
+.admin-tier-pricing-header small {
+    display: block;
+    color: #667085;
+    font-size: 12px;
+}
+
+.admin-add-tier-btn,
+.admin-tier-remove-btn {
+    border: 1px solid #d0d5dd;
+    background: #fff;
+    border-radius: 7px;
+    padding: 7px 10px;
+    cursor: pointer;
+}
+
+.admin-tier-list {
+    display: grid;
+    gap: 8px;
+}
+
+.admin-tier-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: end;
+}
+
+.admin-tier-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #475467;
+}
+
+.admin-tier-field input {
+    width: 100%;
+}
+
+.admin-tier-remove-btn {
+    color: #b42318;
+    margin-bottom: 1px;
+}
+
+.admin-tier-empty {
+    padding: 10px 12px;
+    border: 1px dashed #d0d5dd;
+    border-radius: 7px;
+    color: #667085;
+    font-size: 12px;
+}
+
+
+.admin-product-list-panel {
+    margin-bottom: 20px;
+}
+
+.admin-product-list-header {
+    gap: 16px;
+    align-items: center;
+}
+
+.admin-product-list-tools {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.admin-product-list-tools input {
+    min-width: 230px;
+    padding: 9px 11px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.admin-product-refresh-btn {
+    border: 1px solid #d0d5dd;
+    background: #fff;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+}
+
+.admin-product-list-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 12px;
+    color: #667085;
+    font-size: 12px;
+}
+
+.admin-product-list-table-wrapper {
+    overflow-x: auto;
+}
+
+.admin-product-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+}
+
+.admin-product-list-table th,
+.admin-product-list-table td {
+    text-align: left;
+    padding: 11px 10px;
+    border-bottom: 1px solid #eaecf0;
+    vertical-align: middle;
+}
+
+.admin-product-list-table th {
+    color: #475467;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f9fafb;
+}
+
+.admin-product-list-table td {
+    color: #344054;
+    font-size: 13px;
+}
+
+.admin-product-list-name {
+    font-weight: 600;
+    color: #101828;
+}
+
+.admin-product-list-sub {
+    display: block;
+    margin-top: 2px;
+    color: #667085;
+    font-size: 11px;
+}
+
+.admin-product-list-status {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.admin-product-list-status.active {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.admin-product-list-status.hidden {
+    background: #f2f4f7;
+    color: #475467;
+}
+
+.admin-product-list-table th:last-child,
+.admin-product-list-table td:last-child {
+    width: 1%;
+    min-width: 118px;
+    white-space: nowrap;
+}
+
+.admin-product-list-actions {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.admin-product-list-actions button {
+    display: inline-block;
+    border: 1px solid #d0d5dd;
+    background: #fff;
+    border-radius: 7px;
+    padding: 6px 9px;
+    cursor: pointer;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.admin-product-list-actions button + button {
+    margin-left: 6px;
+}
+
+.admin-product-list-actions .admin-product-list-hide-btn {
+    color: #b42318;
+}
+
+.admin-product-list-actions .admin-product-list-unhide-btn {
+    color: #027a48;
+}
+
+.admin-product-list-empty td {
+    padding: 24px 12px;
+    text-align: center;
+    color: #667085;
+}
+
+.admin-product-list-table tr.is-selected td {
+    background: #f9fafb;
+}
+
+.admin-product-existing-media {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    background: #f9fafb;
+}
+
+.admin-product-existing-media[hidden] {
+    display: none;
+}
+
+.admin-product-existing-media-title {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #344054;
+}
+
+.admin-product-existing-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 8px;
+}
+
+.admin-product-existing-image {
+    overflow: hidden;
+    border: 1px solid #e4e7ec;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.admin-product-existing-image img {
+    display: block;
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+}
+
+.admin-product-existing-image span {
+    display: block;
+    padding: 5px 6px;
+    color: #667085;
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-product-existing-datasheet {
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.admin-product-existing-datasheet a {
+    color: #175cd3;
+    text-decoration: none;
+}
+
+@media (max-width: 760px) {
+    .admin-product-list-tools {
+        width: 100%;
+    }
+
+    .admin-product-list-tools input {
+        min-width: 0;
+        flex: 1;
+    }
+}
+
+</style>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -510,6 +902,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const productSuccess =
         document.getElementById("admin-product-success");
+
+    const productFormTitle =
+        document.getElementById("admin-product-form-title");
+
+    const productFormDescription =
+        document.getElementById("admin-product-form-description");
+
+    const productSaveButton =
+        document.getElementById("admin-product-save-btn");
+
+    const productListBody =
+        document.getElementById("admin-product-list-body");
+
+    const productListCount =
+        document.getElementById("admin-product-list-count");
+
+    const productSearch =
+        document.getElementById("admin-product-search");
+
+    const productRefreshButton =
+        document.getElementById("admin-product-refresh-btn");
+
+    const existingMedia =
+        document.getElementById("admin-product-existing-media");
+
+    const existingImages =
+        document.getElementById("admin-product-existing-images");
+
+    const existingDatasheet =
+        document.getElementById("admin-product-existing-datasheet");
 
     const addVariantButton =
         document.getElementById("add-variant-btn");
@@ -559,119 +981,676 @@ document.addEventListener("DOMContentLoaded", function () {
     const variantCount =
         document.querySelector(".admin-variant-count");
 
+    const variantProductLabel =
+        document.getElementById("variant-product-label");
 
+    const addTierButton =
+        document.getElementById("add-tier-btn");
+
+    const variantTierList =
+        document.getElementById("variant-tier-list");
+
+
+    let adminProducts = [];
+    let editingProductId = null;
+
+    let selectedVariantProductId = null;
+    let selectedVariantProductName = "";
+    let variantState = [];
     let variantModalMode = "add";
-    let editingVariantRow = null;
+    let editingVariantIndex = null;
 
 
-    function updateVariantCount() {
+    function formatAdminProductPrice(value) {
 
-        const totalVariants =
-            variantTableBody.querySelectorAll("tr").length;
+        const number = Number(value || 0);
 
-        variantCount.textContent =
-            `${totalVariants} variants`;
+        return Number.isFinite(number)
+            ? `$${number.toFixed(2)}`
+            : "$0.00";
 
     }
 
 
-    function openVariantModal(mode = "add", row = null) {
+    function findAdminProduct(productId) {
 
-        variantModalMode = mode;
-        editingVariantRow = row;
+        return adminProducts.find(
+            function (product) {
+                return product.id === productId;
+            }
+        ) || null;
 
-        variantForm.reset();
-
-
-        if (mode === "edit" && row) {
-
-            variantModalTitle.textContent =
-                "Edit Product Variant";
-
-            variantModalDescription.textContent =
-                "Update the selected product variant.";
-
-            variantSubmitButton.textContent =
-                "Save Changes";
+    }
 
 
-            variantSku.value =
-                row.cells[0]
-                    .querySelector("code")
-                    ?.textContent.trim() || "";
+    function createProductListButton(
+        label,
+        className,
+        productId
+    ) {
 
-            variantName.value =
-                row.cells[1].textContent.trim();
+        const button =
+            document.createElement("button");
 
-            variantPrice.value =
-                row.cells[2].textContent
-                    .replace("$", "")
-                    .trim();
+        button.type = "button";
+        button.className = className;
+        button.textContent = label;
+        button.dataset.productId =
+            productId;
 
-            variantStock.value =
-                row.cells[3].textContent.trim();
+        return button;
+
+    }
 
 
-            const statusBadge =
-                row.cells[4].querySelector(
-                    ".admin-variant-status"
-                );
+    function renderProductList() {
 
-            variantStatus.value =
-                statusBadge?.classList.contains("inactive")
-                    ? "inactive"
-                    : "active";
+        const keyword =
+            String(productSearch?.value || "")
+                .trim()
+                .toLowerCase();
 
-        } else {
+        const filtered =
+            adminProducts.filter(function (product) {
 
-            variantModalMode = "add";
-            editingVariantRow = null;
+                if (!keyword) {
+                    return true;
+                }
 
-            variantModalTitle.textContent =
-                "Add Product Variant";
+                return [
+                    product.name,
+                    product.part_number,
+                    product.category_name,
+                    product.brand_name
+                ].some(function (value) {
+                    return String(value || "")
+                        .toLowerCase()
+                        .includes(keyword);
+                });
 
-            variantModalDescription.textContent =
-                "Create a new product variant.";
+            });
 
-            variantSubmitButton.textContent =
-                "Add Variant";
 
-            variantStatus.value =
-                "active";
+        productListBody.innerHTML = "";
+
+        productListCount.textContent =
+            `${adminProducts.length} ${
+                adminProducts.length === 1
+                    ? "product"
+                    : "products"
+            }`;
+
+
+        if (filtered.length === 0) {
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "admin-product-list-empty";
+
+            const cell =
+                document.createElement("td");
+
+            cell.colSpan = 7;
+            cell.textContent =
+                keyword
+                    ? "No products match your search."
+                    : "No products found.";
+
+            row.appendChild(cell);
+            productListBody.appendChild(row);
+            return;
 
         }
 
 
-        variantModal.classList.add("show");
+        filtered.forEach(function (product) {
 
-        document.body.classList.add("modal-open");
+            const row =
+                document.createElement("tr");
+
+            if (product.id === editingProductId) {
+                row.classList.add("is-selected");
+            }
+
+
+            const productCell =
+                document.createElement("td");
+
+            const name =
+                document.createElement("div");
+
+            name.className =
+                "admin-product-list-name";
+
+            name.textContent =
+                product.name || "Unnamed product";
+
+            const brand =
+                document.createElement("span");
+
+            brand.className =
+                "admin-product-list-sub";
+
+            brand.textContent =
+                product.brand_name ||
+                "No brand";
+
+            productCell.appendChild(name);
+            productCell.appendChild(brand);
+
+
+            const skuCell =
+                document.createElement("td");
+
+            const sku =
+                document.createElement("code");
+
+            sku.textContent =
+                product.part_number || "";
+
+            skuCell.appendChild(sku);
+
+
+            const categoryCell =
+                document.createElement("td");
+
+            categoryCell.textContent =
+                product.category_name || "—";
+
+
+            const priceCell =
+                document.createElement("td");
+
+            priceCell.textContent =
+                formatAdminProductPrice(
+                    product.min_price
+                );
+
+
+            const stockCell =
+                document.createElement("td");
+
+            stockCell.textContent =
+                String(product.total_stock || 0);
+
+
+            const statusCell =
+                document.createElement("td");
+
+            const status =
+                document.createElement("span");
+
+            status.className =
+                `admin-product-list-status ${
+                    product.is_hidden
+                        ? "hidden"
+                        : "active"
+                }`;
+
+            status.textContent =
+                product.is_hidden
+                    ? "Hidden"
+                    : "Active";
+
+            statusCell.appendChild(status);
+
+
+            const actionsCell =
+                document.createElement("td");
+
+            actionsCell.className =
+                "admin-product-list-actions";
+
+            actionsCell.appendChild(
+                createProductListButton(
+                    "Edit",
+                    "admin-product-list-edit-btn",
+                    product.id
+                )
+            );
+
+            actionsCell.appendChild(
+                createProductListButton(
+                    product.is_hidden
+                        ? "Unhide"
+                        : "Hide",
+                    product.is_hidden
+                        ? "admin-product-list-unhide-btn"
+                        : "admin-product-list-hide-btn",
+                    product.id
+                )
+            );
+
+
+            row.appendChild(productCell);
+            row.appendChild(skuCell);
+            row.appendChild(categoryCell);
+            row.appendChild(priceCell);
+            row.appendChild(stockCell);
+            row.appendChild(statusCell);
+            row.appendChild(actionsCell);
+
+            productListBody.appendChild(row);
+
+        });
 
     }
 
 
-    function closeVariantModal() {
+    function renderExistingProductMedia(product) {
 
-        variantModal.classList.remove("show");
+        existingImages.innerHTML = "";
+        existingDatasheet.innerHTML = "";
 
-        document.body.classList.remove("modal-open");
+        const images =
+            Array.isArray(product?.images)
+                ? product.images
+                : [];
 
-        editingVariantRow = null;
+        const datasheet =
+            String(product?.datasheet_url || "");
+
+        existingMedia.hidden =
+            images.length === 0 &&
+            !datasheet;
+
+
+        images.forEach(function (url, index) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "admin-product-existing-image";
+
+            const image =
+                document.createElement("img");
+
+            image.src = url;
+            image.alt =
+                `${product.name || "Product"} image ${index + 1}`;
+
+            const label =
+                document.createElement("span");
+
+            label.textContent =
+                `Image ${index + 1}`;
+
+            item.appendChild(image);
+            item.appendChild(label);
+
+            existingImages.appendChild(item);
+
+        });
+
+
+        if (datasheet) {
+
+            const link =
+                document.createElement("a");
+
+            link.href = datasheet;
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.textContent =
+                "Open current datasheet PDF";
+
+            existingDatasheet.appendChild(link);
+
+        }
 
     }
 
 
-    function createVariantStatusBadge(status) {
+    function resetProductEditor() {
+
+        editingProductId = null;
+
+        productForm.reset();
+        clearImagePreviews();
+
+        productDatasheetName.textContent = "";
+
+        existingMedia.hidden = true;
+        existingImages.innerHTML = "";
+        existingDatasheet.innerHTML = "";
+
+        specificationContainer.className =
+            "admin-product-spec-empty";
+
+        specificationContainer.textContent =
+            "No category selected.";
+
+        productFormTitle.textContent =
+            "Create Product";
+
+        productFormDescription.textContent =
+            "Create a new product.";
+
+        productSaveButton.textContent =
+            "Save Product";
+
+        selectProductForVariants(null);
+        renderProductList();
+
+    }
+
+
+    async function editAdminProduct(productId) {
+
+        hideProductMessage();
+
+        try {
+
+            const response =
+                await fetch(
+                    `/admin/products/${
+                        encodeURIComponent(productId)
+                    }/data/`,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.error ||
+                    "Unable to load product."
+                );
+            }
+
+            const product =
+                data.product;
+
+            editingProductId =
+                product.id;
+
+            productName.value =
+                product.name || "";
+
+            productSku.value =
+                product.part_number || "";
+
+            productCategory.value =
+                product.category_id || "";
+
+            productBrand.value =
+                product.brand_id || "";
+
+            productPrice.value =
+                product.min_price ?? 0;
+
+            productStatus.value =
+                product.is_hidden
+                    ? "inactive"
+                    : "active";
+
+            productDescription.value =
+                product.description || "";
+
+            productImages.value = "";
+            productDatasheet.value = "";
+            clearImagePreviews();
+            productDatasheetName.textContent = "";
+
+            productFormTitle.textContent =
+                `Edit Product: ${product.name}`;
+
+            productFormDescription.textContent =
+                "Update product information. Existing variants are managed in the panel beside this form.";
+
+            productSaveButton.textContent =
+                "Update Product";
+
+            await loadCategorySpecifications(
+                product.category_id,
+                product.specifications || {}
+            );
+
+            renderExistingProductMedia(product);
+
+            selectProductForVariants(product);
+            renderProductList();
+
+            productForm.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        } catch (error) {
+
+            showProductMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+
+
+    async function toggleAdminProductHidden(
+        productId
+    ) {
+
+        const product =
+            findAdminProduct(productId);
+
+        if (!product) {
+            return;
+        }
+
+        const willHide =
+            !Boolean(product.is_hidden);
+
+        const confirmed =
+            confirm(
+                `${
+                    willHide ? "Hide" : "Unhide"
+                } product "${product.name}"?`
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "hidden",
+            willHide ? "true" : "false"
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/admin/products/${
+                        encodeURIComponent(productId)
+                    }/hidden/`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken":
+                                csrfToken,
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        },
+                        body: formData
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.error ||
+                    "Unable to change product visibility."
+                );
+            }
+
+
+            const index =
+                adminProducts.findIndex(
+                    function (item) {
+                        return item.id ===
+                               productId;
+                    }
+                );
+
+            if (index !== -1) {
+                adminProducts[index] =
+                    data.product;
+            }
+
+
+            if (
+                editingProductId === productId
+            ) {
+
+                productStatus.value =
+                    data.product.is_hidden
+                        ? "inactive"
+                        : "active";
+
+                selectProductForVariants(
+                    data.product
+                );
+
+            }
+
+            renderProductList();
+
+            showProductMessage(
+                `Product "${data.product.name}" is now ${
+                    data.product.is_hidden
+                        ? "hidden"
+                        : "visible"
+                }.`
+            );
+
+        } catch (error) {
+
+            showProductMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+
+
+    function normaliseVariant(raw) {
+
+        return {
+            sku: String(raw?.sku || ""),
+            option_name: String(
+                raw?.option_name ||
+                raw?.name ||
+                ""
+            ),
+            retail_price: Number(
+                raw?.retail_price ??
+                raw?.price ??
+                0
+            ),
+            list_price: Number(
+                raw?.list_price ??
+                raw?.retail_price ??
+                raw?.price ??
+                0
+            ),
+            stock_qty: Number(
+                raw?.stock_qty ??
+                raw?.stock ??
+                0
+            ),
+            is_active:
+                raw?.is_active === undefined
+                    ? String(raw?.status || "active") !== "inactive"
+                    : Boolean(raw.is_active),
+            price_tiers: Array.isArray(raw?.price_tiers)
+                ? raw.price_tiers.map(function (tier) {
+                    return {
+                        min_qty: Number(tier.min_qty || 0),
+                        price: Number(tier.price || 0)
+                    };
+                })
+                : [],
+            ...(raw?.reorder_level !== undefined
+                ? {reorder_level: raw.reorder_level}
+                : {}),
+            ...(raw?.warehouse_location !== undefined
+                ? {warehouse_location: raw.warehouse_location}
+                : {})
+        };
+
+    }
+
+
+    function selectProductForVariants(product) {
+
+        selectedVariantProductId =
+            product?.id || null;
+
+        selectedVariantProductName =
+            product?.name || "";
+
+        variantState =
+            Array.isArray(product?.variants)
+                ? product.variants.map(normaliseVariant)
+                : [];
+
+        addVariantButton.disabled =
+            !selectedVariantProductId;
+
+        variantProductLabel.textContent =
+            selectedVariantProductId
+                ? `Selected product: ${selectedVariantProductName}`
+                : "Save a product first to manage its variants.";
+
+        renderVariantTable();
+
+    }
+
+
+    function updateVariantCount() {
+
+        variantCount.textContent =
+            `${variantState.length} ${
+                variantState.length === 1
+                    ? "variant"
+                    : "variants"
+            }`;
+
+    }
+
+
+    function createVariantStatusBadge(isActive) {
 
         const badge =
             document.createElement("span");
 
         badge.className =
-            `admin-variant-status ${status}`;
+            `admin-variant-status ${
+                isActive ? "active" : "inactive"
+            }`;
 
         badge.textContent =
-            status === "active"
-                ? "Active"
-                : "Inactive";
+            isActive ? "Active" : "Inactive";
 
         return badge;
 
@@ -680,32 +1659,525 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function createVariantActionButton(
         label,
-        className
+        className,
+        index
     ) {
 
         const button =
             document.createElement("button");
 
-        button.type =
-            "button";
-
-        button.className =
-            className;
-
-        button.textContent =
-            label;
+        button.type = "button";
+        button.className = className;
+        button.textContent = label;
+        button.dataset.variantIndex =
+            String(index);
 
         return button;
 
     }
 
 
-    addVariantButton.addEventListener(
+    function renderVariantTable() {
+
+        variantTableBody.innerHTML = "";
+        updateVariantCount();
+
+
+        if (!selectedVariantProductId) {
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "admin-variant-empty-row";
+
+            const cell =
+                document.createElement("td");
+
+            cell.colSpan = 6;
+            cell.textContent =
+                "Save a product first to manage variants.";
+
+            row.appendChild(cell);
+            variantTableBody.appendChild(row);
+            return;
+
+        }
+
+
+        if (variantState.length === 0) {
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "admin-variant-empty-row";
+
+            const cell =
+                document.createElement("td");
+
+            cell.colSpan = 6;
+            cell.textContent =
+                "No variants yet. Click + Add Variant.";
+
+            row.appendChild(cell);
+            variantTableBody.appendChild(row);
+            return;
+
+        }
+
+
+        variantState.forEach(function (variant, index) {
+
+            const row =
+                document.createElement("tr");
+
+            row.dataset.variantIndex =
+                String(index);
+
+
+            const skuCell =
+                document.createElement("td");
+
+            const skuCode =
+                document.createElement("code");
+
+            skuCode.textContent =
+                variant.sku;
+
+            skuCell.appendChild(skuCode);
+
+
+            const nameCell =
+                document.createElement("td");
+
+            nameCell.textContent =
+                variant.option_name;
+
+
+            const priceCell =
+                document.createElement("td");
+
+            priceCell.textContent =
+                `$${Number(
+                    variant.retail_price || 0
+                ).toFixed(2)}`;
+
+            if (variant.price_tiers.length) {
+
+                const tierHint =
+                    document.createElement("small");
+
+                tierHint.style.display = "block";
+                tierHint.style.color = "#667085";
+
+                tierHint.textContent =
+                    `${variant.price_tiers.length} price tier${
+                        variant.price_tiers.length === 1 ? "" : "s"
+                    }`;
+
+                priceCell.appendChild(tierHint);
+
+            }
+
+
+            const stockCell =
+                document.createElement("td");
+
+            stockCell.textContent =
+                String(variant.stock_qty || 0);
+
+
+            const statusCell =
+                document.createElement("td");
+
+            statusCell.appendChild(
+                createVariantStatusBadge(
+                    variant.is_active
+                )
+            );
+
+
+            const actionsCell =
+                document.createElement("td");
+
+            actionsCell.appendChild(
+                createVariantActionButton(
+                    "Edit",
+                    "admin-variant-edit-btn",
+                    index
+                )
+            );
+
+            actionsCell.appendChild(
+                createVariantActionButton(
+                    "Delete",
+                    "admin-variant-delete-btn",
+                    index
+                )
+            );
+
+
+            row.appendChild(skuCell);
+            row.appendChild(nameCell);
+            row.appendChild(priceCell);
+            row.appendChild(stockCell);
+            row.appendChild(statusCell);
+            row.appendChild(actionsCell);
+
+            variantTableBody.appendChild(row);
+
+        });
+
+    }
+
+
+    function createTierRow(tier = {}) {
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "admin-tier-row";
+
+
+        const qtyField =
+            document.createElement("div");
+
+        qtyField.className =
+            "admin-tier-field";
+
+        const qtyLabel =
+            document.createElement("label");
+
+        qtyLabel.textContent =
+            "Minimum Qty";
+
+        const qtyInput =
+            document.createElement("input");
+
+        qtyInput.type = "number";
+        qtyInput.min = "1";
+        qtyInput.step = "1";
+        qtyInput.required = true;
+        qtyInput.className =
+            "variant-tier-min-qty";
+        qtyInput.value =
+            tier.min_qty ?? "";
+
+
+        const priceField =
+            document.createElement("div");
+
+        priceField.className =
+            "admin-tier-field";
+
+        const priceLabel =
+            document.createElement("label");
+
+        priceLabel.textContent =
+            "Tier Price";
+
+        const priceInput =
+            document.createElement("input");
+
+        priceInput.type = "number";
+        priceInput.min = "0";
+        priceInput.step = "0.01";
+        priceInput.required = true;
+        priceInput.className =
+            "variant-tier-price";
+        priceInput.value =
+            tier.price ?? "";
+
+
+        const removeButton =
+            document.createElement("button");
+
+        removeButton.type = "button";
+        removeButton.className =
+            "admin-tier-remove-btn";
+        removeButton.textContent =
+            "Remove";
+
+        removeButton.addEventListener(
+            "click",
+            function () {
+                row.remove();
+                refreshTierEmptyState();
+            }
+        );
+
+
+        qtyField.appendChild(qtyLabel);
+        qtyField.appendChild(qtyInput);
+
+        priceField.appendChild(priceLabel);
+        priceField.appendChild(priceInput);
+
+        row.appendChild(qtyField);
+        row.appendChild(priceField);
+        row.appendChild(removeButton);
+
+        return row;
+
+    }
+
+
+    function refreshTierEmptyState() {
+
+        const rows =
+            variantTierList.querySelectorAll(
+                ".admin-tier-row"
+            );
+
+        const oldEmpty =
+            variantTierList.querySelector(
+                ".admin-tier-empty"
+            );
+
+        if (rows.length === 0) {
+
+            if (!oldEmpty) {
+
+                const empty =
+                    document.createElement("div");
+
+                empty.className =
+                    "admin-tier-empty";
+
+                empty.textContent =
+                    "No tier pricing. Retail price will be used.";
+
+                variantTierList.appendChild(empty);
+
+            }
+
+        } else if (oldEmpty) {
+
+            oldEmpty.remove();
+
+        }
+
+    }
+
+
+    function renderTierRows(tiers = []) {
+
+        variantTierList.innerHTML = "";
+
+        tiers.forEach(function (tier) {
+            variantTierList.appendChild(
+                createTierRow(tier)
+            );
+        });
+
+        refreshTierEmptyState();
+
+    }
+
+
+    function collectTierRows() {
+
+        return Array.from(
+            variantTierList.querySelectorAll(
+                ".admin-tier-row"
+            )
+        ).map(function (row) {
+
+            return {
+                min_qty: Number(
+                    row.querySelector(
+                        ".variant-tier-min-qty"
+                    ).value
+                ),
+                price: Number(
+                    row.querySelector(
+                        ".variant-tier-price"
+                    ).value
+                )
+            };
+
+        });
+
+    }
+
+
+    function openVariantModal(
+        mode = "add",
+        index = null
+    ) {
+
+        if (!selectedVariantProductId) {
+
+            showProductMessage(
+                "Save a product before adding variants.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        variantModalMode = mode;
+        editingVariantIndex = index;
+        variantForm.reset();
+
+
+        if (
+            mode === "edit" &&
+            Number.isInteger(index) &&
+            variantState[index]
+        ) {
+
+            const variant =
+                variantState[index];
+
+            variantModalTitle.textContent =
+                "Edit Product Variant";
+
+            variantModalDescription.textContent =
+                "Update this variant and its tier pricing.";
+
+            variantSubmitButton.textContent =
+                "Save Changes";
+
+            variantSku.value =
+                variant.sku;
+
+            variantName.value =
+                variant.option_name;
+
+            variantPrice.value =
+                variant.retail_price;
+
+            variantStock.value =
+                variant.stock_qty;
+
+            variantStatus.value =
+                variant.is_active
+                    ? "active"
+                    : "inactive";
+
+            renderTierRows(
+                variant.price_tiers || []
+            );
+
+        } else {
+
+            variantModalMode = "add";
+            editingVariantIndex = null;
+
+            variantModalTitle.textContent =
+                "Add Product Variant";
+
+            variantModalDescription.textContent =
+                "Create a variant and optional quantity pricing.";
+
+            variantSubmitButton.textContent =
+                "Add Variant";
+
+            variantStatus.value =
+                "active";
+
+            renderTierRows([]);
+
+        }
+
+
+        variantModal.classList.add("show");
+        document.body.classList.add("modal-open");
+
+    }
+
+
+    function closeVariantModal() {
+
+        variantModal.classList.remove("show");
+        document.body.classList.remove("modal-open");
+        editingVariantIndex = null;
+
+    }
+
+
+    async function saveVariantState(candidateVariants) {
+
+        if (!selectedVariantProductId) {
+            throw new Error(
+                "No saved product is selected."
+            );
+        }
+
+        const response =
+            await fetch(
+                `/admin/products/${
+                    encodeURIComponent(
+                        selectedVariantProductId
+                    )
+                }/variants/`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                        "X-CSRFToken":
+                            csrfToken,
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({
+                        variants: candidateVariants
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(
+                data.error ||
+                "Unable to save variants."
+            );
+        }
+
+        variantState =
+            (data.variants || [])
+                .map(normaliseVariant);
+
+        renderVariantTable();
+
+        return data;
+
+    }
+
+
+    addTierButton.addEventListener(
         "click",
         function () {
 
-            openVariantModal("add");
+            const empty =
+                variantTierList.querySelector(
+                    ".admin-tier-empty"
+                );
 
+            if (empty) {
+                empty.remove();
+            }
+
+            variantTierList.appendChild(
+                createTierRow()
+            );
+
+        }
+    );
+
+
+    addVariantButton.addEventListener(
+        "click",
+        function () {
+            openVariantModal("add");
         }
     );
 
@@ -719,11 +2191,8 @@ document.addEventListener("DOMContentLoaded", function () {
     variantModalCancel.addEventListener(
         "click",
         function (event) {
-
             event.preventDefault();
-
             closeVariantModal();
-
         }
     );
 
@@ -736,7 +2205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     variantForm.addEventListener(
         "submit",
-        function (event) {
+        async function (event) {
 
             event.preventDefault();
 
@@ -747,164 +2216,108 @@ document.addEventListener("DOMContentLoaded", function () {
             const nameValue =
                 variantName.value.trim();
 
-            const priceValue =
-                Number(variantPrice.value).toFixed(2);
-
-            const stockValue =
-                variantStock.value.trim();
-
-            const statusValue =
-                variantStatus.value;
-
-
             if (
                 !skuValue ||
                 !nameValue ||
                 variantPrice.value === "" ||
-                stockValue === ""
+                variantStock.value === ""
             ) {
                 return;
             }
 
 
+            const priceValue =
+                Number(variantPrice.value);
+
+            const stockValue =
+                Number(variantStock.value);
+
+            const tiers =
+                collectTierRows();
+
+
+            const candidate =
+                variantState.map(function (item) {
+                    return {...item};
+                });
+
+
+            const oldVariant =
+                (
+                    variantModalMode === "edit" &&
+                    Number.isInteger(
+                        editingVariantIndex
+                    )
+                )
+                    ? candidate[editingVariantIndex]
+                    : null;
+
+
+            const variant = {
+                ...(oldVariant || {}),
+                sku: skuValue,
+                option_name: nameValue,
+                retail_price: priceValue,
+                list_price:
+                    oldVariant?.list_price ??
+                    priceValue,
+                stock_qty: stockValue,
+                is_active:
+                    variantStatus.value === "active",
+                price_tiers: tiers
+            };
+
+
             if (
                 variantModalMode === "edit" &&
-                editingVariantRow
+                Number.isInteger(
+                    editingVariantIndex
+                )
             ) {
 
-                const row =
-                    editingVariantRow;
-
-
-                const skuCode =
-                    row.cells[0].querySelector("code");
-
-                if (skuCode) {
-                    skuCode.textContent =
-                        skuValue;
-                }
-
-
-                row.cells[1].textContent =
-                    nameValue;
-
-                row.cells[2].textContent =
-                    `$${priceValue}`;
-
-                row.cells[3].textContent =
-                    stockValue;
-
-
-                row.cells[4].replaceChildren(
-                    createVariantStatusBadge(
-                        statusValue
-                    )
-                );
+                candidate[
+                    editingVariantIndex
+                ] = variant;
 
             } else {
 
-                const row =
-                    document.createElement("tr");
-
-
-                const skuCell =
-                    document.createElement("td");
-
-                const skuCode =
-                    document.createElement("code");
-
-                skuCode.textContent =
-                    skuValue;
-
-                skuCell.appendChild(
-                    skuCode
-                );
-
-
-                const nameCell =
-                    document.createElement("td");
-
-                nameCell.textContent =
-                    nameValue;
-
-
-                const priceCell =
-                    document.createElement("td");
-
-                priceCell.textContent =
-                    `$${priceValue}`;
-
-
-                const stockCell =
-                    document.createElement("td");
-
-                stockCell.textContent =
-                    stockValue;
-
-
-                const statusCell =
-                    document.createElement("td");
-
-                statusCell.appendChild(
-                    createVariantStatusBadge(
-                        statusValue
-                    )
-                );
-
-
-                const actionsCell =
-                    document.createElement("td");
-
-                actionsCell.appendChild(
-                    createVariantActionButton(
-                        "Edit",
-                        "admin-variant-edit-btn"
-                    )
-                );
-
-                actionsCell.appendChild(
-                    createVariantActionButton(
-                        "Delete",
-                        "admin-variant-delete-btn"
-                    )
-                );
-
-
-                row.appendChild(
-                    skuCell
-                );
-
-                row.appendChild(
-                    nameCell
-                );
-
-                row.appendChild(
-                    priceCell
-                );
-
-                row.appendChild(
-                    stockCell
-                );
-
-                row.appendChild(
-                    statusCell
-                );
-
-                row.appendChild(
-                    actionsCell
-                );
-
-
-                variantTableBody.appendChild(
-                    row
-                );
+                candidate.push(variant);
 
             }
 
 
-            updateVariantCount();
+            const oldButtonText =
+                variantSubmitButton.textContent;
 
-            closeVariantModal();
+            variantSubmitButton.disabled = true;
+            variantSubmitButton.textContent =
+                "Saving...";
+
+
+            try {
+
+                await saveVariantState(candidate);
+
+                showProductMessage(
+                    `Variants for "${selectedVariantProductName}" saved successfully.`
+                );
+
+                closeVariantModal();
+
+            } catch (error) {
+
+                showProductMessage(
+                    error.message,
+                    true
+                );
+
+            } finally {
+
+                variantSubmitButton.disabled = false;
+                variantSubmitButton.textContent =
+                    oldButtonText;
+
+            }
 
         }
     );
@@ -912,79 +2325,89 @@ document.addEventListener("DOMContentLoaded", function () {
 
     variantTableBody.addEventListener(
         "click",
-        function (event) {
-
-            const deleteButton =
-                event.target.closest(
-                    ".admin-variant-delete-btn"
-                );
-
-
-            if (
-                deleteButton &&
-                variantTableBody.contains(
-                    deleteButton
-                )
-            ) {
-
-                const row =
-                    deleteButton.closest("tr");
-
-                if (!row) {
-                    return;
-                }
-
-
-                const sku =
-                    row.querySelector("code")
-                        ?.textContent.trim() ||
-                    "this variant";
-
-
-                const confirmed =
-                    confirm(
-                        `Delete variant "${sku}"?`
-                    );
-
-
-                if (!confirmed) {
-                    return;
-                }
-
-
-                row.remove();
-
-                updateVariantCount();
-
-                return;
-            }
-
+        async function (event) {
 
             const editButton =
                 event.target.closest(
                     ".admin-variant-edit-btn"
                 );
 
+            if (editButton) {
 
-            if (
-                editButton &&
-                variantTableBody.contains(
-                    editButton
-                )
-            ) {
-
-                const row =
-                    editButton.closest("tr");
-
-                if (!row) {
-                    return;
-                }
-
+                const index =
+                    Number(
+                        editButton.dataset.variantIndex
+                    );
 
                 openVariantModal(
                     "edit",
-                    row
+                    index
                 );
+
+                return;
+
+            }
+
+
+            const deleteButton =
+                event.target.closest(
+                    ".admin-variant-delete-btn"
+                );
+
+            if (!deleteButton) {
+                return;
+            }
+
+
+            const index =
+                Number(
+                    deleteButton.dataset.variantIndex
+                );
+
+            const variant =
+                variantState[index];
+
+            if (!variant) {
+                return;
+            }
+
+
+            const confirmed =
+                confirm(
+                    `Delete variant "${variant.sku}"?`
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            const candidate =
+                variantState.filter(
+                    function (_, itemIndex) {
+                        return itemIndex !== index;
+                    }
+                );
+
+
+            deleteButton.disabled = true;
+
+            try {
+
+                await saveVariantState(candidate);
+
+                showProductMessage(
+                    `Variant "${variant.sku}" deleted.`
+                );
+
+            } catch (error) {
+
+                showProductMessage(
+                    error.message,
+                    true
+                );
+
+                deleteButton.disabled = false;
 
             }
 
@@ -992,288 +2415,363 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
+    selectProductForVariants(null);
+
+
     const productCategory =
         document.getElementById("product-category");
+
+    const productBrand =
+        document.getElementById("product-brand");
+
+    const productName =
+        document.getElementById("product-name");
+
+    const productSku =
+        document.getElementById("product-sku");
+
+    const productPrice =
+        document.getElementById("product-price");
+
+    const productStatus =
+        document.getElementById("product-status");
+
+    const productDescription =
+        document.getElementById("product-description");
+
+    const productImages =
+        document.getElementById("product-images");
+
+    const productDatasheet =
+        document.getElementById("product-datasheet");
+
+    const productImagePreview =
+        document.getElementById("product-image-preview");
+
+    const productDatasheetName =
+        document.getElementById("product-datasheet-name");
+
+    let productImagePreviewUrls = [];
 
     const specificationContainer =
         document.getElementById("admin-product-spec-fields");
 
-
-    const specificationTemplates = {
-
-        "microcontrollers-kits": [
-            {
-                label: "Core",
-                key: "core",
-                type: "select",
-                unit: ""
-            },
-            {
-                label: "Clock Speed",
-                key: "clock_speed_mhz",
-                type: "number",
-                unit: "MHz"
-            },
-            {
-                label: "Flash Memory",
-                key: "flash_kb",
-                type: "number",
-                unit: "KB"
-            },
-            {
-                label: "RAM",
-                key: "ram_kb",
-                type: "number",
-                unit: "KB"
-            },
-            {
-                label: "GPIO Pins",
-                key: "gpio_count",
-                type: "number",
-                unit: "pins"
-            },
-            {
-                label: "Wi-Fi",
-                key: "wifi",
-                type: "boolean",
-                unit: ""
-            },
-            {
-                label: "Bluetooth",
-                key: "bluetooth",
-                type: "boolean",
-                unit: ""
-            },
-            {
-                label: "Operating Voltage",
-                key: "operating_voltage_v",
-                type: "number",
-                unit: "V"
-            }
-        ],
+    const csrfToken =
+        productForm.querySelector(
+            'input[name="csrfmiddlewaretoken"]'
+        )?.value || "";
 
 
-        "sensors": [
-            {
-                label: "Sensor Type",
-                key: "sensor_type",
-                type: "select",
-                unit: ""
-            },
-            {
-                label: "Interface",
-                key: "interface",
-                type: "select",
-                unit: ""
-            },
-            {
-                label: "Supply Voltage",
-                key: "supply_voltage_v",
-                type: "number",
-                unit: "V"
-            },
-            {
-                label: "Min Operating Temperature",
-                key: "operating_temp_min_c",
-                type: "number",
-                unit: "C"
-            },
-            {
-                label: "Digital Output",
-                key: "digital_output",
-                type: "boolean",
-                unit: ""
-            }
-        ],
+    function showProductMessage(message, isError = false) {
 
+        productSuccess.hidden = false;
+        productSuccess.textContent = message;
 
-        "resistors": [
-            {
-                label: "Resistance",
-                key: "resistance_ohm",
-                type: "number",
-                unit: "ohm"
-            },
-            {
-                label: "Tolerance",
-                key: "tolerance_percent",
-                type: "select",
-                unit: "%"
-            },
-            {
-                label: "Power Rating",
-                key: "power_rating_w",
-                type: "select",
-                unit: "W"
-            },
-            {
-                label: "Package",
-                key: "package",
-                type: "select",
-                unit: ""
-            },
-            {
-                label: "Material",
-                key: "material",
-                type: "select",
-                unit: ""
-            }
-        ],
+        productSuccess.style.background =
+            isError ? "#fff1f2" : "";
 
+        productSuccess.style.color =
+            isError ? "#b42318" : "";
 
-        "capacitors": [
-            {
-                label: "Capacitance",
-                key: "capacitance_uf",
-                type: "number",
-                unit: "uF"
-            },
-            {
-                label: "Voltage Rating",
-                key: "voltage_rating_v",
-                type: "number",
-                unit: "V"
-            },
-            {
-                label: "Dielectric",
-                key: "dielectric",
-                type: "select",
-                unit: ""
-            },
-            {
-                label: "Package",
-                key: "package",
-                type: "select",
-                unit: ""
-            },
-            {
-                label: "Low ESR",
-                key: "low_esr",
-                type: "boolean",
-                unit: ""
-            }
-        ],
+        productSuccess.style.borderColor =
+            isError ? "#fda29b" : "";
 
-
-        "power-regulators": [
-            {
-                label: "Output Voltage",
-                key: "output_voltage_v",
-                type: "number",
-                unit: "V"
-            },
-            {
-                label: "Max Output Current",
-                key: "output_current_a",
-                type: "number",
-                unit: "A"
-            },
-            {
-                label: "Max Input Voltage",
-                key: "input_voltage_max_v",
-                type: "number",
-                unit: "V"
-            },
-            {
-                label: "Module Type",
-                key: "module_type",
-                type: "select",
-                unit: ""
-            },
-            {
-                label: "Adjustable Output",
-                key: "adjustable",
-                type: "boolean",
-                unit: ""
-            }
-        ]
-
-    };
-
-
-    function createSpecificationControl(field) {
-
-        if (field.type === "boolean") {
-
-            const select =
-                document.createElement("select");
-
-            select.name = field.key;
-
-            const emptyOption =
-                document.createElement("option");
-
-            emptyOption.value = "";
-            emptyOption.textContent = "Select value";
-
-
-            const yesOption =
-                document.createElement("option");
-
-            yesOption.value = "true";
-            yesOption.textContent = "Yes";
-
-
-            const noOption =
-                document.createElement("option");
-
-            noOption.value = "false";
-            noOption.textContent = "No";
-
-
-            select.appendChild(emptyOption);
-            select.appendChild(yesOption);
-            select.appendChild(noOption);
-
-            return select;
-        }
-
-
-        if (field.type === "select") {
-
-            const select =
-                document.createElement("select");
-
-            select.name = field.key;
-
-
-            const option =
-                document.createElement("option");
-
-            option.value = "";
-
-            option.textContent =
-                "Select value";
-
-            select.appendChild(option);
-
-            return select;
-        }
-
-
-        const input =
-            document.createElement("input");
-
-        input.name = field.key;
-
-        input.type =
-            field.type === "number"
-                ? "number"
-                : "text";
-
-        input.placeholder =
-            `Enter ${field.label.toLowerCase()}`;
-
-        return input;
     }
 
 
-    function renderSpecifications(categoryKey) {
+    function hideProductMessage() {
 
-        specificationContainer.replaceChildren();
+        productSuccess.hidden = true;
+        productSuccess.textContent =
+            "Product saved successfully.";
+
+        productSuccess.style.background = "";
+        productSuccess.style.color = "";
+        productSuccess.style.borderColor = "";
+
+    }
 
 
-        if (!categoryKey) {
+    function addSelectOption(
+        select,
+        value,
+        label,
+        disabled = false
+    ) {
+
+        const option =
+            document.createElement("option");
+
+        option.value = value;
+        option.textContent = label;
+        option.disabled = disabled;
+
+        select.appendChild(option);
+
+    }
+
+
+    async function loadAdminProductData() {
+
+        productCategory.innerHTML =
+            '<option value="">Loading categories...</option>';
+
+        productBrand.innerHTML =
+            '<option value="">Loading brands...</option>';
+
+        try {
+
+            const response =
+                await fetch(
+                    "/admin/products/data/",
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.error ||
+                    "Unable to load product data."
+                );
+            }
+
+
+            adminProducts =
+                Array.isArray(data.products)
+                    ? data.products
+                    : [];
+
+            renderProductList();
+
+
+            productCategory.innerHTML =
+                '<option value="">Select category</option>';
+
+            data.categories.forEach(function (category) {
+
+                const indent =
+                    "— ".repeat(
+                        Number(category.level || 0)
+                    );
+
+                const hiddenLabel =
+                    category.is_hidden
+                        ? " [Hidden]"
+                        : "";
+
+                addSelectOption(
+                    productCategory,
+                    category.id,
+                    indent +
+                    category.name +
+                    hiddenLabel,
+                    Boolean(category.is_hidden)
+                );
+
+            });
+
+
+            productBrand.innerHTML =
+                '<option value="">Select brand</option>';
+
+            data.brands.forEach(function (brand) {
+
+                addSelectOption(
+                    productBrand,
+                    brand.id,
+                    brand.name
+                );
+
+            });
+
+        } catch (error) {
+
+            productCategory.innerHTML =
+                '<option value="">Unable to load categories</option>';
+
+            productBrand.innerHTML =
+                '<option value="">Unable to load brands</option>';
+
+            showProductMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+
+
+    function createSpecificationGroup(field, currentValue = "") {
+
+        const group =
+            document.createElement("div");
+
+        group.className =
+            "admin-product-form-group";
+
+
+        const label =
+            document.createElement("label");
+
+        label.htmlFor =
+            `spec-${field.key}`;
+
+        label.textContent =
+            field.unit
+                ? `${field.label} (${field.unit})`
+                : field.label;
+
+
+        let input;
+
+        if (field.data_type === "select") {
+
+            input =
+                document.createElement("select");
+
+            addSelectOption(
+                input,
+                "",
+                `Select ${field.label}`
+            );
+
+            (field.allowed_values || [])
+                .forEach(function (value) {
+
+                    addSelectOption(
+                        input,
+                        value,
+                        value
+                    );
+
+                });
+
+        } else if (field.data_type === "boolean") {
+
+            input =
+                document.createElement("select");
+
+            addSelectOption(
+                input,
+                "",
+                `Select ${field.label}`
+            );
+
+            addSelectOption(
+                input,
+                "true",
+                "Yes"
+            );
+
+            addSelectOption(
+                input,
+                "false",
+                "No"
+            );
+
+        } else {
+
+            input =
+                document.createElement("input");
+
+            input.type =
+                field.data_type === "number"
+                    ? "number"
+                    : "text";
+
+            if (field.data_type === "number") {
+                input.step = "any";
+            }
+
+            input.placeholder =
+                field.unit
+                    ? `${field.label} (${field.unit})`
+                    : field.label;
+
+        }
+
+
+        input.id =
+            `spec-${field.key}`;
+
+        input.dataset.specKey =
+            field.key;
+
+        input.dataset.specType =
+            field.data_type || "text";
+
+        if (
+            currentValue !== undefined &&
+            currentValue !== null
+        ) {
+            input.value =
+                typeof currentValue === "boolean"
+                    ? String(currentValue)
+                    : currentValue;
+        }
+
+
+        group.appendChild(label);
+        group.appendChild(input);
+
+        return group;
+
+    }
+
+
+    function renderSpecifications(
+        fields,
+        currentValues = {}
+    ) {
+
+        specificationContainer.innerHTML = "";
+
+        if (!fields || fields.length === 0) {
+
+            specificationContainer.className =
+                "admin-product-spec-empty";
+
+            specificationContainer.textContent =
+                "This category has no specification fields.";
+
+            return;
+        }
+
+
+        specificationContainer.className =
+            "admin-product-form-grid";
+
+
+        [...fields]
+            .sort(function (a, b) {
+                return Number(a.display_order || 0) -
+                       Number(b.display_order || 0);
+            })
+            .forEach(function (field) {
+
+                specificationContainer.appendChild(
+                    createSpecificationGroup(
+                        field,
+                        currentValues[field.key]
+                    )
+                );
+
+            });
+
+    }
+
+
+    async function loadCategorySpecifications(categoryId, currentValues = {}) {
+
+        if (!categoryId) {
 
             specificationContainer.className =
                 "admin-product-spec-empty";
@@ -1285,105 +2783,498 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const fields =
-            specificationTemplates[categoryKey];
+        specificationContainer.className =
+            "admin-product-spec-empty";
+
+        specificationContainer.textContent =
+            "Loading specification fields...";
 
 
-        if (!fields) {
+        try {
+
+            const response =
+                await fetch(
+                    `/admin/categories/${encodeURIComponent(categoryId)}/spec-template/`,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.error ||
+                    "Unable to load specifications."
+                );
+            }
+
+            renderSpecifications(
+                data.category.spec_template || [],
+                currentValues
+            );
+
+        } catch (error) {
 
             specificationContainer.className =
                 "admin-product-spec-empty";
 
             specificationContainer.textContent =
-                "No specification template available.";
+                error.message;
 
+        }
+
+    }
+
+
+    function collectSpecifications() {
+
+        const specifications = {};
+
+        specificationContainer
+            .querySelectorAll("[data-spec-key]")
+            .forEach(function (input) {
+
+                const key =
+                    input.dataset.specKey;
+
+                const value =
+                    input.value;
+
+                if (
+                    value === "" ||
+                    value === null ||
+                    value === undefined
+                ) {
+                    return;
+                }
+
+                specifications[key] = value;
+
+            });
+
+        return specifications;
+
+    }
+
+
+    function clearImagePreviews() {
+
+        productImagePreviewUrls.forEach(function (url) {
+            URL.revokeObjectURL(url);
+        });
+
+        productImagePreviewUrls = [];
+        productImagePreview.innerHTML = "";
+        productImagePreview.hidden = true;
+
+    }
+
+
+    function renderImagePreviews() {
+
+        clearImagePreviews();
+
+        const files =
+            Array.from(productImages.files || []);
+
+        if (files.length === 0) {
             return;
         }
 
+        productImagePreview.hidden = false;
 
-        specificationContainer.className =
-            "admin-product-spec-fields";
+        files.forEach(function (file) {
 
+            const objectUrl =
+                URL.createObjectURL(file);
 
-        fields.forEach(function (field) {
+            productImagePreviewUrls.push(objectUrl);
 
-            const group =
+            const item =
                 document.createElement("div");
 
-            group.className =
-                "admin-product-form-group";
+            item.className =
+                "admin-product-image-preview-item";
 
+            const image =
+                document.createElement("img");
 
-            const label =
-                document.createElement("label");
+            image.src = objectUrl;
+            image.alt = file.name;
 
-            label.textContent =
-                field.unit
-                    ? `${field.label} (${field.unit})`
-                    : field.label;
+            const name =
+                document.createElement("div");
 
+            name.className =
+                "admin-product-image-preview-name";
 
-            const control =
-                createSpecificationControl(field);
+            name.textContent = file.name;
+            name.title = file.name;
 
-
-            group.appendChild(label);
-            group.appendChild(control);
-
-            specificationContainer.appendChild(
-                group
-            );
+            item.appendChild(image);
+            item.appendChild(name);
+            productImagePreview.appendChild(item);
 
         });
 
     }
 
 
+    productImages.addEventListener(
+        "change",
+        function () {
+            hideProductMessage();
+            renderImagePreviews();
+        }
+    );
+
+
+    productDatasheet.addEventListener(
+        "change",
+        function () {
+
+            hideProductMessage();
+
+            const file =
+                productDatasheet.files?.[0];
+
+            productDatasheetName.textContent =
+                file ? `Selected: ${file.name}` : "";
+
+        }
+    );
+
+
     productCategory.addEventListener(
         "change",
         function () {
 
-            renderSpecifications(
+            hideProductMessage();
+
+            loadCategorySpecifications(
                 productCategory.value
             );
 
         }
     );
-    
-productForm.addEventListener("submit", function (event) {
-
-        event.preventDefault();
-
-        productSuccess.hidden = false;
-
-    });
 
 
-    productCancelButton.addEventListener("click", function () {
+    productForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        productForm.reset();
-
-        renderSpecifications("");
-
-        productSuccess.hidden = true;
-
-    });
+            event.preventDefault();
+            hideProductMessage();
 
 
-    productForm.addEventListener("input", function () {
+            if (!productName.value.trim()) {
 
-        productSuccess.hidden = true;
+                showProductMessage(
+                    "Product name is required.",
+                    true
+                );
 
-    });
+                productName.focus();
+                return;
+
+            }
 
 
-    productForm.addEventListener("change", function () {
+            if (!productSku.value.trim()) {
 
-        productSuccess.hidden = true;
+                showProductMessage(
+                    "Product SKU is required.",
+                    true
+                );
 
-    });
+                productSku.focus();
+                return;
+
+            }
+
+
+            if (!productCategory.value) {
+
+                showProductMessage(
+                    "Please select a category.",
+                    true
+                );
+
+                productCategory.focus();
+                return;
+
+            }
+
+
+            const wasEditing =
+                Boolean(editingProductId);
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "name",
+                productName.value.trim()
+            );
+
+            formData.append(
+                "part_number",
+                productSku.value.trim()
+            );
+
+            formData.append(
+                "category_id",
+                productCategory.value
+            );
+
+            formData.append(
+                "brand_id",
+                productBrand.value
+            );
+
+            formData.append(
+                "min_price",
+                productPrice.value || "0"
+            );
+
+            formData.append(
+                "status",
+                productStatus.value
+            );
+
+            formData.append(
+                "description",
+                productDescription.value.trim()
+            );
+
+            formData.append(
+                "specifications",
+                JSON.stringify(
+                    collectSpecifications()
+                )
+            );
+
+            Array.from(productImages.files || [])
+                .forEach(function (file) {
+                    formData.append("images", file);
+                });
+
+            if (productDatasheet.files?.[0]) {
+                formData.append(
+                    "datasheet",
+                    productDatasheet.files[0]
+                );
+            }
+
+
+            const saveButton =
+                productForm.querySelector(
+                    ".admin-product-save-btn"
+                );
+
+            const oldButtonText =
+                saveButton.textContent;
+
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        editingProductId
+                            ? `/admin/products/${
+                                encodeURIComponent(
+                                    editingProductId
+                                )
+                            }/update/`
+                            : "/admin/products/create/",
+                        {
+                            method: "POST",
+                            headers: {
+                                "X-CSRFToken":
+                                    csrfToken,
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            },
+                            body: formData
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!response.ok || !data.ok) {
+                    throw new Error(
+                        data.error ||
+                        "Unable to save product."
+                    );
+                }
+
+
+                editingProductId =
+                    data.product.id;
+
+                showProductMessage(
+                    `Product "${data.product.name}" ${
+                        wasEditing
+                            ? "updated"
+                            : "created"
+                    } successfully.`
+                );
+
+                selectProductForVariants(
+                    data.product
+                );
+
+                renderExistingProductMedia(
+                    data.product
+                );
+
+                productImages.value = "";
+                productDatasheet.value = "";
+                clearImagePreviews();
+                productDatasheetName.textContent = "";
+
+                productFormTitle.textContent =
+                    `Edit Product: ${data.product.name}`;
+
+                productFormDescription.textContent =
+                    "Update product information. Existing variants are managed in the panel beside this form.";
+
+                productSaveButton.textContent =
+                    "Update Product";
+
+                await loadAdminProductData();
+
+                productCategory.value =
+                    data.product.category_id || "";
+
+                productBrand.value =
+                    data.product.brand_id || "";
+
+                productStatus.value =
+                    data.product.is_hidden
+                        ? "inactive"
+                        : "active";
+
+                renderProductList();
+
+
+            } catch (error) {
+
+                showProductMessage(
+                    error.message,
+                    true
+                );
+
+            } finally {
+
+                saveButton.disabled = false;
+                saveButton.textContent =
+                    oldButtonText;
+
+            }
+
+        }
+    );
+
+
+    productCancelButton.addEventListener(
+        "click",
+        function () {
+
+            hideProductMessage();
+            resetProductEditor();
+
+        }
+    );
+
+
+    productForm.addEventListener(
+        "input",
+        hideProductMessage
+    );
+
+
+    productSearch.addEventListener(
+        "input",
+        renderProductList
+    );
+
+
+    productRefreshButton.addEventListener(
+        "click",
+        async function () {
+
+            hideProductMessage();
+            productRefreshButton.disabled = true;
+            productRefreshButton.textContent =
+                "Refreshing...";
+
+            try {
+
+                await loadAdminProductData();
+
+            } finally {
+
+                productRefreshButton.disabled = false;
+                productRefreshButton.textContent =
+                    "Refresh";
+
+            }
+
+        }
+    );
+
+
+    productListBody.addEventListener(
+        "click",
+        function (event) {
+
+            const editButton =
+                event.target.closest(
+                    ".admin-product-list-edit-btn"
+                );
+
+            if (editButton) {
+
+                editAdminProduct(
+                    editButton.dataset.productId
+                );
+
+                return;
+
+            }
+
+
+            const visibilityButton =
+                event.target.closest(
+                    ".admin-product-list-hide-btn, .admin-product-list-unhide-btn"
+                );
+
+            if (visibilityButton) {
+
+                toggleAdminProductHidden(
+                    visibilityButton.dataset.productId
+                );
+
+            }
+
+        }
+    );
+
+
+    loadAdminProductData();
 
 });
+
 </script>
 
 {% endblock %}

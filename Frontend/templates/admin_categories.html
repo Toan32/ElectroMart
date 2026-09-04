@@ -19,7 +19,7 @@
     <div class="category-panel-header">
         <div>
             <h2>Categories</h2>
-            <p>5 categories</p>
+            <p id="category-count-text">Loading...</p>
         </div>
 
         <button
@@ -38,63 +38,8 @@
             <strong>All Categories</strong>
         </div>
 
-        <div class="category-tree-children">
-
-            <button
-                type="button"
-                class="category-tree-item active"
-                data-category="microcontrollers-kits"
-            >
-                <span class="category-tree-icon">🧠</span>
-                <span class="category-tree-name">
-                    Microcontrollers &amp; Kits
-                </span>
-            </button>
-
-            <button
-                type="button"
-                class="category-tree-item"
-                data-category="sensors"
-            >
-                <span class="category-tree-icon">📡</span>
-                <span class="category-tree-name">
-                    Sensors
-                </span>
-            </button>
-
-            <button
-                type="button"
-                class="category-tree-item"
-                data-category="resistors"
-            >
-                <span class="category-tree-icon">🎚️</span>
-                <span class="category-tree-name">
-                    Resistors
-                </span>
-            </button>
-
-            <button
-                type="button"
-                class="category-tree-item"
-                data-category="capacitors"
-            >
-                <span class="category-tree-icon">⚡</span>
-                <span class="category-tree-name">
-                    Capacitors
-                </span>
-            </button>
-
-            <button
-                type="button"
-                class="category-tree-item"
-                data-category="power-regulators"
-            >
-                <span class="category-tree-icon">🔋</span>
-                <span class="category-tree-name">
-                    Power &amp; Regulators
-                </span>
-            </button>
-
+        <div class="category-tree-children" id="category-tree-children">
+            <!-- MongoDB categories rendered by JavaScript -->
         </div>
 
     </div>
@@ -130,8 +75,18 @@
 
     <button
         type="button"
+        class="category-edit-btn category-hide-btn"
+        id="hide-category-btn"
+        style="border-color:#d97706;color:#b45309;background:#fff;"
+    >
+        Hide
+    </button>
+
+    <button
+        type="button"
         class="category-delete-btn"
         id="delete-category-btn"
+        title="Permanently delete an empty category"
     >
         Delete
     </button>
@@ -190,7 +145,7 @@
         <div class="category-modal-header">
 
             <div>
-                <h2>Add Specification Field</h2>
+                <h2 id="field-modal-title">Add Specification Field</h2>
                 <p id="field-modal-category">
                     Microcontrollers &amp; Kits
                 </p>
@@ -207,6 +162,7 @@
         </div>
 
         <form id="field-form">
+            {% csrf_token %}
 
             <div class="category-form-group">
                 <label for="field-label-input">
@@ -216,6 +172,7 @@
                 <input
                     type="text"
                     id="field-label-input"
+                    name="label"
                     placeholder="Example: Clock Speed"
                     required
                 >
@@ -229,6 +186,7 @@
                 <input
                     type="text"
                     id="field-key-input"
+                    name="key"
                     placeholder="Example: clock_speed_mhz"
                     required
                 >
@@ -239,7 +197,7 @@
                     Data Type
                 </label>
 
-                <select id="field-type-input">
+                <select id="field-type-input" name="data_type">
                     <option value="text">Text</option>
                     <option value="number">Number</option>
                     <option value="select">Select</option>
@@ -255,8 +213,24 @@
                 <input
                     type="text"
                     id="field-unit-input"
+                    name="unit"
                     placeholder="Example: MHz, V, KB"
                 >
+            </div>
+
+            <div class="category-form-group">
+                <label for="field-values-input">
+                    Allowed Values
+                </label>
+
+                <input
+                    type="text"
+                    id="field-values-input"
+                    name="allowed_values"
+                    placeholder="Example: 3.3, 5, 12"
+                >
+
+                <small>Optional. Separate values with commas.</small>
             </div>
 
             <div class="field-checkbox-row">
@@ -264,6 +238,7 @@
                 <input
                     type="checkbox"
                     id="field-filterable-input"
+                    name="is_filterable"
                     checked
                 >
 
@@ -274,7 +249,7 @@
             </div>
 
             <div class="category-modal-note">
-                GUI mock-up only. New fields are not saved to MongoDB.
+                Specification fields are loaded from MongoDB.
             </div>
 
             <div class="category-modal-footer">
@@ -290,6 +265,7 @@
                 <button
                     type="submit"
                     class="category-modal-save"
+                    id="field-modal-save"
                 >
                     Add Field
                 </button>
@@ -327,6 +303,7 @@
         </div>
 
         <form id="category-form">
+            {% csrf_token %}
 
             <div class="category-form-group">
                 <label for="category-name-input">
@@ -336,6 +313,7 @@
                 <input
                     type="text"
                     id="category-name-input"
+                    name="name"
                     placeholder="Enter category name"
                     required
                 >
@@ -350,6 +328,7 @@
                 <input
                     type="text"
                     id="category-slug-input"
+                    name="slug"
                     placeholder="example-category"
                     required
                 >
@@ -361,29 +340,14 @@
                     Parent Category
                 </label>
 
-                <select id="category-parent-input">
+                <select id="category-parent-input" name="parent_id">
                     <option value="">No parent category</option>
-                    <option value="microcontrollers-kits">
-                        Microcontrollers & Kits
-                    </option>
-                    <option value="sensors">
-                        Sensors
-                    </option>
-                    <option value="resistors">
-                        Resistors
-                    </option>
-                    <option value="capacitors">
-                        Capacitors
-                    </option>
-                    <option value="power-regulators">
-                        Power & Regulators
-                    </option>
                 </select>
             </div>
 
 
             <div class="category-modal-note">
-                GUI mock-up only. Changes are not saved to MongoDB.
+                Categories are loaded from MongoDB. Save actions will use the CV65 API.
             </div>
 
 
@@ -414,906 +378,718 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const categoryTreeChildren = document.getElementById("category-tree-children");
+    const categoryCountText = document.getElementById("category-count-text");
+    const categoryName = document.getElementById("selected-category-name");
+    const fieldCount = document.getElementById("spec-field-count");
+    const tableBody = document.getElementById("spec-template-body");
+    const categoryParentInput = document.getElementById("category-parent-input");
+    const editCategoryButton = document.getElementById("edit-category-btn");
+    const hideCategoryButton = document.getElementById("hide-category-btn");
+    const deleteCategoryButton = document.getElementById("delete-category-btn");
+    const addFieldButton = document.getElementById("add-field-btn");
+    const addCategoryButton = document.querySelector(".category-add-btn");
 
-    const categorySpecTemplates = {
+    const fieldModal = document.getElementById("field-modal");
+    const fieldModalTitle = document.getElementById("field-modal-title");
+    const fieldModalCategory = document.getElementById("field-modal-category");
+    const fieldModalClose = document.getElementById("field-modal-close");
+    const fieldModalCancel = document.getElementById("field-modal-cancel");
+    const fieldModalBackdrop = document.getElementById("field-modal-backdrop");
+    const fieldForm = document.getElementById("field-form");
+    const fieldLabelInput = document.getElementById("field-label-input");
+    const fieldKeyInput = document.getElementById("field-key-input");
+    const fieldTypeInput = document.getElementById("field-type-input");
+    const fieldUnitInput = document.getElementById("field-unit-input");
+    const fieldValuesInput = document.getElementById("field-values-input");
+    const fieldFilterableInput = document.getElementById("field-filterable-input");
+    const fieldModalSave = document.getElementById("field-modal-save");
 
-        "microcontrollers-kits": {
-            name: "Microcontrollers & Kits",
-            fields: [
-                {
-                    label: "Core",
-                    key: "core",
-                    type: "select",
-                    unit: ""
-                },
-                {
-                    label: "Clock speed",
-                    key: "clock_speed_mhz",
-                    type: "number",
-                    unit: "MHz"
-                },
-                {
-                    label: "Flash memory",
-                    key: "flash_kb",
-                    type: "number",
-                    unit: "KB"
-                },
-                {
-                    label: "RAM",
-                    key: "ram_kb",
-                    type: "number",
-                    unit: "KB"
-                },
-                {
-                    label: "GPIO pins",
-                    key: "gpio_count",
-                    type: "number",
-                    unit: "pins"
-                },
-                {
-                    label: "Wi-Fi",
-                    key: "wifi",
-                    type: "boolean",
-                    unit: ""
-                },
-                {
-                    label: "Bluetooth",
-                    key: "bluetooth",
-                    type: "boolean",
-                    unit: ""
-                },
-                {
-                    label: "Operating voltage",
-                    key: "operating_voltage_v",
-                    type: "number",
-                    unit: "V"
-                }
-            ]
-        },
+    const categoryModal = document.getElementById("category-modal");
+    const categoryModalClose = document.getElementById("category-modal-close");
+    const categoryModalCancel = document.getElementById("category-modal-cancel");
+    const categoryModalBackdrop = document.getElementById("category-modal-backdrop");
+    const categoryModalTitle = document.getElementById("category-modal-title");
+    const categoryForm = document.getElementById("category-form");
+    const categoryNameInput = document.getElementById("category-name-input");
+    const categorySlugInput = document.getElementById("category-slug-input");
 
-        "sensors": {
-            name: "Sensors",
-            fields: [
-                {
-                    label: "Sensor type",
-                    key: "sensor_type",
-                    type: "select",
-                    unit: ""
-                },
-                {
-                    label: "Interface",
-                    key: "interface",
-                    type: "select",
-                    unit: ""
-                },
-                {
-                    label: "Supply voltage",
-                    key: "supply_voltage_v",
-                    type: "number",
-                    unit: "V"
-                },
-                {
-                    label: "Min operating temperature",
-                    key: "operating_temp_min_c",
-                    type: "number",
-                    unit: "C"
-                },
-                {
-                    label: "Digital output",
-                    key: "digital_output",
-                    type: "boolean",
-                    unit: ""
-                }
-            ]
-        },
+    let categories = [];
+    let currentCategoryId = null;
+    let categoryModalMode = "add";
+    let fieldModalMode = "add";
+    let editingFieldKey = null;
 
-        "resistors": {
-            name: "Resistors",
-            fields: [
-                {
-                    label: "Resistance",
-                    key: "resistance_ohm",
-                    type: "number",
-                    unit: "ohm"
-                },
-                {
-                    label: "Tolerance",
-                    key: "tolerance_percent",
-                    type: "select",
-                    unit: "%"
-                },
-                {
-                    label: "Power rating",
-                    key: "power_rating_w",
-                    type: "select",
-                    unit: "W"
-                },
-                {
-                    label: "Package",
-                    key: "package",
-                    type: "select",
-                    unit: ""
-                },
-                {
-                    label: "Material",
-                    key: "material",
-                    type: "select",
-                    unit: ""
-                }
-            ]
-        },
+    function getCategory(categoryId) {
+        return categories.find(function (category) {
+            return category.id === categoryId;
+        });
+    }
 
-        "capacitors": {
-            name: "Capacitors",
-            fields: [
-                {
-                    label: "Capacitance",
-                    key: "capacitance_uf",
-                    type: "number",
-                    unit: "uF"
-                },
-                {
-                    label: "Voltage rating",
-                    key: "voltage_rating_v",
-                    type: "number",
-                    unit: "V"
-                },
-                {
-                    label: "Dielectric",
-                    key: "dielectric",
-                    type: "select",
-                    unit: ""
-                },
-                {
-                    label: "Package",
-                    key: "package",
-                    type: "select",
-                    unit: ""
-                },
-                {
-                    label: "Low ESR",
-                    key: "low_esr",
-                    type: "boolean",
-                    unit: ""
-                }
-            ]
-        },
+    function slugify(value) {
+        return value
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+    }
 
-        "power-regulators": {
-            name: "Power & Regulators",
-            fields: [
-                {
-                    label: "Output voltage",
-                    key: "output_voltage_v",
-                    type: "number",
-                    unit: "V"
-                },
-                {
-                    label: "Max output current",
-                    key: "output_current_a",
-                    type: "number",
-                    unit: "A"
-                },
-                {
-                    label: "Max input voltage",
-                    key: "input_voltage_max_v",
-                    type: "number",
-                    unit: "V"
-                },
-                {
-                    label: "Module type",
-                    key: "module_type",
-                    type: "select",
-                    unit: ""
-                },
-                {
-                    label: "Adjustable output",
-                    key: "adjustable",
-                    type: "boolean",
-                    unit: ""
-                }
-            ]
+    function renderSpecTemplate(categoryId) {
+        const category = getCategory(categoryId);
+
+        if (!category) {
+            categoryName.textContent = "No category selected";
+            fieldCount.textContent = "0 fields";
+            tableBody.replaceChildren();
+            return;
         }
 
-    };
+        categoryName.textContent = category.name;
+        const fields = category.spec_template || [];
+        fieldCount.textContent = `${fields.length} fields`;
+        tableBody.replaceChildren();
 
-    const categoryButtons =
-        document.querySelectorAll(".category-tree-item");
+        fields
+            .slice()
+            .sort(function (a, b) {
+                return Number(a.display_order || 0) - Number(b.display_order || 0);
+            })
+            .forEach(function (field) {
+                const row = document.createElement("tr");
 
-    const categoryName =
-        document.getElementById("selected-category-name");
+                const labelCell = document.createElement("td");
+                labelCell.textContent = field.label || "";
 
-    const fieldCount =
-        document.getElementById("spec-field-count");
+                const keyCell = document.createElement("td");
+                const keyCode = document.createElement("code");
+                keyCode.textContent = field.key || "";
+                keyCell.appendChild(keyCode);
 
-    const tableBody =
-        document.getElementById("spec-template-body");
+                const typeCell = document.createElement("td");
+                typeCell.textContent = field.data_type || "text";
 
-    const editCategoryButton =
-        document.getElementById("edit-category-btn");
+                const unitCell = document.createElement("td");
+                unitCell.textContent = field.unit || "—";
 
-    const deleteCategoryButton =
-        document.getElementById("delete-category-btn");
+                const filterCell = document.createElement("td");
+                filterCell.textContent = field.is_filterable === false ? "No" : "Yes";
 
-    const addCategoryButton =
-    document.querySelector(".category-add-btn");
+                const actionCell = document.createElement("td");
+                actionCell.className = "spec-field-actions-cell";
 
-const categoryModal =
-    document.getElementById("category-modal");
+                const actionGroup = document.createElement("div");
+                actionGroup.className = "spec-field-actions";
 
-const categoryModalTitle =
-    document.getElementById("category-modal-title");
+                // Force reliable spacing even if table/static CSS is cached.
+                actionGroup.style.display = "flex";
+                actionGroup.style.alignItems = "center";
+                actionGroup.style.justifyContent = "flex-end";
+                actionGroup.style.gap = "10px";
+                actionGroup.style.whiteSpace = "nowrap";
 
-const categoryModalClose =
-    document.getElementById("category-modal-close");
+                const editButton = document.createElement("button");
+                editButton.type = "button";
+                editButton.className = "category-edit-btn spec-field-edit-btn";
+                editButton.textContent = "Edit";
+                editButton.style.minWidth = "68px";
+                editButton.style.height = "34px";
+                editButton.addEventListener("click", function () {
+                    openEditFieldModal(field);
+                });
 
-const categoryModalCancel =
-    document.getElementById("category-modal-cancel");
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "category-delete-btn spec-field-delete-btn";
+                deleteButton.textContent = "Delete";
+                deleteButton.style.minWidth = "68px";
+                deleteButton.style.height = "34px";
+                deleteButton.style.marginLeft = "2px";
+                deleteButton.addEventListener("click", function () {
+                    deleteSpecField(field);
+                });
 
-const categoryModalBackdrop =
-    document.getElementById("category-modal-backdrop");
+                actionGroup.appendChild(editButton);
+                actionGroup.appendChild(deleteButton);
+                actionCell.appendChild(actionGroup);
 
-const categoryForm =
-    document.getElementById("category-form");
+                row.appendChild(labelCell);
+                row.appendChild(keyCell);
+                row.appendChild(typeCell);
+                row.appendChild(unitCell);
+                row.appendChild(filterCell);
+                row.appendChild(actionCell);
+                tableBody.appendChild(row);
+            });
+    }
 
-const categoryNameInput =
-    document.getElementById("category-name-input");
+    function updateCategoryActionButtons() {
+        const category = getCategory(currentCategoryId);
 
-const categorySlugInput =
-    document.getElementById("category-slug-input");
+        if (!category) {
+            editCategoryButton.disabled = true;
+            hideCategoryButton.disabled = true;
+            hideCategoryButton.disabled = true;
+            hideCategoryButton.textContent = "Hide";
+            return;
+        }
 
-const categoryParentInput =
-    document.getElementById("category-parent-input");
+        editCategoryButton.disabled = false;
+        hideCategoryButton.disabled = false;
+        deleteCategoryButton.disabled = false;
 
-const addFieldButton =
-    document.getElementById("add-field-btn");
+        hideCategoryButton.textContent = category.is_hidden
+            ? "Unhide"
+            : "Hide";
 
-const fieldModal =
-    document.getElementById("field-modal");
+        hideCategoryButton.title = category.is_hidden
+            ? "Show this category again"
+            : "Hide this category and all descendants";
 
-const fieldModalBackdrop =
-    document.getElementById("field-modal-backdrop");
+        deleteCategoryButton.title =
+            "Permanently delete this category. Allowed only when it has no products and no child categories.";
+    }
 
-const fieldModalClose =
-    document.getElementById("field-modal-close");
+    function selectCategory(categoryId) {
+        currentCategoryId = categoryId;
 
-const fieldModalCancel =
-    document.getElementById("field-modal-cancel");
+        document.querySelectorAll(".category-tree-item").forEach(function (button) {
+            button.classList.toggle(
+                "active",
+                button.dataset.categoryId === categoryId
+            );
+        });
 
-const fieldModalCategory =
-    document.getElementById("field-modal-category");
+        renderSpecTemplate(categoryId);
+        updateCategoryActionButtons();
+    }
 
-const fieldForm =
-    document.getElementById("field-form");
+    function sortCategories(items) {
+        return [...items].sort(function (a, b) {
+            const orderA = Number(a.display_order || 0);
+            const orderB = Number(b.display_order || 0);
 
-const fieldLabelInput =
-    document.getElementById("field-label-input");
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
 
-const fieldKeyInput =
-    document.getElementById("field-key-input");
+            return String(a.name || "").localeCompare(
+                String(b.name || "")
+            );
+        });
+    }
 
-const fieldTypeInput =
-    document.getElementById("field-type-input");
+    function getChildren(parentId) {
+        return sortCategories(
+            categories.filter(function (category) {
+                return (category.parent_id || "") === (parentId || "");
+            })
+        );
+    }
 
-const fieldUnitInput =
-    document.getElementById("field-unit-input");
+    function renderCategoryTree() {
+        categoryTreeChildren.replaceChildren();
 
-const fieldFilterableInput =
-    document.getElementById("field-filterable-input");
+        const renderedIds = new Set();
 
-const categoryTreeChildren =
-    document.querySelector(".category-tree-children");
+        function appendCategory(category, visualLevel) {
+            if (!category || renderedIds.has(category.id)) {
+                return;
+            }
 
-const categoryCountText =
-    document.querySelector(".category-panel-header p");
+            renderedIds.add(category.id);
 
-let currentCategoryKey = "microcontrollers-kits";
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "category-tree-item";
+            button.dataset.categoryId = category.id;
+            button.style.paddingLeft = `${14 + (visualLevel * 22)}px`;
 
-let categoryModalMode = "add";
+            const icon = document.createElement("span");
+            icon.className = "category-tree-icon";
+            icon.textContent = category.icon || "📁";
 
-    function renderSpecTemplate(categoryKey) {
+            const name = document.createElement("span");
+            name.className = "category-tree-name";
+            name.textContent = category.name;
 
-        const category =
-            categorySpecTemplates[categoryKey];
+            if (category.is_hidden) {
+                const hidden = document.createElement("small");
+                hidden.textContent = " (Hidden)";
+                name.appendChild(hidden);
+            }
+
+            button.appendChild(icon);
+            button.appendChild(name);
+
+            button.addEventListener("click", function () {
+                selectCategory(category.id);
+            });
+
+            categoryTreeChildren.appendChild(button);
+
+            getChildren(category.id).forEach(function (child) {
+                appendCategory(child, visualLevel + 1);
+            });
+        }
+
+        // Render roots first, then each child immediately below its parent.
+        getChildren("").forEach(function (root) {
+            appendCategory(root, 0);
+        });
+
+        // Safety fallback for malformed/orphaned records.
+        sortCategories(categories).forEach(function (category) {
+            if (!renderedIds.has(category.id)) {
+                appendCategory(category, Number(category.level || 0));
+            }
+        });
+
+        categoryCountText.textContent = `${categories.length} categories`;
+    }
+
+    function renderParentDropdown(excludeId) {
+        categoryParentInput.replaceChildren();
+
+        const emptyOption = document.createElement("option");
+        emptyOption.value = "";
+        emptyOption.textContent = "No parent category";
+        categoryParentInput.appendChild(emptyOption);
+
+        const renderedIds = new Set();
+
+        function appendOption(category, visualLevel) {
+            if (!category || renderedIds.has(category.id)) {
+                return;
+            }
+
+            renderedIds.add(category.id);
+
+            const isSelf = excludeId && category.id === excludeId;
+            const isDescendant = excludeId &&
+                Array.isArray(category.ancestors) &&
+                category.ancestors.includes(excludeId);
+
+            if (!isSelf && !isDescendant) {
+                const option = document.createElement("option");
+                option.value = category.id;
+                option.textContent =
+                    "— ".repeat(visualLevel) + category.name;
+                categoryParentInput.appendChild(option);
+            }
+
+            getChildren(category.id).forEach(function (child) {
+                appendOption(child, visualLevel + 1);
+            });
+        }
+
+        getChildren("").forEach(function (root) {
+            appendOption(root, 0);
+        });
+
+        sortCategories(categories).forEach(function (category) {
+            if (!renderedIds.has(category.id)) {
+                appendOption(category, Number(category.level || 0));
+            }
+        });
+    }
+
+    function openAddFieldModal() {
+        const category = getCategory(currentCategoryId);
 
         if (!category) {
             return;
         }
 
-        categoryName.textContent = category.name;
+        fieldModalMode = "add";
+        editingFieldKey = null;
+        fieldModalTitle.textContent = "Add Specification Field";
+        fieldModalCategory.textContent = category.name;
+        fieldModalSave.textContent = "Add Field";
+        fieldForm.reset();
+        fieldFilterableInput.checked = true;
+        fieldModal.classList.add("show");
+        fieldLabelInput.focus();
+    }
 
-        fieldCount.textContent =
-            `${category.fields.length} fields`;
+    function openEditFieldModal(field) {
+        const category = getCategory(currentCategoryId);
 
-        tableBody.replaceChildren();
+        if (!category || !field) {
+            return;
+        }
 
-        category.fields.forEach(function (field, fieldIndex) {
+        fieldModalMode = "edit";
+        editingFieldKey = field.key;
+        fieldModalTitle.textContent = "Edit Specification Field";
+        fieldModalCategory.textContent = category.name;
+        fieldModalSave.textContent = "Save Field";
+        fieldForm.reset();
 
-            const row = document.createElement("tr");
+        fieldLabelInput.value = field.label || "";
+        fieldKeyInput.value = field.key || "";
+        fieldTypeInput.value = field.data_type || "text";
+        fieldUnitInput.value = field.unit || "";
+        fieldValuesInput.value = Array.isArray(field.allowed_values)
+            ? field.allowed_values.join(", ")
+            : "";
+        fieldFilterableInput.checked = field.is_filterable !== false;
 
-            const labelCell =
-                document.createElement("td");
+        fieldModal.classList.add("show");
+        fieldLabelInput.focus();
+    }
 
-            labelCell.textContent = field.label;
+    function closeFieldModal() {
+        fieldModal.classList.remove("show");
+        fieldForm.reset();
+        editingFieldKey = null;
+    }
 
-            const keyCell =
-                document.createElement("td");
+    async function deleteSpecField(field) {
+        const category = getCategory(currentCategoryId);
 
-            const keyCode =
-                document.createElement("code");
+        if (!category || !field) {
+            return;
+        }
 
-            keyCode.textContent = field.key;
+        if (!confirm(`Delete specification field "${field.label}"?`)) {
+            return;
+        }
 
-            keyCell.appendChild(keyCode);
+        try {
+            const formData = new FormData();
+            const csrfInput = fieldForm.querySelector(
+                '[name="csrfmiddlewaretoken"]'
+            );
 
-            const typeCell =
-                document.createElement("td");
+            if (csrfInput) {
+                formData.append("csrfmiddlewaretoken", csrfInput.value);
+            }
 
-            typeCell.textContent = field.type;
+            const response = await fetch(
+                `/admin/categories/${category.id}/spec-fields/${encodeURIComponent(field.key)}/delete/`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
 
-            const unitCell =
-                document.createElement("td");
+            const data = await response.json();
 
-            unitCell.textContent =
-                field.unit || "—";
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || "Cannot delete specification field.");
+            }
 
-            const filterCell =
-                document.createElement("td");
+            await loadCategories(category.id);
+        } catch (error) {
+            alert(error.message);
+        }
+    }
 
-            filterCell.textContent =
-                field.filterable === false ? "No" : "Yes";
+    async function loadCategories(selectId) {
+        try {
+            const response = await fetch("{% url 'admin_categories_data' %}");
 
-            const actionCell =
-                document.createElement("td");
+            if (!response.ok) {
+                throw new Error("Cannot load categories.");
+            }
 
-            actionCell.className =
-                "spec-field-actions";
+            const data = await response.json();
+            categories = data.categories || [];
 
-            const deleteFieldButton =
-                document.createElement("button");
+            renderCategoryTree();
+            renderParentDropdown();
 
-deleteFieldButton.type =
-    "button";
+            if (categories.length > 0) {
+                const wanted = selectId || currentCategoryId;
+                const selected = wanted && getCategory(wanted)
+                    ? wanted
+                    : categories[0].id;
+                selectCategory(selected);
+            } else {
+                currentCategoryId = null;
+                categoryName.textContent = "No category selected";
+                fieldCount.textContent = "0 fields";
+                tableBody.replaceChildren();
+            }
+        } catch (error) {
+            console.error(error);
+            categoryCountText.textContent = "Failed to load";
+            categoryName.textContent = "Unable to load categories";
+            tableBody.replaceChildren();
+        }
+    }
 
-deleteFieldButton.className =
-    "spec-field-delete-btn";
+    function openAddCategoryModal() {
+        categoryModalMode = "add";
+        categoryModalTitle.textContent = "Add Category";
+        categoryForm.reset();
+        slugWasEdited = false;
+        renderParentDropdown();
+        categoryModal.classList.add("show");
+        categoryNameInput.focus();
+    }
 
-deleteFieldButton.textContent =
-    "Delete";
+    function openEditCategoryModal() {
+        const category = getCategory(currentCategoryId);
 
+        if (!category) {
+            return;
+        }
 
-deleteFieldButton.addEventListener(
-    "click",
-    function () {
+        categoryModalMode = "edit";
+        categoryModalTitle.textContent = "Edit Category";
+        categoryForm.reset();
+        renderParentDropdown(category.id);
+
+        categoryNameInput.value = category.name || "";
+        categorySlugInput.value = category.slug || "";
+        categoryParentInput.value = category.parent_id || "";
+        slugWasEdited = true;
+
+        categoryModal.classList.add("show");
+        categoryNameInput.focus();
+    }
+
+    function closeCategoryModal() {
+        categoryModal.classList.remove("show");
+        categoryForm.reset();
+    }
+
+    addCategoryButton.addEventListener("click", openAddCategoryModal);
+    editCategoryButton.addEventListener("click", openEditCategoryModal);
+    categoryModalClose.addEventListener("click", closeCategoryModal);
+    categoryModalCancel.addEventListener("click", closeCategoryModal);
+    categoryModalBackdrop.addEventListener("click", closeCategoryModal);
+
+    let slugWasEdited = false;
+
+    categoryNameInput.addEventListener("input", function () {
+        if (!slugWasEdited) {
+            categorySlugInput.value = slugify(categoryNameInput.value);
+        }
+    });
+
+    categorySlugInput.addEventListener("input", function () {
+        slugWasEdited = true;
+    });
+
+    hideCategoryButton.addEventListener("click", async function () {
+        const category = getCategory(currentCategoryId);
+
+        if (!category) {
+            return;
+        }
+
+        const nextHidden = !category.is_hidden;
+        const message = nextHidden
+            ? `Hide "${category.name}" and all child categories?`
+            : `Unhide "${category.name}"?`;
+
+        if (!confirm(message)) {
+            return;
+        }
+
+        deleteCategoryButton.disabled = true;
+
+        try {
+            const formData = new FormData();
+            formData.append("hidden", nextHidden ? "true" : "false");
+
+            const csrfInput = categoryForm.querySelector(
+                '[name="csrfmiddlewaretoken"]'
+            );
+
+            if (csrfInput) {
+                formData.append(
+                    "csrfmiddlewaretoken",
+                    csrfInput.value
+                );
+            }
+
+            const response = await fetch(
+                `/admin/categories/${category.id}/hidden/`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || "Cannot change category visibility.");
+            }
+
+            await loadCategories(category.id);
+        } catch (error) {
+            alert(error.message);
+            updateCategoryActionButtons();
+        }
+    });
+
+    deleteCategoryButton.addEventListener("click", async function () {
+        const category = getCategory(currentCategoryId);
+
+        if (!category) {
+            return;
+        }
 
         const confirmed = confirm(
-            `Delete field "${field.label}"?`
+            `Permanently delete "${category.name}"?\n\n` +
+            `This only works when the category has no products and no child categories.`
         );
 
         if (!confirmed) {
             return;
         }
 
-        category.fields.splice(
-            fieldIndex,
-            1
-        );
+        deleteCategoryButton.disabled = true;
 
-        renderSpecTemplate(
-            categoryKey
-        );
+        try {
+            const formData = new FormData();
 
-    }
-);
+            const csrfInput = categoryForm.querySelector(
+                '[name="csrfmiddlewaretoken"]'
+            );
 
-actionCell.appendChild(
-    deleteFieldButton
-);
+            if (csrfInput) {
+                formData.append(
+                    "csrfmiddlewaretoken",
+                    csrfInput.value
+                );
+            }
 
-            row.appendChild(labelCell);
-            row.appendChild(keyCell);
-            row.appendChild(typeCell);
-            row.appendChild(unitCell);
-            row.appendChild(filterCell);
-            row.appendChild(actionCell);
+            const response = await fetch(
+                `/admin/categories/${category.id}/delete/`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
 
-            tableBody.appendChild(row);
+            let data = null;
 
-        });
+            try {
+                data = await response.json();
+            } catch (jsonError) {
+                throw new Error(
+                    "Delete endpoint returned a non-JSON response. Check the URL and Django view."
+                );
+            }
 
-    }
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.error || "Cannot delete category."
+                );
+            }
 
-function selectCategory(button) {
+            await loadCategories(
+                category.parent_id || null
+            );
 
-    document
-        .querySelectorAll(".category-tree-item")
-        .forEach(function (item) {
-            item.classList.remove("active");
-        });
-
-    button.classList.add("active");
-
-    currentCategoryKey =
-        button.dataset.category;
-
-    renderSpecTemplate(currentCategoryKey);
-}
-
-
-function bindCategoryButton(button) {
-
-    button.addEventListener("click", function () {
-        selectCategory(button);
+        } catch (error) {
+            alert(error.message);
+            updateCategoryActionButtons();
+        }
     });
 
-}
+    addFieldButton.addEventListener("click", openAddFieldModal);
+    fieldModalClose.addEventListener("click", closeFieldModal);
+    fieldModalCancel.addEventListener("click", closeFieldModal);
+    fieldModalBackdrop.addEventListener("click", closeFieldModal);
 
+    fieldForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-categoryButtons.forEach(function (button) {
-    bindCategoryButton(button);
-});
+        const category = getCategory(currentCategoryId);
 
-function openCategoryModal(mode) {
-
-    categoryModalMode = mode;
-
-    categoryModal.classList.add("show");
-
-    document.body.classList.add("modal-open");
-
-    if (mode === "add") {
-
-        categoryModalTitle.textContent =
-            "Add Category";
-
-        categoryForm.reset();
-
-    } else {
-
-        const category =
-            categorySpecTemplates[currentCategoryKey];
-
-        categoryModalTitle.textContent =
-            "Edit Category";
-
-        categoryNameInput.value =
-            category.name;
-
-        categorySlugInput.value =
-            currentCategoryKey;
-
-        categoryParentInput.value =
-            category.parent || "";
-    }
-
-}
-
-function openFieldModal() {
-
-    const category =
-        categorySpecTemplates[currentCategoryKey];
-
-    fieldModalCategory.textContent =
-        category.name;
-
-    fieldForm.reset();
-
-    fieldFilterableInput.checked = true;
-
-    fieldModal.classList.add("show");
-
-    document.body.classList.add("modal-open");
-
-}
-
-function closeFieldModal() {
-
-    fieldModal.classList.remove("show");
-
-    document.body.classList.remove("modal-open");
-
-}
-
-function closeCategoryModal() {
-
-    categoryModal.classList.remove("show");
-
-    document.body.classList.remove("modal-open");
-
-}
-
-editCategoryButton.addEventListener("click", function () {
-
-    openCategoryModal("edit");
-
-});
-
-addCategoryButton.addEventListener("click", function () {
-
-    openCategoryModal("add");
-
-});
-
-categoryModalClose.addEventListener("click", closeCategoryModal);
-
-categoryModalCancel.addEventListener("click", closeCategoryModal);
-
-categoryModalBackdrop.addEventListener("click", closeCategoryModal);
-
-deleteCategoryButton.addEventListener("click", function () {
-
-    const category =
-        categorySpecTemplates[currentCategoryKey];
-
-    if (!category) {
-        return;
-    }
-
-
-    const confirmed = confirm(
-        `Delete "${category.name}"?`
-    );
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    const deletedKey =
-        currentCategoryKey;
-
-
-    /* --------------------------------------
-       Remove category from mock data
-       -------------------------------------- */
-
-    delete categorySpecTemplates[deletedKey];
-
-
-    /* --------------------------------------
-       Remove category button from tree
-       -------------------------------------- */
-
-    const deletedButton =
-        document.querySelector(
-            `.category-tree-item[data-category="${deletedKey}"]`
-        );
-
-    if (deletedButton) {
-        deletedButton.remove();
-    }
-
-
-    /* --------------------------------------
-       Remove category from parent dropdown
-       -------------------------------------- */
-
-    const deletedOption =
-        categoryParentInput.querySelector(
-            `option[value="${deletedKey}"]`
-        );
-
-    if (deletedOption) {
-        deletedOption.remove();
-    }
-
-
-    /* --------------------------------------
-       Update category count
-       -------------------------------------- */
-
-    const totalCategories =
-        Object.keys(
-            categorySpecTemplates
-        ).length;
-
-    categoryCountText.textContent =
-        `${totalCategories} categories`;
-
-
-    /* --------------------------------------
-       Select another remaining category
-       -------------------------------------- */
-
-    const remainingButton =
-        document.querySelector(
-            ".category-tree-item"
-        );
-
-
-    if (remainingButton) {
-
-        selectCategory(
-            remainingButton
-        );
-
-    } else {
-
-        currentCategoryKey = "";
-
-        categoryName.textContent =
-            "No category selected";
-
-        fieldCount.textContent =
-            "0 fields";
-
-        tableBody.replaceChildren();
-
-        editCategoryButton.disabled =
-            true;
-
-        deleteCategoryButton.disabled =
-            true;
-
-        addFieldButton.disabled =
-            true;
-    }
-
-});
-
-categoryForm.addEventListener("submit", function (event) {
-
-    event.preventDefault();
-
-    const categoryNameValue =
-        categoryNameInput.value.trim();
-
-    const categoryKeyValue =
-        categorySlugInput.value
-            .trim()
-            .toLowerCase();
-
-    const parentValue =
-        categoryParentInput.value;
-
-
-    if (!categoryNameValue || !categoryKeyValue) {
-        return;
-    }
-
-
-    /* ======================================
-       ADD CATEGORY
-       ====================================== */
-
-    if (categoryModalMode === "add") {
-
-        if (categorySpecTemplates[categoryKeyValue]) {
-
-            alert("This category slug already exists.");
-
+        if (!category) {
             return;
         }
 
+        fieldModalSave.disabled = true;
 
-        categorySpecTemplates[categoryKeyValue] = {
-            name: categoryNameValue,
-            parent: parentValue,
-            fields: []
-        };
+        try {
+            let url = `/admin/categories/${category.id}/spec-fields/create/`;
 
+            if (fieldModalMode === "edit") {
+                if (!editingFieldKey) {
+                    throw new Error("No specification field selected.");
+                }
 
-        const newButton =
-            document.createElement("button");
+                url = `/admin/categories/${category.id}/spec-fields/${encodeURIComponent(editingFieldKey)}/update/`;
+            }
 
-        newButton.type = "button";
+            const response = await fetch(url, {
+                method: "POST",
+                body: new FormData(fieldForm),
+            });
 
-        newButton.className =
-            "category-tree-item";
+            const data = await response.json();
 
-        newButton.dataset.category =
-            categoryKeyValue;
+            if (!response.ok || !data.ok) {
+                throw new Error(data.error || "Cannot save specification field.");
+            }
 
-
-        const icon =
-            document.createElement("span");
-
-        icon.className =
-            "category-tree-icon";
-
-        icon.textContent =
-            "📁";
-
-
-        const name =
-            document.createElement("span");
-
-        name.className =
-            "category-tree-name";
-
-        name.textContent =
-            categoryNameValue;
-
-
-        newButton.appendChild(icon);
-        newButton.appendChild(name);
-
-        categoryTreeChildren.appendChild(
-            newButton
-        );
-
-
-        bindCategoryButton(newButton);
-
-
-        const newOption =
-            document.createElement("option");
-
-        newOption.value =
-            categoryKeyValue;
-
-        newOption.textContent =
-            categoryNameValue;
-
-        categoryParentInput.appendChild(
-            newOption
-        );
-
-
-        const totalCategories =
-            Object.keys(
-                categorySpecTemplates
-            ).length;
-
-        categoryCountText.textContent =
-            `${totalCategories} categories`;
-
-
-        selectCategory(newButton);
-
-    }
-
-
-    /* ======================================
-       EDIT CATEGORY
-       ====================================== */
-
-    else {
-
-        const oldKey =
-            currentCategoryKey;
-
-
-        if (
-            categoryKeyValue !== oldKey &&
-            categorySpecTemplates[categoryKeyValue]
-        ) {
-
-            alert("This category slug already exists.");
-
-            return;
+            closeFieldModal();
+            await loadCategories(category.id);
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            fieldModalSave.disabled = false;
         }
+    });
 
+    categoryForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-        const category =
-            categorySpecTemplates[oldKey];
+        const submitButton = categoryForm.querySelector('[type="submit"]');
+        submitButton.disabled = true;
 
+        try {
+            let url = "{% url 'admin_category_create' %}";
 
-        category.name =
-            categoryNameValue;
+            if (categoryModalMode === "edit") {
+                if (!currentCategoryId) {
+                    throw new Error("No category selected.");
+                }
+                url = `/admin/categories/${currentCategoryId}/update/`;
+            }
 
-        category.parent =
-            parentValue;
+            const response = await fetch(url, {
+                method: "POST",
+                body: new FormData(categoryForm),
+            });
 
+            const data = await response.json();
 
-        /*
-         * If slug changed, move object
-         * to the new key.
-         */
-        if (categoryKeyValue !== oldKey) {
-
-            delete categorySpecTemplates[oldKey];
-
-            categorySpecTemplates[categoryKeyValue] =
-                category;
-
-        }
-
-
-        const currentButton =
-            document.querySelector(
-                `.category-tree-item[data-category="${oldKey}"]`
-            );
-
-
-        if (currentButton) {
-
-            currentButton.dataset.category =
-                categoryKeyValue;
-
-            const nameElement =
-                currentButton.querySelector(
-                    ".category-tree-name"
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.error ||
+                    (categoryModalMode === "edit"
+                        ? "Cannot update category."
+                        : "Cannot create category.")
                 );
+            }
 
-            nameElement.textContent =
-                categoryNameValue;
+            closeCategoryModal();
+            await loadCategories(data.category.id);
+        } catch (error) {
+            alert(error.message);
+        } finally {
+            submitButton.disabled = false;
         }
+    });
 
+    editCategoryButton.disabled = false;
+    hideCategoryButton.disabled = false;
+    deleteCategoryButton.disabled = false;
+    addFieldButton.disabled = false;
 
-        /*
-         * Update Parent Category option
-         */
-        const categoryOption =
-            categoryParentInput.querySelector(
-                `option[value="${oldKey}"]`
-            );
-
-        if (categoryOption) {
-
-            categoryOption.value =
-                categoryKeyValue;
-
-            categoryOption.textContent =
-                categoryNameValue;
-        }
-
-
-        currentCategoryKey =
-            categoryKeyValue;
-
-
-        renderSpecTemplate(
-            currentCategoryKey
-        );
-
-    }
-
-
-    closeCategoryModal();
-
+    loadCategories();
 });
-
-    addFieldButton.addEventListener("click", function () {
-
-    openFieldModal();
-
-});
-
-fieldModalClose.addEventListener(
-    "click",
-    closeFieldModal
-);
-
-fieldModalCancel.addEventListener(
-    "click",
-    closeFieldModal
-);
-
-fieldModalBackdrop.addEventListener(
-    "click",
-    closeFieldModal
-);
-
-fieldForm.addEventListener("submit", function (event) {
-
-    event.preventDefault();
-
-    const category =
-        categorySpecTemplates[currentCategoryKey];
-
-    const newField = {
-        label: fieldLabelInput.value.trim(),
-        key: fieldKeyInput.value.trim(),
-        type: fieldTypeInput.value,
-        unit: fieldUnitInput.value.trim(),
-        filterable: fieldFilterableInput.checked
-    };
-
-    category.fields.push(newField);
-
-    renderSpecTemplate(
-        currentCategoryKey
-    );
-
-    closeFieldModal();
-
-});
-
-    renderSpecTemplate("microcontrollers-kits");
-
-});
-
 </script>
 
 {% endblock %}

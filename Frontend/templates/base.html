@@ -43,26 +43,41 @@
         <span class="hact-txt">Compare</span>
         <b class="badge {% if not compare_count %}hide{% endif %}" id="cmp-badge">{{ compare_count }}</b>
       </a>
+
       <a href="{% url 'wishlist' %}" class="hact">
         <span class="hact-ico">♥</span>
         <span class="hact-txt">Wishlist</span>
         <b class="badge {% if not wishlist_count %}hide{% endif %}" id="wish-badge">{{ wishlist_count }}</b>
       </a>
+
       <a href="/cart/" class="hact">
         <span class="hact-ico">🛒</span>
         <span class="hact-txt">Cart</span>
       </a>
+
       {% if current_user %}
       <a href="{% url 'accounts_profile' %}" class="hact">
         <span class="hact-ico">👤</span>
         <span class="hact-txt">{{ current_user.full_name|default:"Account" }}</span>
       </a>
+
       {% if current_user.role == 'admin' %}
       <a href="{% url 'admin_manage_user' %}" class="hact">
         <span class="hact-ico">🛠</span>
         <span class="hact-txt">Admin</span>
       </a>
+
+      <a href="{% url 'admin_products' %}" class="hact">
+        <span class="hact-ico">📦</span>
+        <span class="hact-txt">Products</span>
+      </a>
+
+      <a href="{% url 'admin_inventory' %}" class="hact">
+        <span class="hact-ico">🏭</span>
+        <span class="hact-txt">Inventory</span>
+      </a>
       {% endif %}
+
       <a href="{% url 'accounts_logout' %}" class="hact">
         <span class="hact-ico">↪</span>
         <span class="hact-txt">Logout</span>
@@ -87,17 +102,16 @@
         {% endfor %}
       </ul>
     </div>
+
     <ul class="nav-links">
+      {% for c in nav_categories %}
+      <li><a href="{% url 'product_list' c.slug %}">{{ c.name }}</a></li>
+      {% endfor %}
 
-    {% for c in nav_categories %}
-    <li><a href="{% url 'product_list' c.slug %}">{{ c.name }}</a></li>
-    {% endfor %}
-
-    <li><a href="/news/">News</a></li>
-    <li><a href="/feedback/">Feedback</a></li>
-    <li><a href="/faq/">FAQ</a></li>
-
-</ul>
+      <li><a href="/news/">News</a></li>
+      <li><a href="/feedback/">Feedback</a></li>
+      <li><a href="/faq/">FAQ</a></li>
+    </ul>
   </div>
 </div>
 
@@ -112,12 +126,14 @@
       <p>Electronic component store: microcontrollers, sensors, resistors,
          capacitors and power modules. Genuine parts with full datasheets.</p>
     </div>
+
     <div>
       <div class="foot-title">Categories</div>
       {% for c in nav_categories %}
       <a href="{% url 'product_list' c.slug %}">{{ c.name }}</a>
       {% endfor %}
     </div>
+
     <div>
       <div class="foot-title">Support</div>
       <a href="#">How to order</a>
@@ -125,6 +141,7 @@
       <a href="/faq/">FAQ</a>
       <a href="/feedback/">Feedback</a>
     </div>
+
     <div>
       <div class="foot-title">Contact</div>
       <p>590 Cach Mang Thang 8, District 3, Ho Chi Minh City<br>
@@ -132,6 +149,7 @@
          Email: support@electromart.vn</p>
     </div>
   </div>
+
   <div class="foot-bottom">
     eProject ElectroMart - FPT Aptech &middot; Django + MongoDB &middot; Storefront module by Toan
   </div>

@@ -1868,29 +1868,72 @@ body.modal-open {
 
 /* ---------- Specification field actions ---------- */
 
+/*
+   CV65:
+   Keep the Actions column compact and make Edit/Delete match
+   the existing category action buttons already used on this page.
+*/
+.spec-template-table th:last-child,
+.spec-template-table td:last-child {
+    width: 170px;
+    min-width: 170px;
+    text-align: right;
+}
+
 .spec-field-actions {
-    width: 90px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
     white-space: nowrap;
 }
 
-.spec-field-delete-btn {
-    border: 1px solid #dc3545;
-    border-radius: 5px;
+.spec-field-actions .spec-field-edit-btn,
+.spec-field-actions .spec-field-delete-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
 
-    padding: 6px 9px;
+    min-width: 66px;
+    height: 32px;
+    padding: 0 12px;
 
-    background: #fff;
-    color: #dc3545;
+    border-radius: 6px;
 
     font-family: inherit;
-    font-size: 11.5px;
+    font-size: 12.5px;
     font-weight: 600;
+    line-height: 1;
 
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
 }
 
-.spec-field-delete-btn:hover {
-    background: #fff1f2;
+.spec-field-actions .spec-field-edit-btn {
+    border: 1px solid var(--blue) !important;
+    background: #fff !important;
+    color: var(--blue) !important;
+}
+
+.spec-field-actions .spec-field-edit-btn:hover {
+    background: #eef2ff !important;
+}
+
+.spec-field-actions .spec-field-delete-btn {
+    border: 1px solid #dc3545 !important;
+    background: #fff !important;
+    color: #dc3545 !important;
+}
+
+.spec-field-actions .spec-field-delete-btn:hover {
+    background: #fff1f2 !important;
 }
 
 /* ==========================================================
@@ -4293,4 +4336,20 @@ body.modal-open {
         font-size: 13px;
     }
 
+}
+
+.qa-real-reply-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: #0d47d9;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.qa-real-reply-btn:hover {
+  text-decoration: underline;
 }
