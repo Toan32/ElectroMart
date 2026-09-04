@@ -18,7 +18,7 @@ instead of scattered across the codebase.
 """
 import os
 
-from pymongo import ASCENDING, MongoClient
+from pymongo import ASCENDING, DESCENDING, MongoClient
 
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('MONGO_DB_NAME', 'electromart_db')
@@ -43,8 +43,26 @@ def ensure_accounts_indexes(db):
     quotations.create_index([('status', ASCENDING)])
 
 
+def ensure_sales_indexes(db):
+    """Sales & Payment module (Backend/sales/db.py) - CV40."""
+    orders = db['orders']
+    # Unique: repo.next_order_number() reads the highest number and adds one,
+    # so two orders placed in the same instant must not both be allowed to
+    # save the same code.
+    orders.create_index([('order_code', ASCENDING)], unique=True)
+    orders.create_index([('order_no', DESCENDING)])
+    orders.create_index([('status', ASCENDING), ('created_at', DESCENDING)])
+    orders.create_index([('created_at', DESCENDING)])
+    orders.create_index([('user_id', ASCENDING), ('created_at', DESCENDING)])
+    orders.create_index([('phone', ASCENDING)])
+    orders.create_index([('email', ASCENDING)])
+
+    coupons = db['coupons']
+    coupons.create_index([('code', ASCENDING)], unique=True)
+    coupons.create_index([('is_active', ASCENDING)])
+
+
 # TODO (other modules, not done in this pass):
-#   def ensure_orders_indexes(db): ...       # module Ban hang & Thanh toan
 #   def ensure_interaction_indexes(db): ...  # module Quan tri danh muc & Tuong tac
 
 
@@ -52,7 +70,8 @@ def main():
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     db = client[DB_NAME]
     ensure_accounts_indexes(db)
-    print('Accounts & B2B indexes created on database "%s".' % DB_NAME)
+    ensure_sales_indexes(db)
+    print('Accounts & B2B and Sales indexes created on database "%s".' % DB_NAME)
 
 
 if __name__ == '__main__':

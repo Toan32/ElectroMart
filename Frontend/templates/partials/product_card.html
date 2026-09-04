@@ -1,7 +1,7 @@
 {% load em_extras %}
 <div class="card">
   {% if p.discount_percent %}<span class="card-sale">-{{ p.discount_percent }}%</span>{% endif %}
-  <button class="card-wish js-wish" data-slug="{{ p.slug }}" title="Add to wishlist">&#9829;</button>
+  <button class="card-wish js-wish {% if p.slug in wishlist_slugs %}on{% endif %}" data-slug="{{ p.slug }}" title="Add to wishlist">&#9829;</button>
 
   <a class="card-img" href="{% url 'product_detail' p.slug %}">
     {% if p.images and p.images.0 %}
@@ -59,7 +59,7 @@
       <span class="tag tag-out">Out of stock</span>
     {% endif %}
     <label class="cmp">
-      <input type="checkbox" class="js-compare" data-slug="{{ p.slug }}"> Compare
+      <input type="checkbox" class="js-compare" data-slug="{{ p.slug }}" {% if p.slug in compare_slugs %}checked{% endif %}> Compare
     </label>
   </div>
 </div>

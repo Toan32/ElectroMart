@@ -55,10 +55,17 @@
       {% if current_user %}
       <a href="{% url 'accounts_profile' %}" class="hact">
         <span class="hact-ico">👤</span>
-        <span class="hact-txt">{{ current_user.full_name|default:"Account" }}</span>
+        <span class="hact-txt">{% if current_user.role == 'admin' %}My Profile{% else %}{{ current_user.full_name|default:"Account" }}{% endif %}</span>
+      </a>
+      <a href="{% url 'tracking' %}" class="hact">
+        <span class="hact-ico">📦</span>
+        <span class="hact-txt">My orders</span>
       </a>
       {% if current_user.role == 'admin' %}
-      <a href="{% url 'admin_manage_user' %}" class="hact">
+      {% comment %} Lands on the dashboard, which carries the shared admin menu
+         to every other admin page. It used to point straight at Manage Users,
+         so Tin's dashboard/orders/promotions had no entry point at all. {% endcomment %}
+      <a href="{% url 'admin_dashboard' %}" class="hact">
         <span class="hact-ico">🛠</span>
         <span class="hact-txt">Admin</span>
       </a>
@@ -142,7 +149,7 @@
   <a class="btn btn-primary btn-sm" href="{% url 'compare' %}">View comparison</a>
 </div>
 
-<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'js/app.js' %}?v=2"></script>
 <script src="{% static 'sales_payment/js/shared.js' %}?v=5"></script>
 <script src="{% static 'sales_payment/js/cart.js' %}?v=5"></script>
 {% block extra_js %}{% endblock %}

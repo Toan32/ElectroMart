@@ -1,0 +1,125 @@
+{% extends "admin/base_admin.html" %}
+{% load static %}
+{% load em_extras %}
+
+{% block admin_crumb %}Dashboard{% endblock %}
+
+{% block admin_content %}
+<h1 class="acc-title">Analytics Dashboard</h1>
+
+{% comment %} ---------- Control table ----------
+   KPI tiles       : read-only, computed by sales/repo.dashboard_kpis()
+   revenue chart   : Chart.js line, 7 real days from repo.revenue_last_days()
+   category chart  : Chart.js doughnut, from repo.sales_by_category()
+   recent orders   : 5 newest orders, row links to the order detail page
+   top products    : best sellers by quantity, repo.top_products()
+   Every figure comes from the orders collection; nothing on this page is
+   hard-coded any more. {% endcomment %}
+
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Total revenue</div>
+    <div class="kpi-value">{{ kpis.total_revenue|money }}</div>
+    <div class="kpi-sub">Excludes cancelled and unpaid orders</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Total orders</div>
+    <div class="kpi-value">{{ kpis.total_orders }}</div>
+    <div class="kpi-sub">All statuses</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Average order value</div>
+    <div class="kpi-value">{{ kpis.avg_order_value|money }}</div>
+    <div class="kpi-sub">Revenue / paid orders</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Active promos</div>
+    <div class="kpi-value">{{ kpis.active_promotions }}</div>
+    <div class="kpi-sub"><a href="{% url 'admin_promotions' %}" style="color:var(--blue)">Manage promo codes</a></div>
+  </div>
+</div>
+
+{% if has_chart_data %}
+<div class="charts-row">
+  <div class="a-card">
+    <div class="a-card-head">
+      <h3 class="a-card-title">Revenue, last 7 days</h3>
+      <span class="promo-meta">From the orders collection</span>
+    </div>
+    <div class="chart-body"><canvas id="revenueChart"></canvas></div>
+  </div>
+  <div class="a-card">
+    <div class="a-card-head"><h3 class="a-card-title">Revenue by category</h3></div>
+    <div class="chart-body"><canvas id="categoryChart"></canvas></div>
+  </div>
+</div>
+{% else %}
+<div class="a-card" style="margin-bottom:18px">
+  <p class="muted" style="margin:0">
+    No paid orders yet, so there is nothing to chart. Place an order from the
+    storefront, or run <code>python Database/seed_sales.py</code> to load sample orders.
+  </p>
+</div>
+{% endif %}
+
+<div class="a-card">
+  <div class="a-card-head">
+    <h3 class="a-card-title">Recent orders</h3>
+    <a href="{% url 'admin_orders' %}" class="btn btn-outline btn-sm">View all orders &#8594;</a>
+  </div>
+  <div class="table-scroll">
+    <table class="a-table">
+      <thead>
+        <tr>
+          <th>Order</th><th>Customer</th><th>Date</th>
+          <th class="num">Total</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in recent_orders %}
+        <tr>
+          <td><a class="a-code" style="color:var(--blue)" href="{% url 'admin_order_detail' order_id=o.id %}">{{ o.order_code }}</a></td>
+          <td>{{ o.customer_name }}</td>
+          <td class="muted">{{ o.created_at|date:"d/m/Y H:i" }}</td>
+          <td class="num"><strong>{{ o.total|money }}</strong></td>
+          <td><span class="badge {{ o.status_badge }}">{{ o.status_label }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="a-empty">No orders recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if top_products %}
+<div class="a-card">
+  <div class="a-card-head"><h3 class="a-card-title">Best sellers</h3></div>
+  <div class="table-scroll">
+    <table class="a-table">
+      <thead>
+        <tr><th>Product</th><th class="num">Units sold</th><th class="num">Revenue</th></tr>
+      </thead>
+      <tbody>
+        {% for p in top_products %}
+        <tr>
+          <td>{{ p.name }}</td>
+          <td class="num">{{ p.qty }}</td>
+          <td class="num"><strong>{{ p.revenue|money }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block admin_js %}
+{% if has_chart_data %}
+<script src="{% static 'sales_payment/js/chart.min.js' %}"></script>
+<script id="revenue-data" type="application/json">{{ revenue_chart_json|safe }}</script>
+<script id="category-data" type="application/json">{{ category_chart_json|safe }}</script>
+<script src="{% static 'js/admin_dashboard.js' %}"></script>
+{% endif %}
+{% endblock %}

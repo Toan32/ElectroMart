@@ -5,6 +5,8 @@ from django.conf import settings
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 
+from accounts.decorators import admin_required
+
 from . import repo
 
 COMPARE_KEY = 'compare'
@@ -343,18 +345,31 @@ def faq(request):
         'page_title': 'FAQ - ElectroMart',
     })
 
+# These three were reachable by anyone with the URL. Now that they sit in the
+# shared admin menu they use the same guard as every other admin page, so
+# there is one definition of "who is an admin" across the project.
+@admin_required
 def admin_categories(request):
     return render(request, 'admin_categories.html', {
-        'page_title': 'Manage Categories - ElectroMart'
+        'page_title': 'Manage Categories - ElectroMart',
+        'admin_page': 'categories',
     })
 
+
+@admin_required
 def admin_products(request):
     return render(request, 'admin_products.html', {
-        'page_title': 'Manage Products - ElectroMart'
+        'page_title': 'Manage Products - ElectroMart',
+        'admin_page': 'products',
     })
-    
+
+
+@admin_required
 def admin_inventory(request):
-    return render(request, 'admin_inventory.html')
+    return render(request, 'admin_inventory.html', {
+        'page_title': 'Manage Inventory - ElectroMart',
+        'admin_page': 'inventory',
+    })
 
 
 # ------------------------------------------------------------- sales_payment module
@@ -366,18 +381,8 @@ def checkout(request):
     return render(request, 'sales_payment/checkout.html', {'page_title': 'Thanh toán - ElectroMart'})
 
 
-def tracking(request):
-    return render(request, 'sales_payment/tracking.html', {'page_title': 'Tra cứu đơn hàng - ElectroMart'})
-
-
-def admin_dashboard(request):
-    return render(request, 'sales_payment/admin-dashboard.html')
-
-
-def admin_orders(request):
-    return render(request, 'sales_payment/admin-orders.html')
-
-
-def admin_promotions(request):
-    return render(request, 'sales_payment/admin-promotions.html')
+# tracking, admin_dashboard, admin_orders and admin_promotions moved to
+# sales/views.py (CV54-CV57): they now read the orders and coupons
+# collections and render through the shared admin layout, instead of being
+# static renders of a standalone page fed by localStorage.
 

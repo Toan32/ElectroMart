@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+from django.views.generic import RedirectView
 
 from accounts import views as accounts_views
 from catalogue import views
+from sales import views as sales_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -15,6 +17,7 @@ urlpatterns = [
     path('compare/clear/', views.compare_clear, name='compare_clear'),
     path('compare/<slug:slug>/', views.compare_toggle, name='compare_toggle'),
     path('wishlist/', views.wishlist, name='wishlist'),
+    path('wishlist/<slug:slug>/', views.wishlist_toggle, name='wishlist_toggle'),
     # ------------------------------------------------------- accounts (Loc)
     path('accounts/register/', accounts_views.register, name='accounts_register'),
     path('accounts/activate/<str:token>/', accounts_views.activate, name='accounts_activate'),
@@ -39,24 +42,48 @@ urlpatterns = [
     path('accounts/rfq/new/', accounts_views.rfq_create, name='accounts_rfq_create'),
     path('accounts/rfq/', accounts_views.rfq_list, name='accounts_rfq_list'),
 
-    path('admin/users/', accounts_views.admin_manage_user, name='admin_manage_user'),
-    path('admin/users/<str:user_id>/lock/', accounts_views.admin_toggle_lock, name='admin_toggle_lock'),
-    path('admin/users/<str:profile_id>/wholesale-review/', accounts_views.admin_wholesale_review, name='admin_wholesale_review'),
+    path('accounts/orders/', sales_views.track_order, name='accounts_orders'),
+
     # ------------------------------------------------------- catalogue & content (Minh)
     path('news/', views.news, name='news'),
     path('feedback/', views.feedback, name='feedback'),
     path('faq/', views.faq, name='faq'),
-    path('admin/categories/', views.admin_categories, name='admin_categories'),
-    path('admin/products/', views.admin_products, name='admin_products'),
-    path('admin/inventory/', views.admin_inventory, name='admin_inventory'),
 
     # ------------------------------------------------------- sales & payment (Tin)
     path('cart/', views.cart, name='cart'),
     path('checkout/', views.checkout, name='checkout'),
-    path('tracking/', views.tracking, name='tracking'),
-    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
-    path('admin-orders/', views.admin_orders, name='admin_orders'),
-    path('admin-promotions/', views.admin_promotions, name='admin_promotions'),
+    path('tracking/', sales_views.track_order, name='tracking'),
+    # JSON endpoints the checkout page posts to (CV52, CV53).
+    path('checkout/place-order/', sales_views.place_order, name='place_order'),
+    path('checkout/apply-coupon/', sales_views.apply_coupon, name='apply_coupon'),
+    path('checkout/<str:order_code>/confirm-transfer/', sales_views.confirm_transfer,
+         name='confirm_transfer'),
+
+    # ---------------------------------------------------------------- admin
+    # One /admin/... prefix for every module, so the shared admin menu in
+    # Frontend/templates/admin/_admin_nav.html reads consistently. Tin's three
+    # pages used to sit on their own /admin-dashboard/ style URLs outside it.
+    path('admin/users/', accounts_views.admin_manage_user, name='admin_manage_user'),
+    path('admin/users/<str:user_id>/lock/', accounts_views.admin_toggle_lock, name='admin_toggle_lock'),
+    path('admin/users/<str:profile_id>/wholesale-review/', accounts_views.admin_wholesale_review, name='admin_wholesale_review'),
+
+    path('admin/categories/', views.admin_categories, name='admin_categories'),
+    path('admin/products/', views.admin_products, name='admin_products'),
+    path('admin/inventory/', views.admin_inventory, name='admin_inventory'),
+
+    path('admin/dashboard/', sales_views.admin_dashboard, name='admin_dashboard'),
+    path('admin/orders/', sales_views.admin_orders, name='admin_orders'),
+    path('admin/orders/<str:order_id>/', sales_views.admin_order_detail, name='admin_order_detail'),
+    path('admin/orders/<str:order_id>/status/', sales_views.admin_order_status, name='admin_order_status'),
+    path('admin/promotions/', sales_views.admin_promotions, name='admin_promotions'),
+    path('admin/promotions/<str:coupon_id>/toggle/', sales_views.admin_promotion_toggle, name='admin_promotion_toggle'),
+    path('admin/promotions/<str:coupon_id>/delete/', sales_views.admin_promotion_delete, name='admin_promotion_delete'),
+
+    # Old standalone URLs, kept so existing links and the team's bookmarks
+    # still land on the merged pages instead of a 404.
+    path('admin-dashboard/', RedirectView.as_view(pattern_name='admin_dashboard', permanent=False)),
+    path('admin-orders/', RedirectView.as_view(pattern_name='admin_orders', permanent=False)),
+    path('admin-promotions/', RedirectView.as_view(pattern_name='admin_promotions', permanent=False)),
 ]
 
 if settings.DEBUG:

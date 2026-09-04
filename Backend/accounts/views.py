@@ -18,6 +18,8 @@ RESET_HOURS = 1
 
 LOGIN_NOTICES = {
     'registered': 'Account created. Please check your email to activate your account.',
+    'registered_no_email': 'Account created, but the activation email could not be sent. '
+                           'Please contact support to have your account activated.',
     'activated': 'Your account is now active. You can log in.',
     'reset_sent': 'If that email is registered, a reset link has been sent.',
     'password_reset': 'Your password has been changed. Please log in again.',
@@ -42,9 +44,12 @@ def register(request):
 
             token = secrets.token_urlsafe(32)
             repo.set_activation_token(user['_id'], token, datetime.utcnow() + timedelta(hours=ACTIVATION_HOURS))
-            mailer.send_activation_email(user, token)
+            sent = mailer.send_activation_email(user, token)
 
-            return redirect('%s?notice=registered' % _url('accounts_login'))
+            # The account exists either way, so say so plainly instead of
+            # telling someone to check an inbox nothing was delivered to.
+            notice = 'registered' if sent else 'registered_no_email'
+            return redirect('%s?notice=%s' % (_url('accounts_login'), notice))
         return render(request, 'accounts/register.html', {'form': form})
     return render(request, 'accounts/register.html', {'page_title': 'Register - ElectroMart'})
 
@@ -169,7 +174,12 @@ def edit_profile(request):
             avatar = form.cleaned_data.get('avatar')
             if avatar:
                 avatar_url = _save_avatar(user['_id'], avatar)
-            repo.update_profile(user['_id'], full_name=form.cleaned_data['full_name'], avatar_url=avatar_url)
+            repo.update_profile(
+                user['_id'], 
+                full_name=form.cleaned_data['full_name'], 
+                avatar_url=avatar_url, 
+                phone=form.cleaned_data.get('phone', '')
+            )
             return redirect('accounts_profile')
         return render(request, 'accounts/edit_profile.html', {'form': form, 'user': user})
     return render(request, 'accounts/edit_profile.html', {

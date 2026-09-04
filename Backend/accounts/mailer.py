@@ -40,9 +40,15 @@ def send_mail(to_email, subject, template_name, context=None):
         )
         msg.attach_alternative(html_body, 'text/html')
         msg.send(fail_silently=False)
-    except Exception:
+    except Exception as exc:
         ok = False
-        logger.exception('Failed to send "%s" to %s', subject, to_email)
+        # The message matters: "Username and Password not accepted" (wrong app
+        # password) and a connection timeout (blocked port 587) look identical
+        # from the browser, so put the real reason in the log.
+        logger.error('Failed to send "%s" to %s via %s:%s as %r - %s: %s',
+                     subject, to_email, settings.EMAIL_HOST, settings.EMAIL_PORT,
+                     settings.EMAIL_HOST_USER, type(exc).__name__, exc)
+        logger.debug('Traceback for the failure above', exc_info=True)
 
     # CV59 step 3: log every email attempt for debugging, success or not.
     logger.info('%s | to=%s | subject=%s | template=%s',
@@ -50,8 +56,22 @@ def send_mail(to_email, subject, template_name, context=None):
     return ok
 
 
+def _log_action_link(label, url):
+    """Print a one-time link in plain text as well as emailing it.
+
+    Django's console backend encodes the body as quoted-printable, which
+    breaks a long URL across lines with '=' characters and makes it unusable
+    to copy. Whenever real SMTP is not configured, log the bare URL so the
+    flow can still be finished from the terminal. Never logged once
+    EMAIL_ENABLED is on - a live one-time link does not belong in a log file.
+    """
+    if not getattr(settings, 'EMAIL_ENABLED', False):
+        logger.warning('%s (SMTP not configured, use this link): %s', label, url)
+
+
 def send_activation_email(user, token):
     activate_url = '%s/accounts/activate/%s/' % (settings.SITE_BASE_URL, token)
+    _log_action_link('Activation link for %s' % user['email'], activate_url)
     return send_mail(
         user['email'],
         'Activate your ElectroMart account',
@@ -62,6 +82,7 @@ def send_activation_email(user, token):
 
 def send_password_reset_email(user, token):
     reset_url = '%s/accounts/reset-password/%s/' % (settings.SITE_BASE_URL, token)
+    _log_action_link('Password reset link for %s' % user['email'], reset_url)
     return send_mail(
         user['email'],
         'Reset your ElectroMart password',

@@ -1,4 +1,4 @@
-﻿/* checkout.js - Checkout process and Payment simulation */
+/* checkout.js - Checkout process and Payment simulation */
 
 document.addEventListener('DOMContentLoaded', () => {
     initCheckoutPage();
@@ -97,10 +97,34 @@ function recalculateSummary() {
     totalEl.textContent = formatCurrency(Math.max(0, finalTotal));
 }
 
-// Generate random order ID
-function generateOrderId() {
-    return 'EM-' + Math.floor(100000 + Math.random() * 900000);
+/* The order used to be built here and pushed into localStorage, which is why
+   nobody but this browser ever saw it. It is now posted to
+   sales/views.place_order, which recomputes every amount from the product
+   prices in MongoDB and returns the stored order - so the admin's Order
+   Management page shows it immediately, and a customer cannot edit the total
+   before it is saved. */
+
+function csrfToken() {
+    const field = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    return field ? field.value : '';
 }
+
+function postJson(url, payload) {
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(payload || {})
+    }).then(function (response) {
+        return response.json().catch(function () {
+            throw new Error('The server returned an unexpected response.');
+        });
+    });
+}
+window.postJson = postJson;
 
 // Submit Order and open payment modal if bank transfer, or direct success page
 function processOrderSubmit() {
@@ -118,36 +142,57 @@ function processOrderSubmit() {
         document.getElementById('phoneNumber').classList.remove('is-invalid');
     }
 
-    const orderId = generateOrderId();
-    const newOrder = {
-        orderId: orderId,
-        customerName: name,
+    const submitBtn = document.getElementById('placeOrderBtn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.dataset.label = submitBtn.textContent;
+        submitBtn.textContent = 'Placing order...';
+    }
+
+    const activeDiscount = JSON.parse(localStorage.getItem('electromart_discount'));
+    const payload = {
+        customer_name: name,
         phone: phone,
         email: email,
         address: address,
-        date: new Date().toLocaleDateString('vi-VN') + ' ' + new Date().toLocaleTimeString('vi-VN'),
-        items: getCart(),
-        subtotal: cartSubtotal,
-        discount: discountAmt,
-        shippingFee: SHIPPING_FEES[activeShipping],
-        total: finalTotal,
-        paymentMethod: paymentMethod,
-        status: paymentMethod === 'cod' ? 'pending' : 'unpaid'
+        payment_method: paymentMethod,
+        shipping_method: activeShipping,
+        coupon_code: activeDiscount ? activeDiscount.code : '',
+        items: getCart().map(function (item) {
+            return {
+                product_id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.image,
+                specs: item.specs
+            };
+        })
     };
 
-    // Save order to localStorage list of orders
-    let allOrders = JSON.parse(localStorage.getItem('electromart_orders')) || [];
-    allOrders.unshift(newOrder); // Add to beginning of array
-    localStorage.setItem('electromart_orders', JSON.stringify(allOrders));
-
-    if (paymentMethod === 'cod') {
-        // Clear cart and redirect to order success view
-        clearCart();
-        showOrderSuccess(newOrder);
-    } else {
-        // Open Bank Transfer VietQR Payment Modal
-        openPaymentModal(newOrder);
-    }
+    postJson('/checkout/place-order/', payload).then(function (data) {
+        if (!data.ok) {
+            throw new Error(data.error || 'The order could not be placed.');
+        }
+        const order = data.order;
+        if (order.payment_method === 'cod') {
+            clearCart();
+            showOrderSuccess(order);
+        } else {
+            openPaymentModal(order);
+        }
+    }).catch(function (err) {
+        if (window.showToast) {
+            showToast(err.message, 'danger');
+        } else {
+            alert(err.message);
+        }
+    }).finally(function () {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtn.dataset.label || 'Place order';
+        }
+    });
 }
 
 let paymentTimer = null;
@@ -165,7 +210,7 @@ function openPaymentModal(order) {
     const bankId = 'MB';
     const accountNo = '8888999999';
     const accountName = 'ELECTROMART STORE';
-    const description = `EM ${order.orderId.replace('EM-', '')}`;
+    const description = `EM ${order.order_code.replace('EM-', '')}`;
     
     // URL format for VietQR API
     const vietQRUrl = `https://img.vietqr.io/image/${bankId}-${accountNo}-print.png?amount=${order.total}&addInfo=${encodeURIComponent(description)}&accountName=${encodeURIComponent(accountName)}`;
@@ -198,30 +243,36 @@ function openPaymentModal(order) {
     openModal(modalId);
 }
 
-// Simulate successful payment by customer clicking check payment
+// Customer says the transfer is done: the server moves the order from
+// "unpaid" to "confirmed" (sales/repo.mark_paid), so the admin sees the
+// payment too. Marking it only in localStorage left the two sides disagreeing.
 function simulatePaymentSuccess() {
     if (!window.currentPendingOrder) return;
-    
-    clearInterval(paymentTimer);
-    closeModal('paymentModal');
 
-    // Update order status in localStorage to "confirmed" (paid)
-    let allOrders = JSON.parse(localStorage.getItem('electromart_orders')) || [];
-    const idx = allOrders.findIndex(o => o.orderId === window.currentPendingOrder.orderId);
-    if (idx !== -1) {
-        allOrders[idx].status = 'confirmed';
-        localStorage.setItem('electromart_orders', JSON.stringify(allOrders));
-    }
-
-    const completedOrder = allOrders[idx] || window.currentPendingOrder;
-    clearCart();
-    showToast('Bank transfer payment confirmed successfully!', 'success');
-    showOrderSuccess(completedOrder);
+    const order = window.currentPendingOrder;
+    postJson('/checkout/' + encodeURIComponent(order.order_code) + '/confirm-transfer/', {})
+        .then(function (data) {
+            if (!data.ok) {
+                throw new Error(data.error || 'The payment could not be confirmed.');
+            }
+            clearInterval(paymentTimer);
+            closeModal('paymentModal');
+            clearCart();
+            showToast('Bank transfer payment confirmed successfully!', 'success');
+            showOrderSuccess(data.order);
+        })
+        .catch(function (err) {
+            if (window.showToast) {
+                showToast(err.message, 'danger');
+            } else {
+                alert(err.message);
+            }
+        });
 }
 
 // Show success view
 function showOrderSuccess(order) {
-    const contentArea = document.querySelector('.cart-layout');
+    const contentArea = document.querySelector('.checkout-layout') || document.querySelector('.cart-layout');
     if (!contentArea) return;
 
     contentArea.innerHTML = `
@@ -230,22 +281,22 @@ function showOrderSuccess(order) {
             <h2 style="font-size: 2rem; font-weight: 800; margin-top: var(--space-md); color: var(--color-success);">Order Placed Successfully!</h2>
             <p style="color: var(--text-secondary); margin-top: var(--space-xs); margin-bottom: var(--space-xl);">
                 Thank you for shopping at ElectroMart. Your order ID is: 
-                <strong style="color: var(--color-primary); font-size: 1.25rem; display: block; margin-top: var(--space-2xs); font-family: monospace;">${order.orderId}</strong>
+                <strong style="color: var(--color-primary); font-size: 1.25rem; display: block; margin-top: var(--space-2xs); font-family: monospace;">${order.order_code}</strong>
             </p>
 
             <div style="text-align: left; background-color: var(--bg-tertiary); padding: var(--space-lg); border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: var(--space-xl); font-size:0.95rem;">
                 <h4 style="border-bottom: 1px dashed var(--border-color); padding-bottom: var(--space-xs); margin-bottom: var(--space-sm); font-weight: 700;">Delivery Information</h4>
-                <p style="margin-bottom:var(--space-2xs);"><strong>Customer:</strong> ${order.customerName}</p>
+                <p style="margin-bottom:var(--space-2xs);"><strong>Customer:</strong> ${order.customer_name}</p>
                 <p style="margin-bottom:var(--space-2xs);"><strong>Phone Number:</strong> ${order.phone}</p>
                 <p style="margin-bottom:var(--space-2xs);"><strong>Shipping Address:</strong> ${order.address}</p>
                 <p style="margin-bottom:var(--space-2xs);"><strong>Total Amount:</strong> <strong style="color: var(--color-primary);">${formatCurrency(order.total)}</strong></p>
-                <p style="margin-bottom:var(--space-2xs);"><strong>Payment Method:</strong> ${order.paymentMethod === 'cod' ? 'Cash on Delivery (COD)' : 'Bank Transfer (VietQR)'}</p>
-                <p style="margin-bottom:var(--space-2xs);"><strong>Initial Status:</strong> <span class="badge ${order.status === 'confirmed' ? 'badge-success' : 'badge-warning'}">${order.status === 'confirmed' ? 'Paid' : 'Pending'}</span></p>
+                <p style="margin-bottom:var(--space-2xs);"><strong>Payment Method:</strong> ${order.payment_method === 'cod' ? 'Cash on Delivery (COD)' : 'Bank Transfer (VietQR)'}</p>
+                <p style="margin-bottom:var(--space-2xs);"><strong>Initial Status:</strong> <span class="badge ${order.status === 'confirmed' ? 'badge-success' : 'badge-warning'}">${order.status_label}</span></p>
             </div>
 
             <div style="display: flex; gap: var(--space-md); justify-content: center;">
                 <a href="/" class="btn btn-secondary">Continue Shopping</a>
-                <a href="/tracking/?orderId=${order.orderId}" class="btn btn-primary">Track Order â†’</a>
+                <a href="/tracking/?order_code=${order.order_code}&contact=${encodeURIComponent(order.phone)}" class="btn btn-primary">Track Order &rarr;</a>
             </div>
         </div>
     `;

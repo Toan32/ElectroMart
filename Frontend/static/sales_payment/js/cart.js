@@ -12,12 +12,10 @@ const PRODUCTS = [
     { id: 'prod-08', name: 'Keychron K8 Pro Mechanical Keyboard', price: 2450000, category: 'accessory', image: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=400&q=80', specs: 'Brown Switch / RGB / Bluetooth' }
 ];
 
-// Mock promotion codes list
-const PROMO_CODES = {
-    'ELECTRO10': { type: 'percent', value: 10, minOrder: 10000000, desc: '10% off for orders from 10 million VND' },
-    'EM500': { type: 'fixed', value: 500000, minOrder: 5000000, desc: '500,000 VND off for orders from 5 million VND' },
-    'FREESHIP': { type: 'freeship', value: 0, minOrder: 0, desc: 'Free shipping nationwide' }
-};
+/* The promo codes used to be hard-coded here. They live in the
+   `coupons` collection now (Backend/sales/repo.py), managed from the
+   admin's Promotion Management page and validated server-side by
+   /checkout/apply-coupon/. */
 
 // Initialize Cart State
 let cart = JSON.parse(localStorage.getItem('electromart_cart')) || [];
@@ -139,48 +137,67 @@ function getSubtotal() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 }
 
-// Apply Promo Code
+/* Ask the server whether `code` is valid for `subtotal`.
+
+   `quiet` is used when re-checking a code that is already applied because the
+   cart changed: the customer did not just type it, so a success toast would be
+   noise, but losing the code still has to be explained. */
+function checkPromoCode(code, subtotal, quiet) {
+    const csrfField = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    return fetch('/checkout/apply-coupon/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfField ? csrfField.value : '',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ code: code, subtotal: subtotal })
+    }).then(function (response) {
+        return response.json();
+    }).then(function (data) {
+        if (!data.ok) {
+            // Either the code is wrong, or the cart no longer qualifies.
+            const wasApplied = activeDiscount && activeDiscount.code === code;
+            if (wasApplied) {
+                activeDiscount = null;
+                localStorage.removeItem('electromart_discount');
+            }
+            showToast(data.error || 'Invalid promo code!', quiet ? 'warning' : 'danger');
+            if (wasApplied) renderCartPage();
+            return false;
+        }
+
+        activeDiscount = {
+            code: data.code,
+            amount: data.discount,
+            free_shipping: data.free_shipping,
+            desc: data.description,
+            // The subtotal this amount was calculated for, so renderCartPage
+            // can tell when it has gone stale.
+            subtotal: subtotal
+        };
+        localStorage.setItem('electromart_discount', JSON.stringify(activeDiscount));
+        if (!quiet) {
+            showToast('Promo code "' + data.code + '" applied successfully!', 'success');
+        }
+        renderCartPage();
+        return true;
+    }).catch(function () {
+        showToast('Could not reach the server to check that code.', 'danger');
+        return false;
+    });
+}
+
+// Apply Promo Code - validated by the server against the coupons collection
 function applyPromoCode(code) {
     code = code.trim().toUpperCase();
-    
+
     if (cart.length === 0) {
         showToast('Cart is empty, cannot apply promo code!', 'warning');
         return false;
     }
 
-    const discountInfo = PROMO_CODES[code];
-    if (!discountInfo) {
-        showToast('Invalid promo code!', 'danger');
-        return false;
-    }
-
-    const subtotal = getSubtotal();
-    if (subtotal < discountInfo.minOrder) {
-        showToast(`This code only applies to orders from ${formatCurrency(discountInfo.minOrder)}`, 'warning');
-        return false;
-    }
-
-    // Calculate discount amount
-    let amount = 0;
-    if (discountInfo.type === 'percent') {
-        amount = subtotal * (discountInfo.value / 100);
-    } else if (discountInfo.type === 'fixed') {
-        amount = discountInfo.value;
-    } else if (discountInfo.type === 'freeship') {
-        amount = 0; // Handled as shipping discount in checkout
-    }
-
-    activeDiscount = {
-        code: code,
-        type: discountInfo.type,
-        value: discountInfo.value,
-        amount: amount,
-        desc: discountInfo.desc
-    };
-
-    localStorage.setItem('electromart_discount', JSON.stringify(activeDiscount));
-    showToast(`Promo code "${code}" applied successfully!`, 'success');
-    renderCartPage(); // Rerender if on cart page
+    checkPromoCode(code, getSubtotal(), false);
     return true;
 }
 
@@ -248,41 +265,25 @@ function renderCartPage() {
 
     let finalTotal = subtotal;
 
-    // Recalculate discount based on new subtotal
+    // The discount amount comes from the server (applyPromoCode); this only
+    // renders it. Recomputing it here from a client-side table was how the
+    // cart and the stored order ended up disagreeing.
     if (activeDiscount) {
-        const discountInfo = PROMO_CODES[activeDiscount.code];
-        if (discountInfo && subtotal >= discountInfo.minOrder) {
-            let discAmt = 0;
-            if (discountInfo.type === 'percent') {
-                discAmt = subtotal * (discountInfo.value / 100);
-            } else if (discountInfo.type === 'fixed') {
-                discAmt = discountInfo.value;
-            }
-            activeDiscount.amount = discAmt;
-            localStorage.setItem('electromart_discount', JSON.stringify(activeDiscount));
+        const discAmt = activeDiscount.amount || 0;
 
-            discountRowEl.style.display = 'flex';
-            discountValEl.textContent = `-${formatCurrency(discAmt)}`;
-            finalTotal = subtotal - discAmt;
+        discountRowEl.style.display = 'flex';
+        discountValEl.textContent = `-${formatCurrency(discAmt)}`;
+        finalTotal = subtotal - discAmt;
 
-            // Render current applied coupon tag in form
-            const promoTagEl = document.getElementById('appliedPromoTag');
-            if (promoTagEl) {
-                promoTagEl.innerHTML = `
-                    <div style="display: inline-flex; align-items: center; gap: var(--space-xs); background-color: var(--color-success-light); color: var(--color-success); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight:600; margin-top:var(--space-xs);">
-                        <span>ðŸ·ï¸ ${activeDiscount.code} (${activeDiscount.desc})</span>
-                        <button onclick="removePromoCode()" style="background:none; border:none; color:var(--color-success); cursor:pointer; font-weight:700;">&times;</button>
-                    </div>
-                `;
-            }
-        } else {
-            // Under minimum order now, auto remove code
-            activeDiscount = null;
-            localStorage.removeItem('electromart_discount');
-            discountRowEl.style.display = 'none';
-            const promoTagEl = document.getElementById('appliedPromoTag');
-            if (promoTagEl) promoTagEl.innerHTML = '';
-            showToast('Promo code removed because the cart does not meet the minimum requirements', 'warning');
+        // Render current applied coupon tag in form
+        const promoTagEl = document.getElementById('appliedPromoTag');
+        if (promoTagEl) {
+            promoTagEl.innerHTML = `
+                <div style="display: inline-flex; align-items: center; gap: var(--space-xs); background-color: var(--color-success-light); color: var(--color-success); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight:600; margin-top:var(--space-xs);">
+                    <span>🏷️ ${activeDiscount.code} (${activeDiscount.desc})</span>
+                    <button onclick="removePromoCode()" style="background:none; border:none; color:var(--color-success); cursor:pointer; font-weight:700;">&times;</button>
+                </div>
+            `;
         }
     } else {
         discountRowEl.style.display = 'none';

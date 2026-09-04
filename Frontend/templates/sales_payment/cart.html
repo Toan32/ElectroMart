@@ -66,6 +66,9 @@
         <!-- Promo Code Form -->
         <div class="promo-section">
             <form id="promoCodeForm">
+              {% comment %} cart.js posts the code to /checkout/apply-coupon/
+                 so the coupons collection decides, not a table in the JS. {% endcomment %}
+              {% csrf_token %}
                 <label class="form-label" style="font-size:0.8rem;">Promo Code (Try: ELECTRO10 or EM500)</label>
                 <div style="display:flex; gap:var(--space-xs); margin-top:var(--space-2xs);">
                     <input type="text" id="promoCodeInput" class="form-control" placeholder="Enter code..." style="padding: 0.4rem 0.6rem; font-size: 0.85rem;">
