@@ -280,6 +280,13 @@ def wholesale_register(request):
     if existing and existing['approval_status'] != repo.APPROVAL_PENDING:
         return redirect('accounts_wholesale_status')
 
+    # A first-time applicant has no profile yet, but the template still reads
+    # initial.company_name (etc.) as a filter argument, and a bare {} makes
+    # that lookup raise VariableDoesNotExist -> HTTP 500. Always hand the
+    # template a dict that has those keys.
+    initial = existing or {'company_name': '', 'tax_code': '',
+                           'company_address': '', 'contact_person': ''}
+
     if request.method == 'POST':
         form = forms.WholesaleRegisterForm(request.POST)
         if form.is_valid():
@@ -291,9 +298,8 @@ def wholesale_register(request):
                 repo.create_wholesale_profile(user['_id'], d['company_name'], d['tax_code'],
                                               d['company_address'], d['contact_person'])
             return redirect('accounts_wholesale_status')
-        return render(request, 'accounts/wholesale_register.html', {'form': form, 'initial': existing or {}})
+        return render(request, 'accounts/wholesale_register.html', {'form': form, 'initial': initial})
 
-    initial = existing or {}
     return render(request, 'accounts/wholesale_register.html', {
         'page_title': 'Business account - ElectroMart', 'initial': initial})
 
