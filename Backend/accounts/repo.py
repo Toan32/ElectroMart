@@ -107,12 +107,14 @@ def clear_reset_token(user_id):
     return _update_user(user_id, {'reset_token': None, 'reset_expires': None})
 
 
-def update_profile(user_id, full_name=None, avatar_url=None):
+def update_profile(user_id, full_name=None, avatar_url=None, phone=None):
     fields = {}
     if full_name is not None:
         fields['full_name'] = full_name
     if avatar_url is not None:
         fields['avatar_url'] = avatar_url
+    if phone is not None:
+        fields['phone'] = phone
     if not fields:
         return None
     return _update_user(user_id, fields)

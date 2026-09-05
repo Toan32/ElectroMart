@@ -118,6 +118,13 @@
       post('/wishlist/' + b.dataset.slug + '/', function (d) {
         b.classList.toggle('on', d.added);
         setBadge(wishBadge, d.count);
+        if (window.location.pathname.indexOf('/wishlist') !== -1 && !d.added) {
+          var card = b.closest('.card');
+          if (card) card.remove();
+          var countEl = document.querySelector('.results-head .count b');
+          if (countEl) countEl.textContent = d.count;
+          if (d.count === 0) window.location.reload();
+        }
       });
     });
   });

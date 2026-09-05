@@ -71,7 +71,7 @@ class ResetPasswordForm(forms.Form):
 class ProfileForm(forms.Form):
     full_name = forms.CharField(max_length=120)
     phone = forms.CharField(max_length=11, required=False)
-    avatar = forms.ImageField(required=False)
+    avatar = forms.FileField(required=False)
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone', '')

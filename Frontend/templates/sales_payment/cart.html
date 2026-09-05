@@ -1,0 +1,94 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Stylesheets dynamically loaded inside body to avoid modifying base.html -->
+<link rel="stylesheet" href="{% static 'sales_payment/css/variables.css' %}">
+<link rel="stylesheet" href="{% static 'sales_payment/css/shared-components.css' %}">
+<link rel="stylesheet" href="{% static 'sales_payment/css/layout.css' %}">
+<style>
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--space-xl);
+        align-items: start;
+    }
+
+    .promo-section {
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 1px dashed var(--border-color);
+    }
+
+    @media (max-width: 992px) {
+        .cart-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div style="margin-bottom: var(--space-lg); margin-top: var(--space-md);">
+    <h1 style="font-size: 2rem; font-weight: 800;">Shopping Cart</h1>
+    <p style="color: var(--text-secondary); font-size: 0.95rem;">Manage your selected items before proceeding to checkout.</p>
+</div>
+
+<div class="cart-layout">
+    <!-- Left: List of Cart Items -->
+    <div class="card" style="padding: var(--space-lg); background-color: var(--bg-secondary);">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-md); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-sm);">Product List</h3>
+        <div id="cartItemsList">
+            <!-- Items dynamically loaded from cart.js?v=3 -->
+        </div>
+        <div style="margin-top: var(--space-lg); display: flex; justify-content: space-between;">
+            <a href="/" class="btn btn-secondary">&larr; Continue Shopping</a>
+        </div>
+    </div>
+
+    <!-- Right: Summary Box -->
+    <div class="card" style="padding: var(--space-lg); position: sticky; top: 90px; background-color: var(--bg-secondary);">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-md); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-sm);">Order Summary</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: var(--space-sm); font-size: 0.95rem;">
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-secondary);">Subtotal</span>
+                <span id="cartSubtotal" style="font-weight: 600;">0Ä‘</span>
+            </div>
+            <div id="discountRow" style="display: flex; justify-content: space-between; color: var(--color-success); display: none;">
+                <span>Discount</span>
+                <span id="cartDiscount" style="font-weight: 600;">-0Ä‘</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: var(--space-xs); border-top: 1px solid var(--border-color);">
+                <span style="font-weight: 700;">Total</span>
+                <span id="cartTotal" style="font-weight: 800; font-size: 1.3rem; color: var(--color-primary);">0Ä‘</span>
+            </div>
+        </div>
+
+        <!-- Promo Code Form -->
+        <div class="promo-section">
+            <form id="promoCodeForm">
+              {% comment %} cart.js posts the code to /checkout/apply-coupon/
+                 so the coupons collection decides, not a table in the JS. {% endcomment %}
+              {% csrf_token %}
+                <label class="form-label" style="font-size:0.8rem;">Promo Code (Try: ELECTRO10 or EM500)</label>
+                <div style="display:flex; gap:var(--space-xs); margin-top:var(--space-2xs);">
+                    <input type="text" id="promoCodeInput" class="form-control" placeholder="Enter code..." style="padding: 0.4rem 0.6rem; font-size: 0.85rem;">
+                    <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                </div>
+            </form>
+            <div id="appliedPromoTag">
+                <!-- Display applied code tag with remove option -->
+            </div>
+        </div>
+
+        <!-- Checkout Button -->
+        <div style="margin-top: var(--space-lg);">
+            <a href="/checkout/" id="checkoutBtn" class="btn btn-primary btn-block" style="text-align: center; justify-content: center; font-size:1.05rem;">Proceed to Checkout â†’</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Local scripts not needed as shared.js and cart.js are loaded globally in base.html -->
+{% endblock %}
+

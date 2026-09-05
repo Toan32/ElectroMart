@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Stylesheets dynamically loaded inside body to avoid modifying base.html -->
+<link rel="stylesheet" href="{% static 'sales_payment/css/variables.css' %}">
+<link rel="stylesheet" href="{% static 'sales_payment/css/shared-components.css' %}">
+<link rel="stylesheet" href="{% static 'sales_payment/css/layout.css' %}">
+<style>
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: 1.8fr 1.2fr;
+        gap: var(--space-xl);
+        align-items: start;
+    }
+
+    .shipping-option, .payment-option {
+        border: 1px solid var(--border-color);
+        padding: var(--space-md);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--space-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        transition: all var(--transition-fast);
+        background-color: var(--bg-secondary);
+    }
+
+    .shipping-option:hover, .payment-option:hover {
+        border-color: var(--color-primary);
+        background-color: var(--bg-tertiary);
+    }
+
+    .shipping-option input[type="radio"], .payment-option input[type="radio"] {
+        width: 1.2rem;
+        height: 1.2rem;
+        accent-color: var(--color-primary);
+        cursor: pointer;
+    }
+
+    .transfer-box {
+        background-color: var(--bg-tertiary);
+        border: 1px dashed var(--border-color);
+        padding: var(--space-md);
+        border-radius: var(--radius-md);
+        margin-top: var(--space-sm);
+        display: none;
+    }
+
+    @media (max-width: 992px) {
+        .checkout-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div style="margin-bottom: var(--space-lg); margin-top: var(--space-md);">
+    <h1 style="font-size: 2rem; font-weight: 800;">Checkout Information</h1>
+    <p style="color: var(--text-secondary); font-size: 0.95rem;">Fill in the shipping information and select your payment method.</p>
+</div>
+
+<form id="checkoutForm">
+    {% comment %} The form is submitted by checkout.js via fetch() to
+       /checkout/place-order/, so the CSRF token has to be in the page for
+       the X-CSRFToken header to read. {% endcomment %}
+    {% csrf_token %}
+    <div class="checkout-layout">
+        <!-- Left: Customer Information & Delivery Methods -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-lg);">
+            <!-- Customer Details Card -->
+            <div class="card" style="padding: var(--space-lg); background-color: var(--bg-secondary);">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-md); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-sm);">1. Shipping Information</h3>
+                
+                <div class="form-group">
+                    <label class="form-label" for="fullName">Receiver's Full Name</label>
+                    <input type="text" id="fullName" class="form-control" placeholder="e.g. John Doe" required>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                    <div class="form-group">
+                        <label class="form-label" for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" class="form-control" placeholder="e.g. 0987654321" required>
+                        <div class="invalid-feedback">Phone number must contain 10-11 digits.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="e.g. name@gmail.com" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="address">Detailed Address (Street, Ward, District, City)</label>
+                    <input type="text" id="address" class="form-control" placeholder="e.g. 123 Nguyen Trai Street, Ben Thanh Ward, District 1, HCMC" required>
+                </div>
+            </div>
+
+            <!-- Shipping Methods Card -->
+            <div class="card" style="padding: var(--space-lg); background-color: var(--bg-secondary);">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-md); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-sm);">2. Shipping Method</h3>
+                
+                <label class="shipping-option">
+                    <input type="radio" name="shipping_method" value="standard" checked>
+                    <div style="flex-grow:1;">
+                        <div style="font-weight: 600; font-size:0.95rem;">Standard Shipping</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Delivery takes 3 - 5 days.</div>
+                    </div>
+                    <div style="font-weight: 700; color:var(--color-primary);">30.000đ</div>
+                </label>
+
+                <label class="shipping-option">
+                    <input type="radio" name="shipping_method" value="express">
+                    <div style="flex-grow:1;">
+                        <div style="font-weight: 600; font-size:0.95rem;">Express Shipping</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Delivery takes 24h - 48h.</div>
+                    </div>
+                    <div style="font-weight: 700; color:var(--color-primary);">50.000đ</div>
+                </label>
+            </div>
+
+            <!-- Payment Methods Card -->
+            <div class="card" style="padding: var(--space-lg); background-color: var(--bg-secondary);">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-md); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-sm);">3. Payment Method</h3>
+                
+                <label class="payment-option">
+                    <input type="radio" name="payment_method" value="cod" checked>
+                    <div style="flex-grow:1;">
+                        <div style="font-weight: 600; font-size:0.95rem;">Cash on Delivery (COD)</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Pay in cash directly to the courier upon delivery.</div>
+                    </div>
+                </label>
+
+                <label class="payment-option">
+                    <input type="radio" name="payment_method" value="transfer">
+                    <div style="flex-grow:1;">
+                        <div style="font-weight: 600; font-size:0.95rem;">Bank Transfer (VietQR Code)</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary);">Scan the VietQR code using your banking app to complete the order.</div>
+                    </div>
+                </label>
+
+                <div class="transfer-box" id="transferInstructions">
+                    <h5 style="margin-bottom:var(--space-2xs); font-weight: 700;">A dynamic VietQR will be shown</h5>
+                    <p style="font-size:0.85rem; color:var(--text-secondary);">Upon clicking "Confirm Order", a dialog with the payment QR code, amount, and details will appear.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="card" style="padding: var(--space-lg); position: sticky; top: 90px; background-color: var(--bg-secondary);">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-md); border-bottom: 1px solid var(--border-color); padding-bottom: var(--space-sm);">Order Summary</h3>
+            
+            <!-- Items summary -->
+            <div id="checkoutItemsList" style="margin-bottom: var(--space-md);">
+                <!-- Dynamic items lists -->
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: var(--space-sm); font-size: 0.95rem; margin-top: var(--space-md);">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">Subtotal</span>
+                    <span id="summarySubtotal" style="font-weight: 600;">0đ</span>
+                </div>
+                <div id="summaryDiscountRow" style="display: flex; justify-content: space-between; color: var(--color-success); display: none;">
+                    <span>Discount</span>
+                    <span id="summaryDiscount" style="font-weight: 600;">-0đ</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-secondary);">Shipping Fee</span>
+                    <span id="summaryShipping" style="font-weight: 600;">0đ</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-top: var(--space-xs); border-top: 1px solid var(--border-color);">
+                    <span style="font-weight: 700;">Total</span>
+                    <span id="summaryTotal" style="font-weight: 800; font-size: 1.3rem; color: var(--color-primary);">0đ</span>
+                </div>
+            </div>
+
+            <div style="margin-top: var(--space-lg);">
+                <button type="submit" id="placeOrderBtn" class="btn btn-primary btn-block" style="font-size:1.05rem; justify-content:center;">Confirm Order 🛒</button>
+                <a href="/cart/" class="btn btn-secondary btn-block" style="margin-top: var(--space-xs); text-align: center; justify-content: center;">Back to Cart</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- BANK TRANSFER MODAL (VietQR Payment) -->
+<div class="modal" id="paymentModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" style="max-width: 480px; background-color: var(--bg-secondary);">
+        <div class="modal-header">
+            <h3 class="modal-title">VietQR Bank Transfer Payment</h3>
+            <button class="modal-close" type="button" onclick="closeModal('paymentModal')">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align: center; padding: var(--space-lg);">
+            <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom: var(--space-sm);">Please use your banking application to scan the QR code below to make the transfer.</p>
+            
+            <!-- VietQR Image Mock -->
+            <div style="background-color:#ffffff; display:inline-block; padding: var(--space-md); border-radius: var(--radius-md); border:1px solid var(--border-color); box-shadow: var(--shadow-sm); margin-bottom:var(--space-md);">
+                <img id="vietQRImg" src="" alt="VietQR Payment Code" style="width:240px; height:240px; object-fit: contain; display: block; margin: 0 auto;">
+            </div>
+
+            <div style="background-color: var(--bg-tertiary); padding: var(--space-md); border-radius: var(--radius-md); text-align: left; font-size:0.9rem; border:1px solid var(--border-color); margin-bottom: var(--space-md);">
+                <p style="margin-bottom:var(--space-2xs);"><strong>Bank:</strong> MBBank (Military Bank)</p>
+                <p style="margin-bottom:var(--space-2xs);"><strong>Account Holder:</strong> ELECTROMART STORE</p>
+                <p style="margin-bottom:var(--space-2xs);"><strong>Account Number:</strong> 8888999999</p>
+                <p style="margin-bottom:var(--space-2xs);"><strong>Amount:</strong> <strong id="qrAmountText" style="color:var(--color-primary); font-size:1rem;">0đ</strong></p>
+                <p style="margin-bottom:0;"><strong>Memo:</strong> <strong id="qrDescText" style="font-family: monospace; color:var(--color-secondary);">EM XXXXXX</strong></p>
+            </div>
+
+            <div style="display:flex; justify-content:center; align-items:center; gap:var(--space-xs); font-size:0.9rem; font-weight:600; color:var(--color-danger); margin-bottom: var(--space-md);">
+                <span>🕒 Time remaining:</span>
+                <span id="qrTimerText" style="font-family: monospace; font-size:1.05rem;">05:00</span>
+            </div>
+
+            <div style="border-top:1px dashed var(--border-color); padding-top:var(--space-md); display:flex; flex-direction:column; gap:var(--space-xs);">
+                <button type="button" class="btn btn-success btn-block" onclick="simulatePaymentSuccess()" style="justify-content:center;">Payment completed (Simulate success) ✅</button>
+                <button type="button" class="btn btn-secondary btn-block" onclick="closeModal('paymentModal')" style="justify-content:center;">Cancel transaction</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'sales_payment/js/checkout.js' %}?v=4"></script>
+{% endblock %}

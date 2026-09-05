@@ -1,0 +1,1324 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
+
+{% block content %}
+
+{% include "admin/_admin_nav.html" %}
+
+<div class="admin-category-page">
+
+    <div class="admin-page-header">
+        <div>
+            <h1>Manage Categories</h1>
+            <p>Manage product categories and specification templates.</p>
+        </div>
+    </div>
+
+    <div class="admin-category-layout">
+
+        <!-- CATEGORY TREE -->
+<section class="category-tree-panel">
+
+    <div class="category-panel-header">
+        <div>
+            <h2>Categories</h2>
+            <p>5 categories</p>
+        </div>
+
+        <button
+            type="button"
+            class="category-add-btn"
+        >
+            + Add Category
+        </button>
+    </div>
+
+    <div class="category-tree">
+
+        <div class="category-tree-root">
+            <span class="category-tree-arrow">▼</span>
+            <span class="category-tree-folder">📁</span>
+            <strong>All Categories</strong>
+        </div>
+
+        <div class="category-tree-children">
+
+            <button
+                type="button"
+                class="category-tree-item active"
+                data-category="microcontrollers-kits"
+            >
+                <span class="category-tree-icon">🧠</span>
+                <span class="category-tree-name">
+                    Microcontrollers &amp; Kits
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="category-tree-item"
+                data-category="sensors"
+            >
+                <span class="category-tree-icon">📡</span>
+                <span class="category-tree-name">
+                    Sensors
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="category-tree-item"
+                data-category="resistors"
+            >
+                <span class="category-tree-icon">🎚️</span>
+                <span class="category-tree-name">
+                    Resistors
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="category-tree-item"
+                data-category="capacitors"
+            >
+                <span class="category-tree-icon">⚡</span>
+                <span class="category-tree-name">
+                    Capacitors
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="category-tree-item"
+                data-category="power-regulators"
+            >
+                <span class="category-tree-icon">🔋</span>
+                <span class="category-tree-name">
+                    Power &amp; Regulators
+                </span>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+        <!-- SPEC TEMPLATE -->
+<section class="spec-template-panel">
+
+    <div class="spec-template-header">
+
+    <div>
+        <h2>Specification Template</h2>
+
+        <p id="selected-category-name">
+            Microcontrollers &amp; Kits
+        </p>
+    </div>
+
+<div class="spec-template-actions">
+
+    <span id="spec-field-count">
+        8 fields
+    </span>
+
+    <button
+        type="button"
+        class="category-edit-btn"
+        id="edit-category-btn"
+    >
+        Edit
+    </button>
+
+    <button
+        type="button"
+        class="category-delete-btn"
+        id="delete-category-btn"
+    >
+        Delete
+    </button>
+
+    <button
+        type="button"
+        class="spec-add-field-btn"
+        id="add-field-btn"
+    >
+        + Add Field
+    </button>
+
+</div>
+
+</div>
+
+    <div class="spec-table-wrapper">
+
+        <table class="spec-template-table">
+
+            <thead>
+                <tr>
+                    <th>Field Name</th>
+                    <th>Key</th>
+                    <th>Data Type</th>
+                    <th>Unit</th>
+                    <th>Filterable</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="spec-template-body">
+                <!-- JS renders specification fields here -->
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+    </div>
+
+</div>
+
+<!-- SPEC FIELD MODAL -->
+<div class="category-modal" id="field-modal">
+
+    <div
+        class="category-modal-backdrop"
+        id="field-modal-backdrop"
+    ></div>
+
+    <div class="category-modal-box">
+
+        <div class="category-modal-header">
+
+            <div>
+                <h2>Add Specification Field</h2>
+                <p id="field-modal-category">
+                    Microcontrollers &amp; Kits
+                </p>
+            </div>
+
+            <button
+                type="button"
+                class="category-modal-close"
+                id="field-modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="field-form">
+
+            <div class="category-form-group">
+                <label for="field-label-input">
+                    Field Name
+                </label>
+
+                <input
+                    type="text"
+                    id="field-label-input"
+                    placeholder="Example: Clock Speed"
+                    required
+                >
+            </div>
+
+            <div class="category-form-group">
+                <label for="field-key-input">
+                    Key
+                </label>
+
+                <input
+                    type="text"
+                    id="field-key-input"
+                    placeholder="Example: clock_speed_mhz"
+                    required
+                >
+            </div>
+
+            <div class="category-form-group">
+                <label for="field-type-input">
+                    Data Type
+                </label>
+
+                <select id="field-type-input">
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="select">Select</option>
+                    <option value="boolean">Boolean</option>
+                </select>
+            </div>
+
+            <div class="category-form-group">
+                <label for="field-unit-input">
+                    Unit
+                </label>
+
+                <input
+                    type="text"
+                    id="field-unit-input"
+                    placeholder="Example: MHz, V, KB"
+                >
+            </div>
+
+            <div class="field-checkbox-row">
+
+                <input
+                    type="checkbox"
+                    id="field-filterable-input"
+                    checked
+                >
+
+                <label for="field-filterable-input">
+                    Filterable
+                </label>
+
+            </div>
+
+            <div class="category-modal-note">
+                GUI mock-up only. New fields are not saved to MongoDB.
+            </div>
+
+            <div class="category-modal-footer">
+
+                <button
+                    type="button"
+                    class="category-modal-cancel"
+                    id="field-modal-cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="category-modal-save"
+                >
+                    Add Field
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- CATEGORY MODAL -->
+<div class="category-modal" id="category-modal">
+
+    <div class="category-modal-backdrop" id="category-modal-backdrop"></div>
+
+    <div class="category-modal-box">
+
+        <div class="category-modal-header">
+
+            <div>
+                <h2 id="category-modal-title">Add Category</h2>
+                <p>Create or update a product category.</p>
+            </div>
+
+            <button
+                type="button"
+                class="category-modal-close"
+                id="category-modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="category-form">
+
+            <div class="category-form-group">
+                <label for="category-name-input">
+                    Category Name
+                </label>
+
+                <input
+                    type="text"
+                    id="category-name-input"
+                    placeholder="Enter category name"
+                    required
+                >
+            </div>
+
+
+            <div class="category-form-group">
+                <label for="category-slug-input">
+                    Slug
+                </label>
+
+                <input
+                    type="text"
+                    id="category-slug-input"
+                    placeholder="example-category"
+                    required
+                >
+            </div>
+
+
+            <div class="category-form-group">
+                <label for="category-parent-input">
+                    Parent Category
+                </label>
+
+                <select id="category-parent-input">
+                    <option value="">No parent category</option>
+                    <option value="microcontrollers-kits">
+                        Microcontrollers & Kits
+                    </option>
+                    <option value="sensors">
+                        Sensors
+                    </option>
+                    <option value="resistors">
+                        Resistors
+                    </option>
+                    <option value="capacitors">
+                        Capacitors
+                    </option>
+                    <option value="power-regulators">
+                        Power & Regulators
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="category-modal-note">
+                GUI mock-up only. Changes are not saved to MongoDB.
+            </div>
+
+
+            <div class="category-modal-footer">
+
+                <button
+                    type="button"
+                    class="category-modal-cancel"
+                    id="category-modal-cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="category-modal-save"
+                >
+                    Save Category
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const categorySpecTemplates = {
+
+        "microcontrollers-kits": {
+            name: "Microcontrollers & Kits",
+            fields: [
+                {
+                    label: "Core",
+                    key: "core",
+                    type: "select",
+                    unit: ""
+                },
+                {
+                    label: "Clock speed",
+                    key: "clock_speed_mhz",
+                    type: "number",
+                    unit: "MHz"
+                },
+                {
+                    label: "Flash memory",
+                    key: "flash_kb",
+                    type: "number",
+                    unit: "KB"
+                },
+                {
+                    label: "RAM",
+                    key: "ram_kb",
+                    type: "number",
+                    unit: "KB"
+                },
+                {
+                    label: "GPIO pins",
+                    key: "gpio_count",
+                    type: "number",
+                    unit: "pins"
+                },
+                {
+                    label: "Wi-Fi",
+                    key: "wifi",
+                    type: "boolean",
+                    unit: ""
+                },
+                {
+                    label: "Bluetooth",
+                    key: "bluetooth",
+                    type: "boolean",
+                    unit: ""
+                },
+                {
+                    label: "Operating voltage",
+                    key: "operating_voltage_v",
+                    type: "number",
+                    unit: "V"
+                }
+            ]
+        },
+
+        "sensors": {
+            name: "Sensors",
+            fields: [
+                {
+                    label: "Sensor type",
+                    key: "sensor_type",
+                    type: "select",
+                    unit: ""
+                },
+                {
+                    label: "Interface",
+                    key: "interface",
+                    type: "select",
+                    unit: ""
+                },
+                {
+                    label: "Supply voltage",
+                    key: "supply_voltage_v",
+                    type: "number",
+                    unit: "V"
+                },
+                {
+                    label: "Min operating temperature",
+                    key: "operating_temp_min_c",
+                    type: "number",
+                    unit: "C"
+                },
+                {
+                    label: "Digital output",
+                    key: "digital_output",
+                    type: "boolean",
+                    unit: ""
+                }
+            ]
+        },
+
+        "resistors": {
+            name: "Resistors",
+            fields: [
+                {
+                    label: "Resistance",
+                    key: "resistance_ohm",
+                    type: "number",
+                    unit: "ohm"
+                },
+                {
+                    label: "Tolerance",
+                    key: "tolerance_percent",
+                    type: "select",
+                    unit: "%"
+                },
+                {
+                    label: "Power rating",
+                    key: "power_rating_w",
+                    type: "select",
+                    unit: "W"
+                },
+                {
+                    label: "Package",
+                    key: "package",
+                    type: "select",
+                    unit: ""
+                },
+                {
+                    label: "Material",
+                    key: "material",
+                    type: "select",
+                    unit: ""
+                }
+            ]
+        },
+
+        "capacitors": {
+            name: "Capacitors",
+            fields: [
+                {
+                    label: "Capacitance",
+                    key: "capacitance_uf",
+                    type: "number",
+                    unit: "uF"
+                },
+                {
+                    label: "Voltage rating",
+                    key: "voltage_rating_v",
+                    type: "number",
+                    unit: "V"
+                },
+                {
+                    label: "Dielectric",
+                    key: "dielectric",
+                    type: "select",
+                    unit: ""
+                },
+                {
+                    label: "Package",
+                    key: "package",
+                    type: "select",
+                    unit: ""
+                },
+                {
+                    label: "Low ESR",
+                    key: "low_esr",
+                    type: "boolean",
+                    unit: ""
+                }
+            ]
+        },
+
+        "power-regulators": {
+            name: "Power & Regulators",
+            fields: [
+                {
+                    label: "Output voltage",
+                    key: "output_voltage_v",
+                    type: "number",
+                    unit: "V"
+                },
+                {
+                    label: "Max output current",
+                    key: "output_current_a",
+                    type: "number",
+                    unit: "A"
+                },
+                {
+                    label: "Max input voltage",
+                    key: "input_voltage_max_v",
+                    type: "number",
+                    unit: "V"
+                },
+                {
+                    label: "Module type",
+                    key: "module_type",
+                    type: "select",
+                    unit: ""
+                },
+                {
+                    label: "Adjustable output",
+                    key: "adjustable",
+                    type: "boolean",
+                    unit: ""
+                }
+            ]
+        }
+
+    };
+
+    const categoryButtons =
+        document.querySelectorAll(".category-tree-item");
+
+    const categoryName =
+        document.getElementById("selected-category-name");
+
+    const fieldCount =
+        document.getElementById("spec-field-count");
+
+    const tableBody =
+        document.getElementById("spec-template-body");
+
+    const editCategoryButton =
+        document.getElementById("edit-category-btn");
+
+    const deleteCategoryButton =
+        document.getElementById("delete-category-btn");
+
+    const addCategoryButton =
+    document.querySelector(".category-add-btn");
+
+const categoryModal =
+    document.getElementById("category-modal");
+
+const categoryModalTitle =
+    document.getElementById("category-modal-title");
+
+const categoryModalClose =
+    document.getElementById("category-modal-close");
+
+const categoryModalCancel =
+    document.getElementById("category-modal-cancel");
+
+const categoryModalBackdrop =
+    document.getElementById("category-modal-backdrop");
+
+const categoryForm =
+    document.getElementById("category-form");
+
+const categoryNameInput =
+    document.getElementById("category-name-input");
+
+const categorySlugInput =
+    document.getElementById("category-slug-input");
+
+const categoryParentInput =
+    document.getElementById("category-parent-input");
+
+const addFieldButton =
+    document.getElementById("add-field-btn");
+
+const fieldModal =
+    document.getElementById("field-modal");
+
+const fieldModalBackdrop =
+    document.getElementById("field-modal-backdrop");
+
+const fieldModalClose =
+    document.getElementById("field-modal-close");
+
+const fieldModalCancel =
+    document.getElementById("field-modal-cancel");
+
+const fieldModalCategory =
+    document.getElementById("field-modal-category");
+
+const fieldForm =
+    document.getElementById("field-form");
+
+const fieldLabelInput =
+    document.getElementById("field-label-input");
+
+const fieldKeyInput =
+    document.getElementById("field-key-input");
+
+const fieldTypeInput =
+    document.getElementById("field-type-input");
+
+const fieldUnitInput =
+    document.getElementById("field-unit-input");
+
+const fieldFilterableInput =
+    document.getElementById("field-filterable-input");
+
+const categoryTreeChildren =
+    document.querySelector(".category-tree-children");
+
+const categoryCountText =
+    document.querySelector(".category-panel-header p");
+
+let currentCategoryKey = "microcontrollers-kits";
+
+let categoryModalMode = "add";
+
+    function renderSpecTemplate(categoryKey) {
+
+        const category =
+            categorySpecTemplates[categoryKey];
+
+        if (!category) {
+            return;
+        }
+
+        categoryName.textContent = category.name;
+
+        fieldCount.textContent =
+            `${category.fields.length} fields`;
+
+        tableBody.replaceChildren();
+
+        category.fields.forEach(function (field, fieldIndex) {
+
+            const row = document.createElement("tr");
+
+            const labelCell =
+                document.createElement("td");
+
+            labelCell.textContent = field.label;
+
+            const keyCell =
+                document.createElement("td");
+
+            const keyCode =
+                document.createElement("code");
+
+            keyCode.textContent = field.key;
+
+            keyCell.appendChild(keyCode);
+
+            const typeCell =
+                document.createElement("td");
+
+            typeCell.textContent = field.type;
+
+            const unitCell =
+                document.createElement("td");
+
+            unitCell.textContent =
+                field.unit || "—";
+
+            const filterCell =
+                document.createElement("td");
+
+            filterCell.textContent =
+                field.filterable === false ? "No" : "Yes";
+
+            const actionCell =
+                document.createElement("td");
+
+            actionCell.className =
+                "spec-field-actions";
+
+            const deleteFieldButton =
+                document.createElement("button");
+
+deleteFieldButton.type =
+    "button";
+
+deleteFieldButton.className =
+    "spec-field-delete-btn";
+
+deleteFieldButton.textContent =
+    "Delete";
+
+
+deleteFieldButton.addEventListener(
+    "click",
+    function () {
+
+        const confirmed = confirm(
+            `Delete field "${field.label}"?`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        category.fields.splice(
+            fieldIndex,
+            1
+        );
+
+        renderSpecTemplate(
+            categoryKey
+        );
+
+    }
+);
+
+actionCell.appendChild(
+    deleteFieldButton
+);
+
+            row.appendChild(labelCell);
+            row.appendChild(keyCell);
+            row.appendChild(typeCell);
+            row.appendChild(unitCell);
+            row.appendChild(filterCell);
+            row.appendChild(actionCell);
+
+            tableBody.appendChild(row);
+
+        });
+
+    }
+
+function selectCategory(button) {
+
+    document
+        .querySelectorAll(".category-tree-item")
+        .forEach(function (item) {
+            item.classList.remove("active");
+        });
+
+    button.classList.add("active");
+
+    currentCategoryKey =
+        button.dataset.category;
+
+    renderSpecTemplate(currentCategoryKey);
+}
+
+
+function bindCategoryButton(button) {
+
+    button.addEventListener("click", function () {
+        selectCategory(button);
+    });
+
+}
+
+
+categoryButtons.forEach(function (button) {
+    bindCategoryButton(button);
+});
+
+function openCategoryModal(mode) {
+
+    categoryModalMode = mode;
+
+    categoryModal.classList.add("show");
+
+    document.body.classList.add("modal-open");
+
+    if (mode === "add") {
+
+        categoryModalTitle.textContent =
+            "Add Category";
+
+        categoryForm.reset();
+
+    } else {
+
+        const category =
+            categorySpecTemplates[currentCategoryKey];
+
+        categoryModalTitle.textContent =
+            "Edit Category";
+
+        categoryNameInput.value =
+            category.name;
+
+        categorySlugInput.value =
+            currentCategoryKey;
+
+        categoryParentInput.value =
+            category.parent || "";
+    }
+
+}
+
+function openFieldModal() {
+
+    const category =
+        categorySpecTemplates[currentCategoryKey];
+
+    fieldModalCategory.textContent =
+        category.name;
+
+    fieldForm.reset();
+
+    fieldFilterableInput.checked = true;
+
+    fieldModal.classList.add("show");
+
+    document.body.classList.add("modal-open");
+
+}
+
+function closeFieldModal() {
+
+    fieldModal.classList.remove("show");
+
+    document.body.classList.remove("modal-open");
+
+}
+
+function closeCategoryModal() {
+
+    categoryModal.classList.remove("show");
+
+    document.body.classList.remove("modal-open");
+
+}
+
+editCategoryButton.addEventListener("click", function () {
+
+    openCategoryModal("edit");
+
+});
+
+addCategoryButton.addEventListener("click", function () {
+
+    openCategoryModal("add");
+
+});
+
+categoryModalClose.addEventListener("click", closeCategoryModal);
+
+categoryModalCancel.addEventListener("click", closeCategoryModal);
+
+categoryModalBackdrop.addEventListener("click", closeCategoryModal);
+
+deleteCategoryButton.addEventListener("click", function () {
+
+    const category =
+        categorySpecTemplates[currentCategoryKey];
+
+    if (!category) {
+        return;
+    }
+
+
+    const confirmed = confirm(
+        `Delete "${category.name}"?`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const deletedKey =
+        currentCategoryKey;
+
+
+    /* --------------------------------------
+       Remove category from mock data
+       -------------------------------------- */
+
+    delete categorySpecTemplates[deletedKey];
+
+
+    /* --------------------------------------
+       Remove category button from tree
+       -------------------------------------- */
+
+    const deletedButton =
+        document.querySelector(
+            `.category-tree-item[data-category="${deletedKey}"]`
+        );
+
+    if (deletedButton) {
+        deletedButton.remove();
+    }
+
+
+    /* --------------------------------------
+       Remove category from parent dropdown
+       -------------------------------------- */
+
+    const deletedOption =
+        categoryParentInput.querySelector(
+            `option[value="${deletedKey}"]`
+        );
+
+    if (deletedOption) {
+        deletedOption.remove();
+    }
+
+
+    /* --------------------------------------
+       Update category count
+       -------------------------------------- */
+
+    const totalCategories =
+        Object.keys(
+            categorySpecTemplates
+        ).length;
+
+    categoryCountText.textContent =
+        `${totalCategories} categories`;
+
+
+    /* --------------------------------------
+       Select another remaining category
+       -------------------------------------- */
+
+    const remainingButton =
+        document.querySelector(
+            ".category-tree-item"
+        );
+
+
+    if (remainingButton) {
+
+        selectCategory(
+            remainingButton
+        );
+
+    } else {
+
+        currentCategoryKey = "";
+
+        categoryName.textContent =
+            "No category selected";
+
+        fieldCount.textContent =
+            "0 fields";
+
+        tableBody.replaceChildren();
+
+        editCategoryButton.disabled =
+            true;
+
+        deleteCategoryButton.disabled =
+            true;
+
+        addFieldButton.disabled =
+            true;
+    }
+
+});
+
+categoryForm.addEventListener("submit", function (event) {
+
+    event.preventDefault();
+
+    const categoryNameValue =
+        categoryNameInput.value.trim();
+
+    const categoryKeyValue =
+        categorySlugInput.value
+            .trim()
+            .toLowerCase();
+
+    const parentValue =
+        categoryParentInput.value;
+
+
+    if (!categoryNameValue || !categoryKeyValue) {
+        return;
+    }
+
+
+    /* ======================================
+       ADD CATEGORY
+       ====================================== */
+
+    if (categoryModalMode === "add") {
+
+        if (categorySpecTemplates[categoryKeyValue]) {
+
+            alert("This category slug already exists.");
+
+            return;
+        }
+
+
+        categorySpecTemplates[categoryKeyValue] = {
+            name: categoryNameValue,
+            parent: parentValue,
+            fields: []
+        };
+
+
+        const newButton =
+            document.createElement("button");
+
+        newButton.type = "button";
+
+        newButton.className =
+            "category-tree-item";
+
+        newButton.dataset.category =
+            categoryKeyValue;
+
+
+        const icon =
+            document.createElement("span");
+
+        icon.className =
+            "category-tree-icon";
+
+        icon.textContent =
+            "📁";
+
+
+        const name =
+            document.createElement("span");
+
+        name.className =
+            "category-tree-name";
+
+        name.textContent =
+            categoryNameValue;
+
+
+        newButton.appendChild(icon);
+        newButton.appendChild(name);
+
+        categoryTreeChildren.appendChild(
+            newButton
+        );
+
+
+        bindCategoryButton(newButton);
+
+
+        const newOption =
+            document.createElement("option");
+
+        newOption.value =
+            categoryKeyValue;
+
+        newOption.textContent =
+            categoryNameValue;
+
+        categoryParentInput.appendChild(
+            newOption
+        );
+
+
+        const totalCategories =
+            Object.keys(
+                categorySpecTemplates
+            ).length;
+
+        categoryCountText.textContent =
+            `${totalCategories} categories`;
+
+
+        selectCategory(newButton);
+
+    }
+
+
+    /* ======================================
+       EDIT CATEGORY
+       ====================================== */
+
+    else {
+
+        const oldKey =
+            currentCategoryKey;
+
+
+        if (
+            categoryKeyValue !== oldKey &&
+            categorySpecTemplates[categoryKeyValue]
+        ) {
+
+            alert("This category slug already exists.");
+
+            return;
+        }
+
+
+        const category =
+            categorySpecTemplates[oldKey];
+
+
+        category.name =
+            categoryNameValue;
+
+        category.parent =
+            parentValue;
+
+
+        /*
+         * If slug changed, move object
+         * to the new key.
+         */
+        if (categoryKeyValue !== oldKey) {
+
+            delete categorySpecTemplates[oldKey];
+
+            categorySpecTemplates[categoryKeyValue] =
+                category;
+
+        }
+
+
+        const currentButton =
+            document.querySelector(
+                `.category-tree-item[data-category="${oldKey}"]`
+            );
+
+
+        if (currentButton) {
+
+            currentButton.dataset.category =
+                categoryKeyValue;
+
+            const nameElement =
+                currentButton.querySelector(
+                    ".category-tree-name"
+                );
+
+            nameElement.textContent =
+                categoryNameValue;
+        }
+
+
+        /*
+         * Update Parent Category option
+         */
+        const categoryOption =
+            categoryParentInput.querySelector(
+                `option[value="${oldKey}"]`
+            );
+
+        if (categoryOption) {
+
+            categoryOption.value =
+                categoryKeyValue;
+
+            categoryOption.textContent =
+                categoryNameValue;
+        }
+
+
+        currentCategoryKey =
+            categoryKeyValue;
+
+
+        renderSpecTemplate(
+            currentCategoryKey
+        );
+
+    }
+
+
+    closeCategoryModal();
+
+});
+
+    addFieldButton.addEventListener("click", function () {
+
+    openFieldModal();
+
+});
+
+fieldModalClose.addEventListener(
+    "click",
+    closeFieldModal
+);
+
+fieldModalCancel.addEventListener(
+    "click",
+    closeFieldModal
+);
+
+fieldModalBackdrop.addEventListener(
+    "click",
+    closeFieldModal
+);
+
+fieldForm.addEventListener("submit", function (event) {
+
+    event.preventDefault();
+
+    const category =
+        categorySpecTemplates[currentCategoryKey];
+
+    const newField = {
+        label: fieldLabelInput.value.trim(),
+        key: fieldKeyInput.value.trim(),
+        type: fieldTypeInput.value,
+        unit: fieldUnitInput.value.trim(),
+        filterable: fieldFilterableInput.checked
+    };
+
+    category.fields.push(newField);
+
+    renderSpecTemplate(
+        currentCategoryKey
+    );
+
+    closeFieldModal();
+
+});
+
+    renderSpecTemplate("microcontrollers-kits");
+
+});
+
+</script>
+
+{% endblock %}

@@ -17,7 +17,13 @@
       {% for p in products %}
       <td>
         <div class="cmp-card">
-          <div class="cmp-img"><span class="ph">{{ p.name|slice:":2"|upper }}</span></div>
+          <div class="cmp-img">
+            {% if p.images and p.images.0 %}
+              <img src="{{ p.images.0 }}?v=4" alt="{{ p.name }}">
+            {% else %}
+              <span class="ph">{{ p.name|slice:":2"|upper }}</span>
+            {% endif %}
+          </div>
           <a class="cmp-name" href="{% url 'product_detail' p.slug %}">{{ p.name }}</a>
           <div class="price-now">{{ p.min_price|money }}</div>
           <button class="btn btn-outline btn-sm js-compare-off" data-slug="{{ p.slug }}">Remove</button>

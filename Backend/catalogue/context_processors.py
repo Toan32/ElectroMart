@@ -7,5 +7,7 @@ def shop_context(request):
     return {
         'nav_categories': repo.category_tree(),
         'compare_count': len(request.session.get(COMPARE_KEY, [])),
+        'compare_slugs': request.session.get(COMPARE_KEY, []),
         'wishlist_count': len(request.session.get(WISHLIST_KEY, [])),
+        'wishlist_slugs': request.session.get(WISHLIST_KEY, []),
     }

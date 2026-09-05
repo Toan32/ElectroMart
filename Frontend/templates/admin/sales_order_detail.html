@@ -1,0 +1,113 @@
+{% extends "admin/base_admin.html" %}
+{% load em_extras %}
+
+{% block admin_crumb %}<a href="{% url 'admin_orders' %}">Orders</a> <span>&#8250;</span> {{ order.order_code }}{% endblock %}
+
+{% block admin_content %}
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+  <h1 class="acc-title" style="margin-bottom:0">Order <span class="a-code">{{ order.order_code }}</span></h1>
+  <span class="badge {{ order.status_badge }}">{{ order.status_label }}</span>
+</div>
+
+{% comment %} ---------- Control table ----------
+   items table    : read-only, the embedded line items of the order document
+   money summary  : read-only, the totals stored when the order was placed
+   status form    : posts to sales/views.py -> admin_order_status with `next`
+                    pointing back here
+   timeline       : status_history of the document, appended on every change
+   Replaces the "Order Details" and "Update Status" JS modals of the old
+   standalone page - a real URL can be shared, refreshed and bookmarked. {% endcomment %}
+
+<div class="order-grid" style="margin-top:16px">
+  <div>
+    <div class="a-card">
+      <div class="a-card-head"><h3 class="a-card-title">Items</h3></div>
+      <div class="table-scroll">
+        <table class="a-table">
+          <thead>
+            <tr><th>Product</th><th class="num">Unit price</th><th class="num">Qty</th><th class="num">Line total</th></tr>
+          </thead>
+          <tbody>
+            {% for item in order.items %}
+            <tr>
+              <td>
+                <div style="font-weight:600">{{ item.name }}</div>
+                {% if item.specs %}<div class="promo-meta">{{ item.specs }}</div>{% endif %}
+              </td>
+              <td class="num">{{ item.price|money }}</td>
+              <td class="num">{{ item.quantity }}</td>
+              <td class="num"><strong>{{ item.line_total|money }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="a-card">
+      <div class="a-card-head"><h3 class="a-card-title">Status history</h3></div>
+      <ul class="timeline">
+        {% for entry in order.status_history %}
+        <li>
+          <strong>{{ entry.status|capfirst }}</strong>
+          <span class="when">&mdash; {{ entry.at|date:"d/m/Y H:i" }}</span>
+          {% if entry.note %}<div class="promo-meta">{{ entry.note }}</div>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div>
+    <div class="a-card">
+      <div class="a-card-head"><h3 class="a-card-title">Customer</h3></div>
+      <dl class="dl-rows">
+        <dt>Name</dt><dd>{{ order.customer_name }}</dd>
+        <dt>Phone</dt><dd>{{ order.phone }}</dd>
+        <dt>Email</dt><dd>{{ order.email }}</dd>
+        <dt>Address</dt><dd>{{ order.address }}</dd>
+        <dt>Placed</dt><dd>{{ order.created_at|date:"d/m/Y H:i" }}</dd>
+        <dt>Payment</dt><dd>{{ order.payment_label }}</dd>
+        {% if order.note %}<dt>Note</dt><dd>{{ order.note }}</dd>{% endif %}
+      </dl>
+    </div>
+
+    <div class="a-card">
+      <div class="a-card-head"><h3 class="a-card-title">Totals</h3></div>
+      <div class="money-rows">
+        <div><span>Subtotal</span><span>{{ order.subtotal|money }}</span></div>
+        <div>
+          <span>Discount{% if order.coupon_code %} <span class="a-code">{{ order.coupon_code }}</span>{% endif %}</span>
+          <span>{% if order.discount %}-{{ order.discount|money }}{% else %}&mdash;{% endif %}</span>
+        </div>
+        <div><span>Shipping</span><span>{% if order.shipping_fee %}{{ order.shipping_fee|money }}{% else %}Free{% endif %}</span></div>
+        <div class="grand"><span>Total</span><span>{{ order.total|money }}</span></div>
+      </div>
+    </div>
+
+    {% if order.next_statuses %}
+    <div class="a-card">
+      <div class="a-card-head"><h3 class="a-card-title">Update status</h3></div>
+      <form method="post" action="{% url 'admin_order_status' order_id=order.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'admin_order_detail' order_id=order.id %}">
+        <div class="form-group">
+          <label class="form-label" for="id_status">New status</label>
+          <select id="id_status" name="status" class="form-control">
+            {% for value, label in order.next_statuses %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_note">Note (optional)</label>
+          <textarea id="id_note" name="note" class="form-control" rows="2"
+                    placeholder="Shown in the status history"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save change</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "admin/base_admin.html" %}
+{% load em_extras %}
+
+{% block admin_crumb %}Orders{% endblock %}
+
+{% block admin_content %}
+<h1 class="acc-title">Order Management</h1>
+
+{% comment %} ---------- Control table ----------
+   status tabs   : links carrying ?status=, count per status from repo.status_counts()
+   search box    : GET param "q", matches order code / name / phone / email
+   order code    : link to the order detail page
+   status select : per row, posts to sales/views.py -> admin_order_status;
+                   only the transitions repo.ALLOWED_TRANSITIONS permits are
+                   offered, and the server checks again on POST
+   Filtering happens server-side, so a filtered view can be bookmarked - the
+   old page did it in JS over a localStorage array. {% endcomment %}
+
+<div class="filter-bar">
+  <div class="filter-tabs">
+    {% for tab in tabs %}
+    <a class="filter-tab {% if status == tab.value %}is-active{% endif %}"
+       href="?status={{ tab.value }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}">
+      {{ tab.label }} <span class="n">{{ tab.count }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  <form class="filter-search" method="get">
+    <input type="hidden" name="status" value="{{ status }}">
+    <input type="text" name="q" class="form-control" value="{{ q }}"
+           placeholder="Search order code, name, phone, email...">
+    <button type="submit" class="btn btn-outline btn-sm">Search</button>
+    {% if q %}<a href="?status={{ status }}" class="btn btn-outline btn-sm">Clear</a>{% endif %}
+  </form>
+</div>
+
+<div class="a-card">
+  <div class="table-scroll">
+    <table class="a-table">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Customer</th>
+          <th>Date</th>
+          <th class="num">Total</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+        <tr>
+          <td>
+            <a class="a-code" style="color:var(--blue)" href="{% url 'admin_order_detail' order_id=o.id %}">{{ o.order_code }}</a>
+            <div class="promo-meta">{{ o.item_count }} item{{ o.item_count|pluralize }}</div>
+          </td>
+          <td>
+            <div style="font-weight:600">{{ o.customer_name }}</div>
+            <div class="promo-meta">{{ o.phone }}</div>
+          </td>
+          <td class="muted">{{ o.created_at|date:"d/m/Y H:i" }}</td>
+          <td class="num"><strong>{{ o.total|money }}</strong></td>
+          <td>
+            <span class="badge badge-muted">{{ o.payment_label }}</span>
+            {% if o.coupon_code %}<div class="promo-meta a-code">{{ o.coupon_code }}</div>{% endif %}
+          </td>
+          <td><span class="badge {{ o.status_badge }}">{{ o.status_label }}</span></td>
+          <td>
+            {% if o.next_statuses %}
+            <form method="post" action="{% url 'admin_order_status' order_id=o.id %}" class="a-actions">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{% url 'admin_orders' %}">
+              <select name="status" class="form-control" style="height:32px;padding:4px 8px;width:auto">
+                {% for value, label in o.next_statuses %}
+                <option value="{{ value }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+            </form>
+            {% else %}
+            <span class="muted" style="font-size:12px">Final</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="a-empty">
+            {% if q or status != 'all' %}No orders match this filter.
+            {% else %}No orders yet. Place one from the storefront, or run
+              <code>python Database/seed_sales.py</code>.{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

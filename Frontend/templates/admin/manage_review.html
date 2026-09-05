@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
 
 {% block content %}
 {# ------------------------------------------------------------------------
@@ -10,6 +11,8 @@
    Docs2LocChitiet.txt, Viec 7. Fields below are placeholders describing
    the layout the other module's view is expected to fill in. --------- #}
 <nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Admin <span>&#8250;</span> Manage reviews</nav>
+
+{% include "admin/_admin_nav.html" %}
 
 <h1 class="acc-title">Manage reviews</h1>
 

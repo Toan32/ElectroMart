@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load static %}
+{% load em_extras %}
+
+{% comment %} Order tracking (CV54 / REQ-30).
+
+Used to be rendered by tracking.js out of localStorage, which meant an order
+was only visible in the very browser that placed it. It is now a server
+render of the orders collection, so any device can look an order up - and a
+logged-in customer sees their whole history without typing anything.
+
+Looking an order up needs the code AND the phone or email on it: the codes
+are sequential, so the code alone would let anyone page through other
+people's orders. {% endcomment %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Track your order</nav>
+
+<div style="max-width:960px;margin:0 auto">
+  <h1 class="acc-title">Track your order</h1>
+
+  {% comment %} ---------- Control table ----------
+     order_code : text input, required, the EM-000123 code from the receipt
+     contact    : text input, required, phone or email used on the order
+     submit     : GET, so a result page can be reloaded and bookmarked {% endcomment %}
+
+  <form method="get" action="{% url 'tracking' %}" class="a-card" style="margin-bottom:18px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+      <div class="form-group" style="flex:1;min-width:200px;margin:0">
+        <label class="form-label" for="id_order_code">Order code <span class="req">*</span></label>
+        <input class="form-control a-code" type="text" id="id_order_code" name="order_code"
+               value="{{ order_code }}" placeholder="EM-000123" required
+               style="text-transform:uppercase">
+      </div>
+      <div class="form-group" style="flex:1;min-width:200px;margin:0">
+        <label class="form-label" for="id_contact">Phone or email <span class="req">*</span></label>
+        <input class="form-control" type="text" id="id_contact" name="contact"
+               value="{{ contact }}" placeholder="0901234567" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Track order</button>
+    </div>
+    {% if error %}<div class="form-error" style="margin-top:10px">{{ error }}</div>{% endif %}
+  </form>
+
+  {% if order %}
+  <div class="a-card">
+    <div class="a-card-head">
+      <h3 class="a-card-title">Order <span class="a-code">{{ order.order_code }}</span></h3>
+      <span class="badge {{ order.status_badge }}">{{ order.status_label }}</span>
+    </div>
+
+    <dl class="dl-rows" style="margin-bottom:16px">
+      <dt>Placed</dt><dd>{{ order.created_at|date:"d/m/Y H:i" }}</dd>
+      <dt>Recipient</dt><dd>{{ order.customer_name }} &middot; {{ order.phone }}</dd>
+      <dt>Delivery to</dt><dd>{{ order.address }}</dd>
+      <dt>Payment</dt><dd>{{ order.payment_label }}</dd>
+    </dl>
+
+    <div class="table-scroll">
+      <table class="a-table">
+        <thead>
+          <tr><th>Product</th><th class="num">Price</th><th class="num">Qty</th><th class="num">Total</th></tr>
+        </thead>
+        <tbody>
+          {% for item in order.items %}
+          <tr>
+            <td>{{ item.name }}{% if item.specs %}<div class="promo-meta">{{ item.specs }}</div>{% endif %}</td>
+            <td class="num">{{ item.price|money }}</td>
+            <td class="num">{{ item.quantity }}</td>
+            <td class="num"><strong>{{ item.line_total|money }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="money-rows" style="max-width:340px;margin-left:auto;margin-top:14px">
+      <div><span>Subtotal</span><span>{{ order.subtotal|money }}</span></div>
+      <div>
+        <span>Discount{% if order.coupon_code %} <span class="a-code">{{ order.coupon_code }}</span>{% endif %}</span>
+        <span>{% if order.discount %}-{{ order.discount|money }}{% else %}&mdash;{% endif %}</span>
+      </div>
+      <div><span>Shipping</span><span>{% if order.shipping_fee %}{{ order.shipping_fee|money }}{% else %}Free{% endif %}</span></div>
+      <div class="grand"><span>Total</span><span>{{ order.total|money }}</span></div>
+    </div>
+
+    <h4 style="font-size:13.5px;margin:20px 0 8px">Progress</h4>
+    <ul class="timeline">
+      {% for entry in order.status_history %}
+      <li>
+        <strong>{{ entry.status|capfirst }}</strong>
+        <span class="when">&mdash; {{ entry.at|date:"d/m/Y H:i" }}</span>
+        {% if entry.note %}<div class="promo-meta">{{ entry.note }}</div>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% elif not order_code %}
+  <div class="a-card" style="text-align:center;padding:40px 20px;border-style:dashed">
+    <div style="font-size:44px;filter:grayscale(100%)">&#128230;</div>
+    <h3 style="margin:12px 0 6px;font-size:15px">No order loaded yet</h3>
+    <p class="muted" style="margin:0;font-size:13px">
+      Enter the code from your receipt together with the phone number or email
+      you ordered with.
+    </p>
+  </div>
+  {% endif %}
+
+  {% if my_orders %}
+  <div class="a-card">
+    <div class="a-card-head"><h3 class="a-card-title">Your orders</h3></div>
+    <div class="table-scroll">
+      <table class="a-table">
+        <thead>
+          <tr><th>Order</th><th>Date</th><th class="num">Total</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for o in my_orders %}
+          <tr>
+            <td class="a-code">{{ o.order_code }}</td>
+            <td class="muted">{{ o.created_at|date:"d/m/Y H:i" }}</td>
+            <td class="num"><strong>{{ o.total|money }}</strong></td>
+            <td><span class="badge {{ o.status_badge }}">{{ o.status_label }}</span></td>
+            <td>
+              <a class="btn btn-outline btn-sm"
+                 href="?order_code={{ o.order_code }}&amp;contact={{ o.phone|urlencode }}">View</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

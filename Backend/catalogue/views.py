@@ -5,6 +5,8 @@ from django.conf import settings
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 
+from accounts.decorators import admin_required
+
 from . import repo
 
 COMPARE_KEY = 'compare'
@@ -262,3 +264,125 @@ def wishlist(request):
     items = _decorate(repo.products_by_slugs(request.session.get(WISHLIST_KEY, [])))
     return render(request, 'wishlist.html',
                   {'products': items, 'page_title': 'Wishlist'})
+
+def news(request):
+    selected_type = request.GET.get('type', 'all')
+
+    news_items = [
+        {
+            'title': 'ElectroMart launches new STM32 development kits',
+            'type': 'Product News',
+            'date': 'August 20, 2026',
+            'summary': 'Explore the latest STM32 development boards now available at ElectroMart.',
+            'image_text': 'STM32',
+        },
+        {
+            'title': 'Scheduled system maintenance this weekend',
+            'type': 'Announcement',
+            'date': 'August 18, 2026',
+            'summary': 'Some ElectroMart services may be temporarily unavailable during maintenance.',
+            'image_text': 'NOTICE',
+        },
+        {
+            'title': 'How to choose the right capacitor for your project',
+            'type': 'Technical Guide',
+            'date': 'August 15, 2026',
+            'summary': 'A practical guide to capacitance, voltage rating, tolerance and capacitor types.',
+            'image_text': 'GUIDE',
+        },
+        {
+            'title': 'New sensor modules added to our catalogue',
+            'type': 'Product News',
+            'date': 'August 12, 2026',
+            'summary': 'Discover newly added temperature, humidity, pressure and motion sensors.',
+            'image_text': 'SENSOR',
+        },
+        {
+            'title': 'Holiday shipping schedule update',
+            'type': 'Announcement',
+            'date': 'August 10, 2026',
+            'summary': 'Important information about shipping and order processing during the holiday period.',
+            'image_text': 'UPDATE',
+        },
+        {
+            'title': 'Understanding resistor color codes',
+            'type': 'Technical Guide',
+            'date': 'August 8, 2026',
+            'summary': 'Learn how to quickly identify resistor values using standard color bands.',
+            'image_text': 'RESISTOR',
+        },
+    ]
+
+    news_types = [
+        'All',
+        'Product News',
+        'Announcement',
+        'Technical Guide',
+    ]
+
+    if selected_type != 'all':
+        filtered_items = [
+            item for item in news_items
+            if item['type'].lower().replace(' ', '-') == selected_type
+        ]
+    else:
+        filtered_items = news_items
+
+    return render(request, 'news.html', {
+        'page_title': 'News - ElectroMart',
+        'news_items': filtered_items,
+        'news_types': news_types,
+        'selected_type': selected_type,
+    })
+
+def feedback(request):
+    return render(request, 'feedback.html', {
+        'page_title': 'Feedback - ElectroMart',
+    })
+
+def faq(request):
+    return render(request, 'faq.html', {
+        'page_title': 'FAQ - ElectroMart',
+    })
+
+# These three were reachable by anyone with the URL. Now that they sit in the
+# shared admin menu they use the same guard as every other admin page, so
+# there is one definition of "who is an admin" across the project.
+@admin_required
+def admin_categories(request):
+    return render(request, 'admin_categories.html', {
+        'page_title': 'Manage Categories - ElectroMart',
+        'admin_page': 'categories',
+    })
+
+
+@admin_required
+def admin_products(request):
+    return render(request, 'admin_products.html', {
+        'page_title': 'Manage Products - ElectroMart',
+        'admin_page': 'products',
+    })
+
+
+@admin_required
+def admin_inventory(request):
+    return render(request, 'admin_inventory.html', {
+        'page_title': 'Manage Inventory - ElectroMart',
+        'admin_page': 'inventory',
+    })
+
+
+# ------------------------------------------------------------- sales_payment module
+def cart(request):
+    return render(request, 'sales_payment/cart.html', {'page_title': 'Giỏ hàng - ElectroMart'})
+
+
+def checkout(request):
+    return render(request, 'sales_payment/checkout.html', {'page_title': 'Thanh toán - ElectroMart'})
+
+
+# tracking, admin_dashboard, admin_orders and admin_promotions moved to
+# sales/views.py (CV54-CV57): they now read the orders and coupons
+# collections and render through the shared admin layout, instead of being
+# static renders of a standalone page fed by localStorage.
+
