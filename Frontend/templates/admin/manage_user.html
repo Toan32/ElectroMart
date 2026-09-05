@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Admin <span>&#8250;</span> Manage users</nav>
+
+<h1 class="acc-title">Manage users</h1>
+
+{% comment %} ---------- Control table ----------
+   role filter     : select (all/retail/wholesale/admin), GET param "role"
+   status filter   : select (all/active/locked/pending-b2b), GET param "status"
+   search box       : text input, GET param "q", matches name or email
+   lock/unlock btn  : per row, posts to accounts/views.py -> admin_toggle_lock
+   Approve/Reject   : per row, only shown for pending B2B, posts to
+                      admin_wholesale_review (reject opens a <details> box
+                      so the reason field is always in valid HTML, no JS
+                      modal needed) {% endcomment %}
+
+<form class="admin-toolbar" method="get" action="{% url 'admin_manage_user' %}">
+  <select name="role">
+    <option value="">All roles</option>
+    <option value="retail" {% if request.GET.role == 'retail' %}selected{% endif %}>Retail</option>
+    <option value="wholesale" {% if request.GET.role == 'wholesale' %}selected{% endif %}>Wholesale</option>
+    <option value="admin" {% if request.GET.role == 'admin' %}selected{% endif %}>Admin</option>
+  </select>
+  <select name="status">
+    <option value="">All statuses</option>
+    <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active</option>
+    <option value="locked" {% if request.GET.status == 'locked' %}selected{% endif %}>Locked / hidden</option>
+    <option value="pending_b2b" {% if request.GET.status == 'pending_b2b' %}selected{% endif %}>Pending B2B approval</option>
+  </select>
+  <input type="text" name="q" placeholder="Search by name or email..." value="{{ request.GET.q|default:'' }}">
+  <button type="submit" class="btn btn-outline btn-sm">Filter</button>
+</form>
+
+<div style="overflow-x:auto">
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Customer</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Status</th>
+      <th>Registered</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.full_name }}</td>
+      <td>{{ u.email }}</td>
+      <td><span class="pill {% if u.role == 'wholesale' %}pill-approved{% else %}pill-pending{% endif %}">{{ u.role|capfirst }}</span></td>
+      <td>
+        {% if u.is_hidden %}<span class="pill pill-rejected">Locked</span>
+        {% else %}<span class="pill pill-approved">Active</span>{% endif %}
+        {% if u.wholesale_status == 'pending' %}<span class="pill pill-pending">Pending B2B</span>{% endif %}
+      </td>
+      <td>{{ u.created_at|date:"d/m/Y" }}</td>
+      <td>
+        <form method="post" action="{% url 'admin_toggle_lock' user_id=u.id %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline btn-sm">{% if u.is_hidden %}Unlock{% else %}Lock{% endif %}</button>
+        </form>
+        {% if u.wholesale_status == 'pending' %}
+        <form method="post" action="{% url 'admin_wholesale_review' profile_id=u.wholesale_profile_id %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" name="decision" value="approve" class="btn btn-primary btn-sm">Approve</button>
+        </form>
+        <details style="display:inline-block">
+          <summary class="btn btn-outline btn-sm" style="display:inline-block;cursor:pointer">Reject</summary>
+          <form method="post" action="{% url 'admin_wholesale_review' profile_id=u.wholesale_profile_id %}"
+                style="margin-top:8px;min-width:220px">
+            {% csrf_token %}
+            <textarea name="reject_reason" class="form-control" rows="2" required
+                      placeholder="Reason for rejection (required)"></textarea>
+            <button type="submit" name="decision" value="reject" class="btn btn-outline btn-sm" style="margin-top:6px">Confirm reject</button>
+          </form>
+        </details>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" class="muted" style="text-align:center;padding:30px">No users match this filter.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

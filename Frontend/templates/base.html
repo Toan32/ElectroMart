@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page_title|default:"ElectroMart" }}</title>
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block extra_css %}{% endblock %}
 </head>
 <body>
 
@@ -51,10 +52,27 @@
         <span class="hact-ico">🛒</span>
         <span class="hact-txt">Cart</span>
       </a>
-      <a href="#" class="hact">
+      {% if current_user %}
+      <a href="{% url 'accounts_profile' %}" class="hact">
         <span class="hact-ico">👤</span>
-        <span class="hact-txt">Account</span>
+        <span class="hact-txt">{{ current_user.full_name|default:"Account" }}</span>
       </a>
+      {% if current_user.role == 'admin' %}
+      <a href="{% url 'admin_manage_user' %}" class="hact">
+        <span class="hact-ico">🛠</span>
+        <span class="hact-txt">Admin</span>
+      </a>
+      {% endif %}
+      <a href="{% url 'accounts_logout' %}" class="hact">
+        <span class="hact-ico">↪</span>
+        <span class="hact-txt">Logout</span>
+      </a>
+      {% else %}
+      <a href="{% url 'accounts_login' %}" class="hact">
+        <span class="hact-ico">👤</span>
+        <span class="hact-txt">Login</span>
+      </a>
+      {% endif %}
     </nav>
   </div>
 </header>

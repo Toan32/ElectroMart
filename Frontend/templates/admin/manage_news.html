@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+{# ------------------------------------------------------------------------
+   NOTE: this page is GUI ONLY (Viec 7 / CV34). The data (articles) and the
+   logic (save, schedule) belong to the Interaction module - see
+   Docs2LocChitiet.txt, Viec 7. -------------------------------------- #}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Admin <span>&#8250;</span> Manage news</nav>
+
+<div class="acc-layout">
+  <div class="acc-main" style="flex:2">
+    <h1 class="acc-title">New article</h1>
+
+    {% comment %} ---------- Control table (mock-up spec) ----------
+       title          : text input, required
+       content        : rich text editor placeholder (textarea for now)
+       schedule_at    : datetime-local input, optional (blank = publish now) {% endcomment %}
+    <form method="post" action="#">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Title <span class="req">*</span></label>
+        <input class="form-control" type="text" name="title" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Content <span class="req">*</span></label>
+        <textarea class="form-control" name="content" rows="8" placeholder="Rich text editor goes here (Interaction module)"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Schedule publish time</label>
+        <input class="form-control" type="datetime-local" name="schedule_at">
+        <div class="form-hint">Leave empty to publish immediately.</div>
+      </div>
+      <button type="submit" class="btn btn-primary">Save article</button>
+    </form>
+  </div>
+
+  <aside class="acc-side" style="width:280px">
+    <div class="form-label" style="margin-bottom:8px">Recent articles</div>
+    {% for n in news %}
+    <div style="padding:8px 0;border-top:1px solid var(--line);font-size:13px">
+      {{ n.title }}
+      <div class="muted" style="font-size:11.5px">{{ n.published_at|date:"d/m/Y H:i" }}</div>
+    </div>
+    {% empty %}
+    <div class="muted" style="font-size:13px">Article list is provided by the Interaction module.</div>
+    {% endfor %}
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% comment %}
+Handed off to the Sales module (Tin, order status updates) and the
+Interaction module (Minh, feedback replies) - Viec 10 / CV59. Call
+accounts.mailer.send_mail(to_email, subject, "status_change_email.html",
+{full_name, headline, message}) whenever something about a customer's
+order/request changes status.
+{% endcomment %}
+<!doctype html>
+<html>
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:24px 0;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:8px;overflow:hidden;">
+        <tr><td style="background:#1435c3;color:#fff;padding:18px 28px;font-size:18px;font-weight:bold;">
+          ElectroMart
+        </td></tr>
+        <tr><td style="padding:28px;">
+          <p>Hi {{ full_name }},</p>
+          <p style="font-size:16px;font-weight:bold;">{{ headline }}</p>
+          <p>{{ message }}</p>
+        </td></tr>
+        <tr><td style="padding:16px 28px;background:#f3f4f6;color:#6b7280;font-size:12px;">
+          ElectroMart - 590 Cach Mang Thang 8, District 3, Ho Chi Minh City
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

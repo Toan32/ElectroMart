@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> <a href="#">My account</a> <span>&#8250;</span> Edit profile</nav>
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}">Profile</a>
+    <a href="{% url 'accounts_address_book' %}">Address book</a>
+    <a href="#">My orders</a>
+    <a href="#">My reviews</a>
+    <a href="{% url 'accounts_edit_profile' %}" class="active">Edit profile</a>
+    <a href="{% url 'accounts_change_password' %}">Change password</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">Edit profile</h1>
+
+    {% comment %} ---------- Control table ----------
+       avatar     : file input, jpg/png only, max 2MB, previewed before saving (accounts.js)
+       full_name  : text input, required
+       phone      : text input, optional, digits only
+       submit     : primary button, posts to accounts/views.py -> edit_profile {% endcomment %}
+
+    <form method="post" action="{% url 'accounts_edit_profile' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="avatar-edit">
+        {% if user.avatar_url %}
+        <img class="avatar-preview" id="avatar-preview" src="{{ user.avatar_url }}" alt="Avatar">
+        {% else %}
+        <div class="avatar-preview" id="avatar-preview"></div>
+        {% endif %}
+        <div>
+          <label class="btn btn-outline btn-sm" for="id_avatar" style="cursor:pointer">Change photo</label>
+          <input type="file" id="id_avatar" name="avatar" accept="image/jpeg,image/png" class="hide">
+          <div class="form-hint">JPG or PNG, up to 2MB.</div>
+          <div class="form-error" id="avatar-error">{% if form.avatar.errors %}{{ form.avatar.errors.0 }}{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_full_name">Full name <span class="req">*</span></label>
+        <input class="form-control" type="text" id="id_full_name" name="full_name" value="{{ user.full_name }}" required>
+        {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_phone">Phone number</label>
+        <input class="form-control" type="text" id="id_phone" name="phone" value="{{ user.phone|default:'' }}" pattern="[0-9]{9,11}">
+        {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-control" type="email" value="{{ user.email }}" disabled>
+        <div class="form-hint">Email cannot be changed here.</div>
+      </div>
+
+      <div class="btn-block-group" style="flex-direction:row">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <a href="{% url 'accounts_profile' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/accounts.js' %}"></script>{% endblock %}

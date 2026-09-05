@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Register</nav>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1 class="auth-title">Create an account</h1>
+    <p class="auth-sub">Retail customers order at list price. Business (Wholesale) accounts get tiered pricing and RFQ after admin approval.</p>
+
+    {% comment %} ---------- Control table ----------
+       account_type    : radio (retail | wholesale), required, toggles company_fields via accounts.js
+       full_name       : text input, required
+       email           : email input, required, server checks uniqueness
+       password        : password input, required, min 8 chars, strength meter (accounts.js)
+       password2       : password input, required, must match password
+       company_name    : text input, required only if account_type=wholesale
+       tax_code        : text input, required only if account_type=wholesale, 10 or 13 digits
+       agree           : checkbox, required
+       submit          : primary button, posts to accounts/views.py -> register {% endcomment %}
+
+    <form method="post" action="{% url 'accounts_register' %}">
+      {% csrf_token %}
+
+      <div class="radio-group">
+        <label class="radio-opt">
+          <input type="radio" name="account_type" value="retail"
+                 {% if request.POST.account_type != 'wholesale' %}checked{% endif %}>
+          <span>Retail customer</span>
+        </label>
+        <label class="radio-opt">
+          <input type="radio" name="account_type" value="wholesale"
+                 {% if request.POST.account_type == 'wholesale' %}checked{% endif %}>
+          <span>Business (Wholesale)</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_full_name">Full name <span class="req">*</span></label>
+        <input class="form-control" type="text" id="id_full_name" name="full_name"
+               value="{{ request.POST.full_name|default:'' }}" required>
+        {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_email">Email <span class="req">*</span></label>
+        <input class="form-control" type="email" id="id_email" name="email"
+               value="{{ request.POST.email|default:'' }}" required>
+        {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="id_password">Password <span class="req">*</span></label>
+          <input class="form-control" type="password" id="id_password" name="password" required minlength="8">
+          <div class="pwd-meter"><div class="pwd-meter-bar" id="pwd-strength-bar"></div></div>
+          <div class="pwd-meter-label" id="pwd-strength-label"></div>
+          {% if form.password.errors %}<div class="form-error">{{ form.password.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_password2">Confirm password <span class="req">*</span></label>
+          <input class="form-control" type="password" id="id_password2" name="password2" required minlength="8">
+          {% if form.password2.errors %}<div class="form-error">{{ form.password2.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div id="company-fields" class="{% if request.POST.account_type != 'wholesale' %}hide{% endif %}">
+        <div class="form-group">
+          <label class="form-label" for="id_company_name">Company name <span class="req">*</span></label>
+          <input class="form-control" type="text" id="id_company_name" name="company_name"
+                 value="{{ request.POST.company_name|default:'' }}">
+          {% if form.company_name.errors %}<div class="form-error">{{ form.company_name.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="id_tax_code">Tax code (MST) <span class="req">*</span></label>
+          <input class="form-control" type="text" id="id_tax_code" name="tax_code" pattern="\d{10}|\d{13}"
+                 value="{{ request.POST.tax_code|default:'' }}">
+          <div class="form-hint">10 or 13 digits. Business accounts need admin approval before wholesale pricing and RFQ are unlocked.</div>
+          {% if form.tax_code.errors %}<div class="form-error">{{ form.tax_code.errors.0 }}</div>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--muted)">
+          <input type="checkbox" name="agree" required style="margin-top:3px">
+          I agree to the Terms of Service and Privacy Policy.
+        </label>
+      </div>
+
+      <div class="btn-block-group">
+        <button type="submit" class="btn btn-primary btn-lg btn-block">Create account</button>
+      </div>
+    </form>
+
+    <p class="auth-foot">Already have an account? <a href="{% url 'accounts_login' %}">Log in</a></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/accounts.js' %}"></script>{% endblock %}

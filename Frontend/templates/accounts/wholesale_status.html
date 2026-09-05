@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> <a href="{% url 'accounts_profile' %}">My account</a> <span>&#8250;</span> Business account status</nav>
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}">Profile</a>
+    <a href="{% url 'accounts_wholesale_status' %}" class="active">Business account status</a>
+    <a href="{% url 'accounts_rfq_list' %}">My RFQs</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">Business account status</h1>
+
+    {% if profile %}
+      <p>
+        Status:
+        {% if profile.approval_status == 'approved' %}<span class="pill pill-approved">Approved</span>
+        {% elif profile.approval_status == 'rejected' %}<span class="pill pill-rejected">Rejected</span>
+        {% else %}<span class="pill pill-pending">Pending review</span>{% endif %}
+      </p>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Company name</label><div>{{ profile.company_name }}</div></div>
+        <div class="form-group"><label class="form-label">Tax code</label><div>{{ profile.tax_code }}</div></div>
+      </div>
+      <div class="form-group"><label class="form-label">Company address</label><div>{{ profile.company_address }}</div></div>
+      <div class="form-group"><label class="form-label">Contact person</label><div>{{ profile.contact_person }}</div></div>
+      {% if profile.approval_status == 'rejected' %}
+      <div class="form-group">
+        <label class="form-label">Reason for rejection</label>
+        <div class="form-error">{{ profile.reject_reason }}</div>
+      </div>
+      {% endif %}
+    {% else %}
+      <p class="muted">You have not applied for a business account yet.</p>
+      <a href="{% url 'accounts_wholesale_register' %}" class="btn btn-primary">Apply now</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

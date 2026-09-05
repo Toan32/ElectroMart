@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> My account</nav>
+
+{% comment %} ---------- Control table (mock-up spec) ----------
+   This page is read-only: it shows the profile pulled from repo.py and
+   links out to the pages that can change it. No form fields here. {% endcomment %}
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}" class="active">Profile</a>
+    <a href="{% url 'accounts_address_book' %}">Address book</a>
+    <a href="#">My orders</a>
+    <a href="#">My reviews</a>
+    <a href="{% url 'accounts_change_password' %}">Change password</a>
+    {% if user.role == 'wholesale' %}<a href="{% url 'accounts_wholesale_status' %}">Wholesale status</a>
+    {% else %}<a href="{% url 'accounts_wholesale_register' %}">Become a business account</a>{% endif %}
+    <a href="{% url 'accounts_rfq_list' %}">My RFQs</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">My profile</h1>
+
+    <div class="avatar-edit">
+      {% if user.avatar_url %}<img class="avatar-preview" src="{{ user.avatar_url }}" alt="Avatar">
+      {% else %}<div class="avatar-preview"></div>{% endif %}
+      <div>
+        <div style="font-weight:700;font-size:16px">{{ user.full_name|default:"Full name" }}</div>
+        <div class="muted">{{ user.email|default:"email@example.com" }}</div>
+        <span class="pill {% if user.role == 'wholesale' %}pill-approved{% else %}pill-pending{% endif %}">
+          {{ user.role|default:"retail"|capfirst }}
+        </span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Full name</label>
+        <div>{{ user.full_name|default:"-" }}</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div>{{ user.email|default:"-" }}</div>
+      </div>
+    </div>
+
+    <a href="{% url 'accounts_edit_profile' %}" class="btn btn-outline">Edit profile</a>
+  </div>
+</div>
+{% endblock %}
