@@ -14,6 +14,9 @@ Orders). {% endcomment %}
 {% url 'admin_categories' as u_categories %}
 {% url 'admin_products' as u_products %}
 {% url 'admin_inventory' as u_inventory %}
+{% url 'admin_news' as u_news %}
+{% url 'admin_feedback' as u_feedback %}
+{% url 'admin_moderation' as u_moderation %}
 {% url 'admin_manage_user' as u_users %}
 
 <div class="admin-nav">
@@ -28,6 +31,12 @@ Orders). {% endcomment %}
     <a href="{{ u_categories }}" class="admin-nav-link {% if admin_page == 'categories' or request.path == u_categories %}is-active{% endif %}">Categories</a>
     <a href="{{ u_products }}" class="admin-nav-link {% if admin_page == 'products' or request.path == u_products %}is-active{% endif %}">Products</a>
     <a href="{{ u_inventory }}" class="admin-nav-link {% if admin_page == 'inventory' or request.path == u_inventory %}is-active{% endif %}">Inventory</a>
+  </div>
+  <div class="admin-nav-group">
+    <span class="admin-nav-label">Content</span>
+    <a href="{{ u_news }}" class="admin-nav-link {% if admin_page == 'news' or request.path == u_news %}is-active{% endif %}">News</a>
+    <a href="{{ u_feedback }}" class="admin-nav-link {% if admin_page == 'feedback' or request.path == u_feedback %}is-active{% endif %}">Feedback</a>
+    <a href="{{ u_moderation }}" class="admin-nav-link {% if admin_page == 'moderation' or request.path == u_moderation %}is-active{% endif %}">Moderation</a>
   </div>
   <div class="admin-nav-group">
     <span class="admin-nav-label">Accounts</span>

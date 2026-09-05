@@ -33,9 +33,11 @@ MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'electromart_db')
 
 INSTALLED_APPS = [
+    'django.contrib.messages',
     'django.contrib.staticfiles',
     'catalogue',
     'accounts',
+    'interaction',
     'sales',
 ]
 
@@ -44,6 +46,10 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # interaction/views.py reports every review/comment outcome through
+    # django.contrib.messages, and base.html renders them. Without this
+    # middleware those calls raise MessageFailure instead of flashing.
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -58,6 +64,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
                 'catalogue.context_processors.shop_context',
                 'accounts.context_processors.account_context',
             ],

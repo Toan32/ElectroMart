@@ -62,8 +62,84 @@ def ensure_sales_indexes(db):
     coupons.create_index([('is_active', ASCENDING)])
 
 
-# TODO (other modules, not done in this pass):
-#   def ensure_interaction_indexes(db): ...  # module Quan tri danh muc & Tuong tac
+def ensure_interaction_indexes(db):
+    """Interaction module - CV42."""
+
+    reviews = db['reviews']
+    reviews.create_index(
+        [('product_id', ASCENDING), ('user_id', ASCENDING)],
+        unique=True,
+        name='uniq_review_product_user',
+    )
+    reviews.create_index(
+        [('product_id', ASCENDING)],
+        name='idx_reviews_product',
+    )
+    reviews.create_index(
+        [('user_id', ASCENDING)],
+        name='idx_reviews_user',
+    )
+
+    comments = db['comments']
+    comments.create_index(
+        [('product_id', ASCENDING)],
+        name='idx_comments_product',
+    )
+    comments.create_index(
+        [('user_id', ASCENDING)],
+        name='idx_comments_user',
+    )
+    comments.create_index(
+        [('parent_id', ASCENDING)],
+        name='idx_comments_parent',
+    )
+
+    wishlists = db['wishlists']
+    wishlists.create_index(
+        [('user_id', ASCENDING)],
+        unique=True,
+        name='uniq_wishlist_user',
+    )
+
+    feedback = db['feedback']
+    feedback.create_index(
+        [('user_id', ASCENDING)],
+        name='idx_feedback_user',
+    )
+    feedback.create_index(
+        [('status', ASCENDING)],
+        name='idx_feedback_status',
+    )
+
+    announcements = db['announcements']
+    announcements.create_index(
+        [('is_active', ASCENDING)],
+        name='idx_announcements_active',
+    )
+    announcements.create_index(
+        [('created_at', ASCENDING)],
+        name='idx_announcements_created_at',
+    )
+
+
+def ensure_inventory_indexes(db):
+    """Catalogue inventory module - CV67."""
+    movements = db['stock_movements']
+
+    movements.create_index(
+        [('sku', ASCENDING), ('created_at', DESCENDING)],
+        name='idx_stock_movements_sku_created',
+    )
+
+    movements.create_index(
+        [('product_id', ASCENDING), ('created_at', DESCENDING)],
+        name='idx_stock_movements_product_created',
+    )
+
+    movements.create_index(
+        [('type', ASCENDING), ('created_at', DESCENDING)],
+        name='idx_stock_movements_type_created',
+    )
 
 
 def main():
@@ -71,7 +147,10 @@ def main():
     db = client[DB_NAME]
     ensure_accounts_indexes(db)
     ensure_sales_indexes(db)
-    print('Accounts & B2B and Sales indexes created on database "%s".' % DB_NAME)
+    ensure_interaction_indexes(db)
+    ensure_inventory_indexes(db)
+    print('Accounts & B2B, Sales, Interaction and Inventory indexes created '
+          'on database "%s".' % DB_NAME)
 
 
 if __name__ == '__main__':

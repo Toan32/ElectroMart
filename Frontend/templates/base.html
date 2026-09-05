@@ -109,6 +109,17 @@
 </div>
 
 <main class="wrap main">
+  {% comment %} interaction/views.py answers every review/comment action with a
+     django.contrib.messages entry. Nothing printed them before, so a rejected
+     review looked like a page that simply reloaded. {% endcomment %}
+  {% if messages %}
+  <ul class="flash-list">
+    {% for message in messages %}
+    <li class="flash flash-{{ message.tags|default:'info' }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
   {% block content %}{% endblock %}
 </main>
 

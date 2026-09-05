@@ -1,9 +1,15 @@
 """Create the ElectroMart database: collections, indexes and sample data.
 
-Run it directly, no Django needed:
+Run through Django or directly - no Django needed for the direct form:
 
+    python Backend/manage.py seed_data
     python Database/seed_data.py            # wipe and reseed
     python Database/seed_data.py --keep     # keep existing documents
+
+This script owns categories, brands, products, stock movements and the CV70
+content (news + FAQ). The demo accounts belong to Database/seed_accounts.py -
+it hashes passwords through accounts.repo so login keeps working - so nothing
+here touches the users or wholesale_profiles collections.
 
 Connection settings come from the environment, falling back to a local server:
     MONGO_URI       default mongodb://localhost:27017/
@@ -25,6 +31,9 @@ MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('MONGO_DB_NAME', 'electromart_db')
 
 CATEGORIES, BRANDS, PRODUCTS = 'categories', 'brands', 'products'
+NEWS = 'news'
+SETTINGS = 'settings'
+STOCK_MOVEMENTS = 'stock_movements'
 NOW = datetime(2026, 8, 13, tzinfo=timezone.utc)
 
 SYMBOLS = {'Ω': 'ohm', 'µ': 'u', 'μ': 'u', '%': 'pct', '°': 'deg'}
@@ -56,94 +65,937 @@ def field(key, label, dtype, unit='', values=None, filterable=True, order=0):
 # --------------------------------------------------------------- categories
 CATEGORY_DATA = [
     {
-        'name': 'Laptops',
-        'icon': '\U0001f4bb',
+        'name': 'Microcontrollers & Kits',
+        'icon': '🔧',
         'spec_template': [
-            field('cpu', 'CPU', 'select', '',
-                  ['Intel Core i5', 'Intel Core i7', 'Intel Core i9',
-                   'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9',
-                   'Apple M1', 'Apple M2', 'Apple M3'], order=1),
-            field('ram_gb', 'RAM size', 'select', 'GB', ['8', '16', '32', '64'], order=2),
-            field('ssd_gb', 'SSD size', 'select', 'GB', ['256', '512', '1024', '2048'], order=3),
-            field('gpu', 'Graphics Card', 'select', '',
-                  ['Nvidia RTX 4050', 'Nvidia RTX 4060', 'Nvidia RTX 4070',
-                   'Intel Iris Xe', 'AMD Radeon', 'Apple GPU'], order=4),
-            field('screen_size_inch', 'Screen size', 'select', 'inch', ['13.3', '14', '15.6', '16'], order=5),
-            field('os', 'OS', 'select', '', ['Windows 11', 'macOS', 'FreeDOS'], order=6),
+            field(
+                'mcu',
+                'Microcontroller',
+                'select',
+                '',
+                [
+                    'ESP32',
+                    'ESP8266',
+                    'ATmega328P',
+                    'ATmega2560',
+                    'RP2040',
+                    'STM32F103',
+                ],
+                order=1,
+            ),
+            field(
+                'logic_voltage',
+                'Logic Voltage',
+                'select',
+                'V',
+                ['3.3', '5'],
+                order=2,
+            ),
+            field(
+                'flash_memory',
+                'Flash Memory',
+                'select',
+                '',
+                ['32KB', '64KB', '256KB', '512KB', '2MB', '4MB', '16MB'],
+                order=3,
+            ),
+            field(
+                'connectivity',
+                'Connectivity',
+                'select',
+                '',
+                ['USB', 'WiFi', 'WiFi + Bluetooth', 'USB + WiFi'],
+                order=4,
+            ),
+            field(
+                'board_type',
+                'Board Type',
+                'select',
+                '',
+                ['Development Board', 'Microcontroller Board', 'Starter Kit'],
+                order=5,
+            ),
         ],
         'products': [
-            ('Asus Zenbook 14 OLED UX3405MA', 'UX3405MA', 'Asus', 27990000, 45,
-             {'cpu': 'Intel Core i7', 'ram_gb': '16', 'ssd_gb': '512', 'gpu': 'Intel Iris Xe', 'screen_size_inch': '14', 'os': 'Windows 11'}),
-            ('Dell XPS 13 9340 OLED', 'XPS-9340', 'Dell', 49990000, 20,
-             {'cpu': 'Intel Core i7', 'ram_gb': '16', 'ssd_gb': '1024', 'gpu': 'Intel Iris Xe', 'screen_size_inch': '13.3', 'os': 'Windows 11'}),
-            ('Apple MacBook Air M3 13-inch', 'MXCR3', 'Apple', 32490000, 65,
-             {'cpu': 'Apple M3', 'ram_gb': '16', 'ssd_gb': '512', 'gpu': 'Apple GPU', 'screen_size_inch': '13.3', 'os': 'macOS'}),
-            ('Lenovo ThinkPad X1 Carbon Gen 11', 'THINK-X1-G11', 'Lenovo', 54990000, 15,
-             {'cpu': 'Intel Core i7', 'ram_gb': '32', 'ssd_gb': '1024', 'gpu': 'Intel Iris Xe', 'screen_size_inch': '14', 'os': 'Windows 11'}),
-            ('MSI Modern 14 C7M', 'MODERN14-R5', 'MSI', 11990000, 80,
-             {'cpu': 'AMD Ryzen 5', 'ram_gb': '8', 'ssd_gb': '512', 'gpu': 'AMD Radeon', 'screen_size_inch': '14', 'os': 'Windows 11'}),
-            ('Acer Aspire 5 A515', 'ASPIRE-A5', 'Acer', 14490000, 110,
-             {'cpu': 'Intel Core i5', 'ram_gb': '16', 'ssd_gb': '512', 'gpu': 'Intel Iris Xe', 'screen_size_inch': '15.6', 'os': 'Windows 11'}),
-            ('HP Pavilion 15 eg3000', 'HP-PAV-15', 'HP', 16990000, 95,
-             {'cpu': 'Intel Core i5', 'ram_gb': '16', 'ssd_gb': '512', 'gpu': 'Intel Iris Xe', 'screen_size_inch': '15.6', 'os': 'Windows 11'}),
-            ('Asus ROG Zephyrus G14 GA403UU', 'GA403UU', 'Asus', 42990000, 30,
-             {'cpu': 'AMD Ryzen 9', 'ram_gb': '32', 'ssd_gb': '1024', 'gpu': 'Nvidia RTX 4060', 'screen_size_inch': '14', 'os': 'Windows 11'}),
-            ('Gigabyte G5 KF Gaming', 'GB-G5-KF', 'Gigabyte', 21990000, 50,
-             {'cpu': 'Intel Core i7', 'ram_gb': '16', 'ssd_gb': '512', 'gpu': 'Nvidia RTX 4050', 'screen_size_inch': '15.6', 'os': 'Windows 11'}),
-            ('MSI Cyborg 15 A13V', 'CYBORG15-A13V', 'MSI', 24990000, 40,
-             {'cpu': 'Intel Core i7', 'ram_gb': '16', 'ssd_gb': '512', 'gpu': 'Nvidia RTX 4060', 'screen_size_inch': '15.6', 'os': 'Windows 11'}),
+            (
+                'ESP32 DevKit V1 WiFi Bluetooth Development Board',
+                'ESP32-DEVKIT-V1',
+                'Espressif',
+                145000,
+                180,
+                {
+                    'mcu': 'ESP32',
+                    'logic_voltage': '3.3',
+                    'flash_memory': '4MB',
+                    'connectivity': 'WiFi + Bluetooth',
+                    'board_type': 'Development Board',
+                },
+            ),
+            (
+                'ESP32-S3 DevKitC-1 Development Board',
+                'ESP32-S3-DEVKITC1',
+                'Espressif',
+                235000,
+                120,
+                {
+                    'mcu': 'ESP32',
+                    'logic_voltage': '3.3',
+                    'flash_memory': '16MB',
+                    'connectivity': 'WiFi + Bluetooth',
+                    'board_type': 'Development Board',
+                },
+            ),
+            (
+                'NodeMCU ESP8266 CP2102 Development Board',
+                'NODEMCU-ESP8266',
+                'NodeMCU',
+                95000,
+                220,
+                {
+                    'mcu': 'ESP8266',
+                    'logic_voltage': '3.3',
+                    'flash_memory': '4MB',
+                    'connectivity': 'USB + WiFi',
+                    'board_type': 'Development Board',
+                },
+            ),
+            (
+                'Arduino Uno R3 Compatible Development Board',
+                'ARDUINO-UNO-R3',
+                'Arduino',
+                185000,
+                160,
+                {
+                    'mcu': 'ATmega328P',
+                    'logic_voltage': '5',
+                    'flash_memory': '32KB',
+                    'connectivity': 'USB',
+                    'board_type': 'Microcontroller Board',
+                },
+            ),
+            (
+                'Arduino Nano V3 ATmega328P',
+                'ARDUINO-NANO-V3',
+                'Arduino',
+                125000,
+                190,
+                {
+                    'mcu': 'ATmega328P',
+                    'logic_voltage': '5',
+                    'flash_memory': '32KB',
+                    'connectivity': 'USB',
+                    'board_type': 'Microcontroller Board',
+                },
+            ),
+            (
+                'Arduino Mega 2560 R3 Development Board',
+                'ARDUINO-MEGA2560',
+                'Arduino',
+                295000,
+                90,
+                {
+                    'mcu': 'ATmega2560',
+                    'logic_voltage': '5',
+                    'flash_memory': '256KB',
+                    'connectivity': 'USB',
+                    'board_type': 'Microcontroller Board',
+                },
+            ),
+            (
+                'Raspberry Pi Pico RP2040',
+                'RPI-PICO-RP2040',
+                'Raspberry Pi',
+                135000,
+                140,
+                {
+                    'mcu': 'RP2040',
+                    'logic_voltage': '3.3',
+                    'flash_memory': '2MB',
+                    'connectivity': 'USB',
+                    'board_type': 'Development Board',
+                },
+            ),
+            (
+                'Raspberry Pi Pico W RP2040 WiFi',
+                'RPI-PICO-W',
+                'Raspberry Pi',
+                185000,
+                130,
+                {
+                    'mcu': 'RP2040',
+                    'logic_voltage': '3.3',
+                    'flash_memory': '2MB',
+                    'connectivity': 'USB + WiFi',
+                    'board_type': 'Development Board',
+                },
+            ),
+            (
+                'STM32 Blue Pill STM32F103C8T6',
+                'STM32F103-BLUEPILL',
+                'STMicroelectronics',
+                89000,
+                200,
+                {
+                    'mcu': 'STM32F103',
+                    'logic_voltage': '3.3',
+                    'flash_memory': '64KB',
+                    'connectivity': 'USB',
+                    'board_type': 'Development Board',
+                },
+            ),
+            (
+                'Arduino Uno Starter Kit Basic',
+                'ARDUINO-UNO-KIT',
+                'Arduino',
+                465000,
+                75,
+                {
+                    'mcu': 'ATmega328P',
+                    'logic_voltage': '5',
+                    'flash_memory': '32KB',
+                    'connectivity': 'USB',
+                    'board_type': 'Starter Kit',
+                },
+            ),
         ],
     },
+
     {
-        'name': 'RAM',
-        'icon': '\U0001f4be',
+        'name': 'Sensors',
+        'icon': '🌡️',
         'spec_template': [
-            field('ram_type', 'RAM type', 'select', '', ['DDR4', 'DDR5'], order=1),
-            field('capacity_gb', 'Capacity', 'select', 'GB', ['8', '16', '32', '64'], order=2),
-            field('bus_speed_mhz', 'Bus speed', 'select', 'MHz', ['3200', '4800', '5200', '5600', '6000'], order=3),
-            field('form_factor', 'Form factor', 'select', '', ['SO-DIMM', 'UDIMM'], order=4),
-            field('kit_count', 'Kit count', 'select', '', ['Single', 'Dual Kit'], order=5),
+            field(
+                'sensor_type',
+                'Sensor Type',
+                'select',
+                '',
+                [
+                    'Temperature & Humidity',
+                    'Temperature',
+                    'Distance',
+                    'Light',
+                    'Motion',
+                    'Gas',
+                    'Pressure',
+                    'Soil Moisture',
+                ],
+                order=1,
+            ),
+            field(
+                'operating_voltage',
+                'Operating Voltage',
+                'select',
+                'V',
+                ['3.3', '5', '3.3-5'],
+                order=2,
+            ),
+            field(
+                'interface',
+                'Interface',
+                'select',
+                '',
+                ['Digital', 'Analog', 'I2C', 'OneWire', 'Trigger/Echo'],
+                order=3,
+            ),
+            field(
+                'module_type',
+                'Module Type',
+                'select',
+                '',
+                ['Sensor', 'Sensor Module'],
+                order=4,
+            ),
         ],
         'products': [
-            ('Kingston FURY Beast DDR4 8GB 3200MHz', 'KF432C16BB8', 'Kingston', 590000, 300,
-             {'ram_type': 'DDR4', 'capacity_gb': '8', 'bus_speed_mhz': '3200', 'form_factor': 'UDIMM', 'kit_count': 'Single'}),
-            ('Kingston FURY Beast DDR4 16GB 3200MHz', 'KF432C16BB16', 'Kingston', 1090000, 250,
-             {'ram_type': 'DDR4', 'capacity_gb': '16', 'bus_speed_mhz': '3200', 'form_factor': 'UDIMM', 'kit_count': 'Single'}),
-            ('Corsair Vengeance RGB DDR5 32GB 5600MHz Dual', 'CMH32GX5M2B5600C40', 'Corsair', 2990000, 150,
-             {'ram_type': 'DDR5', 'capacity_gb': '32', 'bus_speed_mhz': '5600', 'form_factor': 'UDIMM', 'kit_count': 'Dual Kit'}),
-            ('Corsair Vengeance DDR5 16GB 5200MHz Single', 'CMK16GX5M1A5200C40', 'Corsair', 1350000, 180,
-             {'ram_type': 'DDR5', 'capacity_gb': '16', 'bus_speed_mhz': '5200', 'form_factor': 'UDIMM', 'kit_count': 'Single'}),
-            ('G.Skill Trident Z5 Neo RGB DDR5 32GB 6000MHz', 'F5-6000J3038F16GX2', 'G.Skill', 3490000, 120,
-             {'ram_type': 'DDR5', 'capacity_gb': '32', 'bus_speed_mhz': '6000', 'form_factor': 'UDIMM', 'kit_count': 'Dual Kit'}),
-            ('Lexar DDR4 Laptop RAM 8GB 3200MHz', 'LD4AS008G-B3200', 'Lexar', 490000, 400,
-             {'ram_type': 'DDR4', 'capacity_gb': '8', 'bus_speed_mhz': '3200', 'form_factor': 'SO-DIMM', 'kit_count': 'Single'}),
-            ('Kingston ValueRAM DDR5 Laptop RAM 16GB 4800MHz', 'KVR48S40BS8-16', 'Kingston', 1290000, 190,
-             {'ram_type': 'DDR5', 'capacity_gb': '16', 'bus_speed_mhz': '4800', 'form_factor': 'SO-DIMM', 'kit_count': 'Single'}),
+            (
+                'DHT11 Temperature and Humidity Sensor Module',
+                'DHT11-MODULE',
+                'Aosong',
+                35000,
+                350,
+                {
+                    'sensor_type': 'Temperature & Humidity',
+                    'operating_voltage': '3.3-5',
+                    'interface': 'Digital',
+                    'module_type': 'Sensor Module',
+                },
+            ),
+            (
+                'DHT22 AM2302 Temperature and Humidity Sensor',
+                'DHT22-AM2302',
+                'Aosong',
+                89000,
+                260,
+                {
+                    'sensor_type': 'Temperature & Humidity',
+                    'operating_voltage': '3.3-5',
+                    'interface': 'Digital',
+                    'module_type': 'Sensor',
+                },
+            ),
+            (
+                'DS18B20 Waterproof Temperature Sensor',
+                'DS18B20-WATERPROOF',
+                'Maxim',
+                69000,
+                280,
+                {
+                    'sensor_type': 'Temperature',
+                    'operating_voltage': '3.3-5',
+                    'interface': 'OneWire',
+                    'module_type': 'Sensor',
+                },
+            ),
+            (
+                'HC-SR04 Ultrasonic Distance Sensor',
+                'HC-SR04',
+                'ElecFreaks',
+                39000,
+                420,
+                {
+                    'sensor_type': 'Distance',
+                    'operating_voltage': '5',
+                    'interface': 'Trigger/Echo',
+                    'module_type': 'Sensor Module',
+                },
+            ),
+            (
+                'BH1750 Digital Light Sensor Module',
+                'BH1750-GY30',
+                'ROHM',
+                49000,
+                210,
+                {
+                    'sensor_type': 'Light',
+                    'operating_voltage': '3.3-5',
+                    'interface': 'I2C',
+                    'module_type': 'Sensor Module',
+                },
+            ),
+            (
+                'PIR HC-SR501 Motion Sensor Module',
+                'HC-SR501',
+                'Generic',
+                45000,
+                300,
+                {
+                    'sensor_type': 'Motion',
+                    'operating_voltage': '5',
+                    'interface': 'Digital',
+                    'module_type': 'Sensor Module',
+                },
+            ),
+            (
+                'MQ-2 Smoke and Gas Sensor Module',
+                'MQ2-MODULE',
+                'Hanwei',
+                55000,
+                190,
+                {
+                    'sensor_type': 'Gas',
+                    'operating_voltage': '5',
+                    'interface': 'Analog',
+                    'module_type': 'Sensor Module',
+                },
+            ),
+            (
+                'BMP280 Pressure Temperature Sensor Module',
+                'BMP280-MODULE',
+                'Bosch',
+                72000,
+                170,
+                {
+                    'sensor_type': 'Pressure',
+                    'operating_voltage': '3.3',
+                    'interface': 'I2C',
+                    'module_type': 'Sensor Module',
+                },
+            ),
+            (
+                'Capacitive Soil Moisture Sensor V1.2',
+                'SOIL-CAP-V12',
+                'Generic',
+                65000,
+                230,
+                {
+                    'sensor_type': 'Soil Moisture',
+                    'operating_voltage': '3.3-5',
+                    'interface': 'Analog',
+                    'module_type': 'Sensor Module',
+                },
+            ),
+            (
+                'LM35 Precision Temperature Sensor',
+                'LM35DZ',
+                'Texas Instruments',
+                42000,
+                250,
+                {
+                    'sensor_type': 'Temperature',
+                    'operating_voltage': '5',
+                    'interface': 'Analog',
+                    'module_type': 'Sensor',
+                },
+            ),
         ],
     },
+
     {
-        'name': 'Graphics Cards',
-        'icon': '\U0001f5a5',
+        'name': 'Resistors',
+        'icon': '〰️',
         'spec_template': [
-            field('gpu_brand', 'Chipset', 'select', '', ['Nvidia', 'AMD'], order=1),
-            field('vram_gb', 'VRAM', 'select', 'GB', ['6', '8', '12', '16', '24'], order=2),
-            field('vram_type', 'VRAM type', 'select', '', ['GDDR6', 'GDDR6X'], order=3),
-            field('fan_count', 'Fan count', 'select', '', ['1 fan', '2 fans', '3 fans'], order=4),
-            field('power_pin', 'Power pin', 'select', '', ['8-pin', '12VHPWR', 'None'], order=5),
+            field(
+                'resistance',
+                'Resistance',
+                'select',
+                'Ω',
+                [
+                    '100',
+                    '220',
+                    '330',
+                    '470',
+                    '1000',
+                    '2200',
+                    '4700',
+                    '10000',
+                    '47000',
+                    '100000',
+                ],
+                order=1,
+            ),
+            field(
+                'power',
+                'Power Rating',
+                'select',
+                'W',
+                ['0.25', '0.5', '1'],
+                order=2,
+            ),
+            field(
+                'tolerance',
+                'Tolerance',
+                'select',
+                '%',
+                ['1', '5'],
+                order=3,
+            ),
+            field(
+                'resistor_type',
+                'Resistor Type',
+                'select',
+                '',
+                ['Carbon Film', 'Metal Film'],
+                order=4,
+            ),
         ],
         'products': [
-            ('Asus ROG Strix RTX 4070 Ti SUPER 16GB', 'ROG-STRIX-RTX4070TIS-O16G', 'Asus', 27490000, 25,
-             {'gpu_brand': 'Nvidia', 'vram_gb': '16', 'vram_type': 'GDDR6X', 'fan_count': '3 fans', 'power_pin': '12VHPWR'}),
-            ('MSI GeForce RTX 4060 VENTUS 2X 8G OC', 'RTX-4060-VENTUS-2X-8G', 'MSI', 8490000, 90,
-             {'gpu_brand': 'Nvidia', 'vram_gb': '8', 'vram_type': 'GDDR6', 'fan_count': '2 fans', 'power_pin': '8-pin'}),
-            ('Gigabyte GeForce RTX 4060 Ti WINDFORCE 8G', 'GV-N406TWF2OC-8GD', 'Gigabyte', 11490000, 60,
-             {'gpu_brand': 'Nvidia', 'vram_gb': '8', 'vram_type': 'GDDR6', 'fan_count': '2 fans', 'power_pin': '8-pin'}),
-            ('Asus TUF Gaming Radeon RX 7600 XT 16GB', 'TUF-RX7600XT-O16G-GAMING', 'Asus', 10990000, 45,
-             {'gpu_brand': 'AMD', 'vram_gb': '16', 'vram_type': 'GDDR6', 'fan_count': '3 fans', 'power_pin': '8-pin'}),
-            ('MSI GeForce RTX 3050 VENTUS 2X XS 8G', 'RTX-3050-VENTUS-2X-8G', 'MSI', 5490000, 110,
-             {'gpu_brand': 'Nvidia', 'vram_gb': '8', 'vram_type': 'GDDR6', 'fan_count': '2 fans', 'power_pin': 'None'}),
-            ('Gigabyte Radeon RX 7900 XTX GAMING OC 24G', 'GV-R79XTXGAMING-OC-24GD', 'Gigabyte', 28990000, 18,
-             {'gpu_brand': 'AMD', 'vram_gb': '24', 'vram_type': 'GDDR6', 'fan_count': '3 fans', 'power_pin': '8-pin'}),
+            (
+                '100 Ohm 1/4W Metal Film Resistor 1% Pack 100',
+                'RES-100R-025W',
+                'Yageo',
+                28000,
+                500,
+                {
+                    'resistance': '100',
+                    'power': '0.25',
+                    'tolerance': '1',
+                    'resistor_type': 'Metal Film',
+                },
+            ),
+            (
+                '220 Ohm 1/4W Carbon Film Resistor 5% Pack 100',
+                'RES-220R-025W',
+                'UniOhm',
+                22000,
+                650,
+                {
+                    'resistance': '220',
+                    'power': '0.25',
+                    'tolerance': '5',
+                    'resistor_type': 'Carbon Film',
+                },
+            ),
+            (
+                '330 Ohm 1/4W Metal Film Resistor 1% Pack 100',
+                'RES-330R-025W',
+                'Yageo',
+                28000,
+                580,
+                {
+                    'resistance': '330',
+                    'power': '0.25',
+                    'tolerance': '1',
+                    'resistor_type': 'Metal Film',
+                },
+            ),
+            (
+                '470 Ohm 1/2W Carbon Film Resistor 5% Pack 100',
+                'RES-470R-05W',
+                'UniOhm',
+                32000,
+                430,
+                {
+                    'resistance': '470',
+                    'power': '0.5',
+                    'tolerance': '5',
+                    'resistor_type': 'Carbon Film',
+                },
+            ),
+            (
+                '1K Ohm 1/4W Metal Film Resistor 1% Pack 100',
+                'RES-1K-025W',
+                'Yageo',
+                29000,
+                700,
+                {
+                    'resistance': '1000',
+                    'power': '0.25',
+                    'tolerance': '1',
+                    'resistor_type': 'Metal Film',
+                },
+            ),
+            (
+                '2.2K Ohm 1/4W Metal Film Resistor 1% Pack 100',
+                'RES-2K2-025W',
+                'Yageo',
+                29000,
+                460,
+                {
+                    'resistance': '2200',
+                    'power': '0.25',
+                    'tolerance': '1',
+                    'resistor_type': 'Metal Film',
+                },
+            ),
+            (
+                '4.7K Ohm 1/4W Carbon Film Resistor 5% Pack 100',
+                'RES-4K7-025W',
+                'UniOhm',
+                23000,
+                490,
+                {
+                    'resistance': '4700',
+                    'power': '0.25',
+                    'tolerance': '5',
+                    'resistor_type': 'Carbon Film',
+                },
+            ),
+            (
+                '10K Ohm 1/4W Metal Film Resistor 1% Pack 100',
+                'RES-10K-025W',
+                'Yageo',
+                29000,
+                800,
+                {
+                    'resistance': '10000',
+                    'power': '0.25',
+                    'tolerance': '1',
+                    'resistor_type': 'Metal Film',
+                },
+            ),
+            (
+                '47K Ohm 1/2W Carbon Film Resistor 5% Pack 100',
+                'RES-47K-05W',
+                'UniOhm',
+                33000,
+                370,
+                {
+                    'resistance': '47000',
+                    'power': '0.5',
+                    'tolerance': '5',
+                    'resistor_type': 'Carbon Film',
+                },
+            ),
+            (
+                '100K Ohm 1W Metal Film Resistor 1% Pack 50',
+                'RES-100K-1W',
+                'Vishay',
+                45000,
+                310,
+                {
+                    'resistance': '100000',
+                    'power': '1',
+                    'tolerance': '1',
+                    'resistor_type': 'Metal Film',
+                },
+            ),
+        ],
+    },
+
+    {
+        'name': 'Capacitors',
+        'icon': '🔋',
+        'spec_template': [
+            field(
+                'capacitance',
+                'Capacitance',
+                'select',
+                '',
+                [
+                    '100nF',
+                    '1uF',
+                    '10uF',
+                    '22uF',
+                    '47uF',
+                    '100uF',
+                    '220uF',
+                    '470uF',
+                    '1000uF',
+                    '2200uF',
+                ],
+                order=1,
+            ),
+            field(
+                'voltage_rating',
+                'Voltage Rating',
+                'select',
+                'V',
+                ['16', '25', '35', '50'],
+                order=2,
+            ),
+            field(
+                'capacitor_type',
+                'Capacitor Type',
+                'select',
+                '',
+                ['Ceramic', 'Electrolytic'],
+                order=3,
+            ),
+            field(
+                'mounting',
+                'Mounting',
+                'select',
+                '',
+                ['Through Hole'],
+                order=4,
+            ),
+        ],
+        'products': [
+            (
+                '100nF 50V Ceramic Capacitor Pack 50',
+                'CAP-100NF-50V',
+                'Murata',
+                35000,
+                420,
+                {
+                    'capacitance': '100nF',
+                    'voltage_rating': '50',
+                    'capacitor_type': 'Ceramic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '1uF 50V Electrolytic Capacitor Pack 20',
+                'CAP-1UF-50V',
+                'Nichicon',
+                32000,
+                360,
+                {
+                    'capacitance': '1uF',
+                    'voltage_rating': '50',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '10uF 25V Electrolytic Capacitor Pack 20',
+                'CAP-10UF-25V',
+                'Nichicon',
+                34000,
+                390,
+                {
+                    'capacitance': '10uF',
+                    'voltage_rating': '25',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '22uF 25V Electrolytic Capacitor Pack 20',
+                'CAP-22UF-25V',
+                'Panasonic',
+                36000,
+                340,
+                {
+                    'capacitance': '22uF',
+                    'voltage_rating': '25',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '47uF 25V Electrolytic Capacitor Pack 20',
+                'CAP-47UF-25V',
+                'Panasonic',
+                38000,
+                320,
+                {
+                    'capacitance': '47uF',
+                    'voltage_rating': '25',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '100uF 25V Electrolytic Capacitor Pack 20',
+                'CAP-100UF-25V',
+                'Nichicon',
+                42000,
+                300,
+                {
+                    'capacitance': '100uF',
+                    'voltage_rating': '25',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '220uF 25V Electrolytic Capacitor Pack 10',
+                'CAP-220UF-25V',
+                'Rubycon',
+                39000,
+                280,
+                {
+                    'capacitance': '220uF',
+                    'voltage_rating': '25',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '470uF 25V Electrolytic Capacitor Pack 10',
+                'CAP-470UF-25V',
+                'Rubycon',
+                49000,
+                240,
+                {
+                    'capacitance': '470uF',
+                    'voltage_rating': '25',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '1000uF 35V Electrolytic Capacitor Pack 5',
+                'CAP-1000UF-35V',
+                'Panasonic',
+                55000,
+                200,
+                {
+                    'capacitance': '1000uF',
+                    'voltage_rating': '35',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+            (
+                '2200uF 35V Electrolytic Capacitor Pack 5',
+                'CAP-2200UF-35V',
+                'Nichicon',
+                75000,
+                170,
+                {
+                    'capacitance': '2200uF',
+                    'voltage_rating': '35',
+                    'capacitor_type': 'Electrolytic',
+                    'mounting': 'Through Hole',
+                },
+            ),
+        ],
+    },
+
+    {
+        'name': 'Power & Regulators',
+        'icon': '⚡',
+        'spec_template': [
+            field(
+                'regulator_type',
+                'Type',
+                'select',
+                '',
+                [
+                    'Linear Regulator',
+                    'Buck Converter',
+                    'Boost Converter',
+                    'Buck-Boost Converter',
+                    'Power Module',
+                ],
+                order=1,
+            ),
+            field(
+                'input_voltage',
+                'Input Voltage',
+                'select',
+                '',
+                ['5-12V', '7-35V', '4.5-40V', '2-24V', '3-35V'],
+                order=2,
+            ),
+            field(
+                'output_voltage',
+                'Output Voltage',
+                'select',
+                '',
+                ['3.3V', '5V', '9V', '12V', 'Adjustable'],
+                order=3,
+            ),
+            field(
+                'max_current',
+                'Maximum Current',
+                'select',
+                'A',
+                ['1', '1.5', '2', '3', '5'],
+                order=4,
+            ),
+            field(
+                'package',
+                'Package',
+                'select',
+                '',
+                ['TO-220', 'Module'],
+                order=5,
+            ),
+        ],
+        'products': [
+            (
+                'LM7805 5V Linear Voltage Regulator TO-220',
+                'LM7805',
+                'STMicroelectronics',
+                18000,
+                600,
+                {
+                    'regulator_type': 'Linear Regulator',
+                    'input_voltage': '7-35V',
+                    'output_voltage': '5V',
+                    'max_current': '1',
+                    'package': 'TO-220',
+                },
+            ),
+            (
+                'LM7809 9V Linear Voltage Regulator TO-220',
+                'LM7809',
+                'STMicroelectronics',
+                19000,
+                420,
+                {
+                    'regulator_type': 'Linear Regulator',
+                    'input_voltage': '7-35V',
+                    'output_voltage': '9V',
+                    'max_current': '1',
+                    'package': 'TO-220',
+                },
+            ),
+            (
+                'LM7812 12V Linear Voltage Regulator TO-220',
+                'LM7812',
+                'STMicroelectronics',
+                19000,
+                450,
+                {
+                    'regulator_type': 'Linear Regulator',
+                    'input_voltage': '7-35V',
+                    'output_voltage': '12V',
+                    'max_current': '1',
+                    'package': 'TO-220',
+                },
+            ),
+            (
+                'AMS1117 3.3V Voltage Regulator Module',
+                'AMS1117-33-MOD',
+                'Advanced Monolithic Systems',
+                25000,
+                380,
+                {
+                    'regulator_type': 'Linear Regulator',
+                    'input_voltage': '5-12V',
+                    'output_voltage': '3.3V',
+                    'max_current': '1',
+                    'package': 'Module',
+                },
+            ),
+            (
+                'LM2596 Adjustable Buck Converter Module',
+                'LM2596-BUCK',
+                'Texas Instruments',
+                45000,
+                330,
+                {
+                    'regulator_type': 'Buck Converter',
+                    'input_voltage': '4.5-40V',
+                    'output_voltage': 'Adjustable',
+                    'max_current': '3',
+                    'package': 'Module',
+                },
+            ),
+            (
+                'XL4015 5A Adjustable Buck Converter Module',
+                'XL4015-BUCK',
+                'XLSEMI',
+                75000,
+                240,
+                {
+                    'regulator_type': 'Buck Converter',
+                    'input_voltage': '4.5-40V',
+                    'output_voltage': 'Adjustable',
+                    'max_current': '5',
+                    'package': 'Module',
+                },
+            ),
+            (
+                'MT3608 Adjustable Boost Converter Module',
+                'MT3608-BOOST',
+                'Aerosemi',
+                32000,
+                410,
+                {
+                    'regulator_type': 'Boost Converter',
+                    'input_voltage': '2-24V',
+                    'output_voltage': 'Adjustable',
+                    'max_current': '2',
+                    'package': 'Module',
+                },
+            ),
+            (
+                'XL6009 Adjustable Boost Converter Module',
+                'XL6009-BOOST',
+                'XLSEMI',
+                55000,
+                270,
+                {
+                    'regulator_type': 'Boost Converter',
+                    'input_voltage': '3-35V',
+                    'output_voltage': 'Adjustable',
+                    'max_current': '3',
+                    'package': 'Module',
+                },
+            ),
+            (
+                'DC-DC Buck Boost Converter Adjustable Module',
+                'LTC3780-BUCKBOOST',
+                'Analog Devices',
+                185000,
+                110,
+                {
+                    'regulator_type': 'Buck-Boost Converter',
+                    'input_voltage': '5-12V',
+                    'output_voltage': 'Adjustable',
+                    'max_current': '5',
+                    'package': 'Module',
+                },
+            ),
+            (
+                'MB102 Breadboard Power Supply Module 3.3V 5V',
+                'MB102-POWER',
+                'YwRobot',
+                35000,
+                360,
+                {
+                    'regulator_type': 'Power Module',
+                    'input_voltage': '5-12V',
+                    'output_voltage': '5V',
+                    'max_current': '1',
+                    'package': 'Module',
+                },
+            ),
         ],
     },
 ]
@@ -152,6 +1004,44 @@ DESC = ('{name} is authentic, imported directly from authorized distributors. '
         'Includes full original box, full manufacturer warranty, and ElectroMart\'s premium support. '
         'In stock at our main warehouse, ready for same-day delivery with a 7-day return policy.')
 
+# --------------------------------------------------------------- datasheets
+
+DATASHEET_URLS = {
+    'ESP32-DEVKIT-V1':
+        'https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf',
+
+    'ESP32-S3-DEVKITC1':
+        'https://www.espressif.com/sites/default/files/documentation/esp32-s3_datasheet_en.pdf',
+
+    'NODEMCU-ESP8266':
+        'https://www.espressif.com/sites/default/files/documentation/0a-esp8266ex_datasheet_en.pdf',
+
+    'ARDUINO-UNO-R3':
+        'https://www.microchip.com/en-us/product/ATmega328P',
+
+    'ARDUINO-MEGA2560':
+        'https://www.microchip.com/en-us/product/ATmega2560',
+
+    'RPI-PICO-RP2040':
+        'https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf',
+
+    'STM32F103-BLUEPILL':
+        'https://www.st.com/resource/en/datasheet/stm32f103c8.pdf',
+
+    'BMP280-MODULE':
+        'https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf',
+
+    'LM35DZ':
+        'https://www.ti.com/lit/ds/symlink/lm35.pdf',
+
+    'LM7805':
+        'https://www.st.com/resource/en/datasheet/l78.pdf',
+
+    'LM2596-BUCK':
+        'https://www.ti.com/lit/ds/symlink/lm2596.pdf',
+}
+
+# --------------------------------------------------------------- demo accounts
 
 def ensure_indexes(db):
     """Create every index described in the Design Document."""
@@ -177,6 +1067,17 @@ def ensure_indexes(db):
     p.create_index([('brand_id', ASCENDING)])
     p.create_index([('is_featured', ASCENDING), ('sold_count', DESCENDING)])
     p.create_index([('variants.sku', ASCENDING)])
+
+    # CV70 - News / FAQ content
+    news = db[NEWS]
+    news.create_index([('slug', ASCENDING)], unique=True)
+    news.create_index(
+        [('type', ASCENDING), ('is_hidden', ASCENDING), ('publish_at', DESCENDING)],
+        name='idx_news_type_hidden_publish',
+    )
+    news.create_index([('publish_at', DESCENDING)], name='idx_news_publish_at')
+
+    db[SETTINGS].create_index([('key', ASCENDING)], unique=True)
 
 
 import zlib
@@ -366,17 +1267,150 @@ def generate_product_svg(name, part, cat_name):
     return svg
 
 
+
+
+# --------------------------------------------------------------- CV70 content
+FAQ_DATA = [
+    {
+        'question': 'How do I know if a product is in stock?',
+        'answer': 'The product detail page displays the current stock quantity. Products marked "In stock" are available for ordering.',
+        'display_order': 1,
+        'is_active': True,
+    },
+    {
+        'question': 'Does ElectroMart provide VAT invoices?',
+        'answer': 'Yes. VAT invoices are available for eligible orders. Please provide the required billing information when ordering.',
+        'display_order': 2,
+        'is_active': True,
+    },
+    {
+        'question': 'Can I return a defective electronic component?',
+        'answer': "Products with confirmed manufacturing defects may be returned according to ElectroMart's return and warranty policy.",
+        'display_order': 3,
+        'is_active': True,
+    },
+    {
+        'question': 'How long does delivery usually take?',
+        'answer': 'Delivery time depends on the destination and shipping method. Estimated delivery information will be provided during checkout.',
+        'display_order': 4,
+        'is_active': True,
+    },
+    {
+        'question': 'Where can I find technical specifications?',
+        'answer': 'Technical specifications are available on each product detail page under the Specifications tab.',
+        'display_order': 5,
+        'is_active': True,
+    },
+    {
+        'question': 'Can I compare electronic components?',
+        'answer': 'Yes. Use the Compare option on product cards or product detail pages to add supported products to the comparison list.',
+        'display_order': 6,
+        'is_active': True,
+    },
+]
+
+NEWS_DATA = [
+    (
+        'ElectroMart launches new STM32 development kits',
+        'product-news',
+        datetime(2026, 8, 20, 9, 0, tzinfo=timezone.utc),
+        'Explore the latest STM32 development boards now available at ElectroMart.',
+    ),
+    (
+        'Scheduled system maintenance this weekend',
+        'announcement',
+        datetime(2026, 8, 18, 9, 0, tzinfo=timezone.utc),
+        'Some ElectroMart services may be temporarily unavailable during maintenance.',
+    ),
+    (
+        'How to choose the right capacitor for your project',
+        'technical-guide',
+        datetime(2026, 8, 15, 9, 0, tzinfo=timezone.utc),
+        'A practical guide to capacitance, voltage rating, tolerance and capacitor types.',
+    ),
+    (
+        'New sensor modules added to our catalogue',
+        'product-news',
+        datetime(2026, 8, 12, 9, 0, tzinfo=timezone.utc),
+        'Discover newly added temperature, humidity, pressure and motion sensors.',
+    ),
+    (
+        'Holiday shipping schedule update',
+        'announcement',
+        datetime(2026, 8, 10, 9, 0, tzinfo=timezone.utc),
+        'Important information about shipping and order processing during the holiday period.',
+    ),
+    (
+        'Understanding resistor color codes',
+        'technical-guide',
+        datetime(2026, 8, 8, 9, 0, tzinfo=timezone.utc),
+        'Learn how to quickly identify resistor values using standard color bands.',
+    ),
+]
+
+
+def seed_cv70_content(db):
+    now = NOW
+
+    # --keep must preserve any FAQ edited later by admin, so seed only when
+    # the setting does not exist yet. A normal seed clears SETTINGS first.
+    db[SETTINGS].update_one(
+        {'key': 'faq'},
+        {
+            '$setOnInsert': {
+                'value': FAQ_DATA,
+                'created_at': now,
+                'updated_at': now,
+            },
+        },
+        upsert=True,
+    )
+
+    inserted_news = 0
+    for title, news_type, publish_at, summary in NEWS_DATA:
+        news_slug = slugify(title)
+        result = db[NEWS].update_one(
+            {'slug': news_slug},
+            {
+                '$setOnInsert': {
+                    'title': title,
+                    'slug': news_slug,
+                    'type': news_type,
+                    'summary': summary,
+                    # Existing mock data only had a summary. Reuse it as
+                    # initial detail content rather than inventing article copy.
+                    'content': summary,
+                    'publish_at': publish_at,
+                    'created_by': None,
+                    'is_hidden': False,
+                    'created_at': now,
+                    'updated_at': now,
+                },
+            },
+            upsert=True,
+        )
+        if result.upserted_id is not None:
+            inserted_news += 1
+
+    print(
+        'CV70 content ready: %d new news article(s), FAQ settings available.'
+        % inserted_news
+    )
+
+
 def seed(keep=False):
     rnd = random.Random(2026)
     db = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)[DB_NAME]
 
     if not keep:
-        for c in (CATEGORIES, BRANDS, PRODUCTS):
+        for c in (CATEGORIES, BRANDS, PRODUCTS, STOCK_MOVEMENTS, NEWS, SETTINGS):
             db[c].delete_many({})
         print('Cleared existing documents.')
 
     ensure_indexes(db)
     print('Indexes ready.')
+
+    seed_cv70_content(db)
 
     names = sorted({p[2] for c in CATEGORY_DATA for p in c['products']})
     brand_ids = {n: db[BRANDS].insert_one(
@@ -426,18 +1460,22 @@ def seed(keep=False):
             }
             rating_count = rnd.randint(0, 180)
             
-            # Copy base JPG photo depending on category
-            import shutil
-            base_dir = os.path.join(os.path.dirname(__file__), '..', 'Frontend', 'static', 'sales_payment', 'images')
-            if cat['name'] == 'Laptops':
-                base_img = os.path.join(base_dir, 'laptop_base.jpg')
-            elif cat['name'] == 'RAM':
-                base_img = os.path.join(base_dir, 'ram_base.jpg')
-            else:
-                base_img = os.path.join(base_dir, 'gpu_base.jpg')
-                
-            img_filename = f"prod_{slugify(part)}.jpg"
-            shutil.copy(base_img, os.path.join(img_dir, img_filename))
+            # Generate a unique SVG image for each electronic component
+            img_filename = f"prod_{slugify(part)}.svg"
+
+            svg_content = generate_product_svg(
+                name,
+                part,
+                cat['name'],
+            )
+
+            img_path = os.path.join(
+                img_dir,
+                img_filename,
+            )
+
+            with open(img_path, 'w', encoding='utf-8') as f:
+                f.write(svg_content)
 
             docs.append({
                 'name': name,
@@ -452,7 +1490,7 @@ def seed(keep=False):
                 'list_price': list_price,
                 'total_stock': stock,
                 'images': [f'/static/sales_payment/images/prods/{img_filename}'],
-                'datasheet_url': '',
+                'datasheet_url': DATASHEET_URLS.get(part, ''),
                 'tags': [part.lower(), slugify(brand), slugify(cat['name'])],
                 'avg_rating': round(rnd.uniform(3.8, 5.0), 1) if rating_count else 0.0,
                 'rating_count': rating_count,

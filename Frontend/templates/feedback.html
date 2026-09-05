@@ -1,5 +1,50 @@
 {% extends "base.html" %}
 
+
+{% block extra_css %}
+<style>
+.feedback-message.error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 14px 15px;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.feedback-error-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #dc2626;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.feedback-message.error > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.feedback-message.error strong {
+  font-size: 13px;
+}
+
+.feedback-message.error span {
+  color: #b91c1c;
+  font-size: 12px;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 
 <nav class="crumb">
@@ -146,7 +191,8 @@
       </div>
 
 
-      <form id="feedback-form">
+      <form id="feedback-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
 
         <!-- Name / Email -->
         <div class="feedback-form-row">
@@ -163,6 +209,7 @@
               name="name"
               placeholder="Enter your full name"
               autocomplete="name"
+              value="{{ feedback_form.name|default:'' }}"
               required
             >
 
@@ -181,6 +228,7 @@
               name="email"
               placeholder="example@email.com"
               autocomplete="email"
+              value="{{ feedback_form.email|default:'' }}"
               required
             >
 
@@ -202,12 +250,12 @@
             required
           >
             <option value="">Select a subject</option>
-            <option value="product">Product feedback</option>
-            <option value="website">Website experience</option>
-            <option value="order">Order or delivery</option>
-            <option value="technical">Technical support</option>
-            <option value="suggestion">Suggestion</option>
-            <option value="other">Other</option>
+            <option value="product" {% if feedback_form.subject == "product" %}selected{% endif %}>Product feedback</option>
+            <option value="website" {% if feedback_form.subject == "website" %}selected{% endif %}>Website experience</option>
+            <option value="order" {% if feedback_form.subject == "order" %}selected{% endif %}>Order or delivery</option>
+            <option value="technical" {% if feedback_form.subject == "technical" %}selected{% endif %}>Technical support</option>
+            <option value="suggestion" {% if feedback_form.subject == "suggestion" %}selected{% endif %}>Suggestion</option>
+            <option value="other" {% if feedback_form.subject == "other" %}selected{% endif %}>Other</option>
           </select>
 
         </div>
@@ -235,7 +283,7 @@
             maxlength="1000"
             placeholder="Tell us more about your feedback..."
             required
-          ></textarea>
+          >{{ feedback_form.content|default:'' }}</textarea>
 
         </div>
 
@@ -283,11 +331,27 @@
 
         <!-- Success message -->
         <div
-          class="feedback-message"
+          class="feedback-message{% if feedback_success %} success{% elif feedback_error %} error{% endif %}"
           id="feedback-message"
           role="status"
           aria-live="polite"
-        ></div>
+        >
+          {% if feedback_success %}
+          <div class="feedback-success-icon">✓</div>
+
+          <div>
+            <strong>Feedback submitted successfully</strong>
+            <span>Thank you! Your feedback has been received.</span>
+          </div>
+          {% elif feedback_error %}
+          <div class="feedback-error-icon">!</div>
+
+          <div>
+            <strong>Unable to submit feedback</strong>
+            <span>{{ feedback_error }}</span>
+          </div>
+          {% endif %}
+        </div>
 
 
         <!-- Submit -->
@@ -347,6 +411,9 @@ const feedbackMessage =
 /* ---------- Character counter ---------- */
 
 if (feedbackContent && feedbackCharCurrent) {
+
+  feedbackCharCurrent.textContent =
+    feedbackContent.value.length;
 
   feedbackContent.addEventListener('input', function () {
 
@@ -496,52 +563,6 @@ if (feedbackAttachment && feedbackFilePreview) {
 }
 
 
-/* ---------- Mock submit ---------- */
-
-if (feedbackForm) {
-
-  feedbackForm.addEventListener(
-    'submit',
-    function (event) {
-
-      event.preventDefault();
-
-
-      if (feedbackMessage) {
-
-        feedbackMessage.className =
-          'feedback-message success';
-
-        feedbackMessage.innerHTML = `
-          <div class="feedback-success-icon">✓</div>
-
-          <div>
-            <strong>Feedback submitted successfully</strong>
-            <span>
-              Thank you! Your feedback has been received.
-            </span>
-          </div>
-        `;
-
-      }
-
-
-      feedbackForm.reset();
-
-
-      if (feedbackCharCurrent) {
-        feedbackCharCurrent.textContent = '0';
-      }
-
-
-      if (feedbackFilePreview) {
-        feedbackFilePreview.innerHTML = '';
-      }
-
-    }
-  );
-
-}
 
 </script>
 {% endblock %}

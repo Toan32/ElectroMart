@@ -83,7 +83,12 @@ view.
 | Quản lý đơn hàng | `/admin/orders/` | Sales (Tín) |
 | Chi tiết đơn | `/admin/orders/<id>/` | Sales (Tín) |
 | Khuyến mãi | `/admin/promotions/` | Sales (Tín) |
-| Danh mục / Sản phẩm / Tồn kho | `/admin/categories/` … | Catalogue (Minh) |
+| Danh mục & spec template | `/admin/categories/` | Catalogue (Minh) |
+| Sản phẩm & biến thể | `/admin/products/` | Catalogue (Minh) |
+| Tồn kho & xuất/nhập | `/admin/inventory/` | Catalogue (Minh) |
+| Tin tức | `/admin/news/` | Content (Minh) |
+| Phản hồi khách hàng | `/admin/feedback/` | Content (Minh) |
+| Kiểm duyệt đánh giá & Q&A | `/admin/moderation/` | Content (Minh) |
 | Người dùng & duyệt B2B | `/admin/users/` | Accounts (Lộc) |
 
 Ba URL cũ `/admin-dashboard/`, `/admin-orders/`, `/admin-promotions/` được
@@ -100,3 +105,50 @@ nên admin không bao giờ thấy đơn khách đặt. Luồng hiện tại:
 
 Giá và phí ship do **server** tính lại từ collection `products`, không tin số
 mà trình duyệt gửi lên.
+
+## Catalogue, nội dung & tương tác (module của Minh)
+
+Ba nhóm chức năng vừa được gộp vào `main`:
+
+**Catalogue admin (CV65–CV67).** `/admin/categories/`, `/admin/products/`,
+`/admin/inventory/` trước đây chỉ là bản dựng giao diện với dữ liệu cứng trong
+JS. Giờ mỗi trang render một lần rồi gọi các endpoint JSON riêng
+(`/admin/products/data/`, `/admin/inventory/adjust/`, …) đọc/ghi thẳng vào
+MongoDB: tạo/sửa/ẩn danh mục và spec template động, CRUD sản phẩm + biến thể +
+upload ảnh/datasheet, điều chỉnh tồn kho và ghi `stock_movements`.
+
+**Nội dung (CV70).** `/news/` và `/faq/` đọc từ collection `news` và document
+`settings.key='faq'` thay vì mảng cứng trong view; mỗi bài có trang chi tiết
+`/news/<slug>/`. `/feedback/` post thật lên server (kèm file đính kèm), admin
+xử lý ở `/admin/feedback/` và trả lời qua email dùng chung `accounts/mailer.py`.
+
+**Đánh giá & Q&A (CV42/CV68/CV69).** App mới `Backend/interaction/` giữ
+`reviews`, `comments`, `wishlists`, `feedback`, `announcements`. Trang sản phẩm
+hiện điểm trung bình, phân bố sao và luồng hỏi–đáp nhiều cấp; admin ẩn/hiện và
+trả lời ở `/admin/moderation/`.
+
+### Những chỗ đã sửa khi gộp
+
+- **Phân quyền.** Toàn bộ endpoint CV65–CV67 (`/admin/products/create/`,
+  `/admin/categories/<id>/delete/`, `/admin/inventory/adjust/`, …) trước đó
+  **không có guard nào** — ai biết URL cũng gọi được. Nay dùng
+  `@admin_required` cho trang và `@admin_required_json` cho endpoint fetch
+  (`accounts/decorators.py`), giống mọi trang admin còn lại.
+- **Một định nghĩa "ai là admin".** Ba bản sao `_admin_news_user` /
+  `_admin_feedback_user` / `_cv71_admin_user` gộp còn một `_admin_user()` gọi
+  `accounts.decorators.current_user`.
+- **Giao diện.** 6 trang admin mới bọc lại theo layout của `main`: breadcrumb +
+  `admin/_admin_nav.html` + `admin_sales.css`. Menu admin dùng chung có thêm
+  nhóm **Content** (News / Feedback / Moderation).
+- **Flash message.** `interaction/views.py` báo kết quả qua
+  `django.contrib.messages` nhưng không nơi nào render nên đánh giá bị từ chối
+  chỉ thấy trang tải lại. Đã bật `MessageMiddleware` + context processor và in
+  ở `base.html`.
+- **`/news/`.** Bản của nhánh kia là bản sao nhầm của `news_detail.html` (render
+  `item` thay vì danh sách). Giữ giao diện listing của `main`, nối vào dữ liệu
+  động, và nút "Read more" chết được thay bằng link tới trang chi tiết.
+- **`seed_data.py`.** Bỏ phần seed tài khoản (kèm `import` Django) khỏi script —
+  `seed_accounts.py` đã sở hữu `users`/`wholesale_profiles`, và
+  `seed_data.py` giữ nguyên tính chất chạy độc lập không cần Django.
+- **Không lấy** các trang sales cũ (`sales_payment/admin-*.html`,
+  `js/admin-orders.js`, …): `main` đã thay bằng app `sales` đọc MongoDB.

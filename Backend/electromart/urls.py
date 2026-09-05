@@ -5,6 +5,7 @@ from django.views.generic import RedirectView
 
 from accounts import views as accounts_views
 from catalogue import views
+from interaction import views as interaction_views
 from sales import views as sales_views
 
 urlpatterns = [
@@ -46,8 +47,20 @@ urlpatterns = [
 
     # ------------------------------------------------------- catalogue & content (Minh)
     path('news/', views.news, name='news'),
+    path('news/<slug:slug>/', views.news_detail, name='news_detail'),
     path('feedback/', views.feedback, name='feedback'),
     path('faq/', views.faq, name='faq'),
+
+    # Reviews and Q&A on a product page (CV42 / CV68 / CV69).
+    path('product/<slug:product_slug>/review/', interaction_views.submit_review, name='submit_review'),
+    path('product/<slug:product_slug>/review/me/', interaction_views.my_review, name='my_review'),
+    path('product/<slug:product_slug>/review/edit/', interaction_views.edit_review, name='edit_review'),
+    path('product/<slug:product_slug>/review/hide/', interaction_views.hide_review, name='hide_review'),
+    path('product/<slug:product_slug>/review/unhide/', interaction_views.unhide_review, name='unhide_review'),
+    path('product/<slug:product_slug>/comment/', interaction_views.submit_comment, name='submit_comment'),
+    path('product/<slug:product_slug>/comment/<str:comment_id>/edit/', interaction_views.edit_comment, name='edit_comment'),
+    path('product/<slug:product_slug>/comment/<str:comment_id>/hide/', interaction_views.hide_comment, name='hide_comment'),
+    path('product/<slug:product_slug>/comment/<str:comment_id>/unhide/', interaction_views.unhide_comment, name='unhide_comment'),
 
     # ------------------------------------------------------- sales & payment (Tin)
     path('cart/', views.cart, name='cart'),
@@ -67,9 +80,53 @@ urlpatterns = [
     path('admin/users/<str:user_id>/lock/', accounts_views.admin_toggle_lock, name='admin_toggle_lock'),
     path('admin/users/<str:profile_id>/wholesale-review/', accounts_views.admin_wholesale_review, name='admin_wholesale_review'),
 
+    # Catalogue admin (CV65-CV67). Each page renders once and then talks to
+    # its own JSON endpoints below, which is why the fetch() URLs live under
+    # the same /admin/ prefix as the page that calls them.
     path('admin/categories/', views.admin_categories, name='admin_categories'),
+    path('admin/categories/data/', views.admin_categories_data, name='admin_categories_data'),
+    path('admin/categories/create/', views.admin_category_create, name='admin_category_create'),
+    path('admin/categories/<str:category_id>/update/', views.admin_category_update, name='admin_category_update'),
+    path('admin/categories/<str:category_id>/hidden/', views.admin_category_hidden, name='admin_category_hidden'),
+    path('admin/categories/<str:category_id>/delete/', views.admin_category_delete, name='admin_category_delete'),
+    path('admin/categories/<str:category_id>/spec-template/', views.admin_category_spec_template, name='admin_category_spec_template'),
+    path('admin/categories/<str:category_id>/spec-fields/create/', views.admin_category_spec_create, name='admin_category_spec_create'),
+    path('admin/categories/<str:category_id>/spec-fields/<str:field_key>/update/', views.admin_category_spec_update, name='admin_category_spec_update'),
+    path('admin/categories/<str:category_id>/spec-fields/<str:field_key>/delete/', views.admin_category_spec_delete, name='admin_category_spec_delete'),
+
     path('admin/products/', views.admin_products, name='admin_products'),
+    path('admin/products/data/', views.admin_products_data, name='admin_products_data'),
+    path('admin/products/create/', views.admin_product_create, name='admin_product_create'),
+    path('admin/products/<str:product_id>/data/', views.admin_product_detail, name='admin_product_detail'),
+    path('admin/products/<str:product_id>/update/', views.admin_product_update, name='admin_product_update'),
+    path('admin/products/<str:product_id>/hidden/', views.admin_product_hidden, name='admin_product_hidden'),
+    path('admin/products/<str:product_id>/variants/', views.admin_product_variants, name='admin_product_variants'),
+
     path('admin/inventory/', views.admin_inventory, name='admin_inventory'),
+    path('admin/inventory/data/', views.admin_inventory_data, name='admin_inventory_data'),
+    path('admin/inventory/low-stock/', views.admin_inventory_low_stock, name='admin_inventory_low_stock'),
+    path('admin/inventory/adjust/', views.admin_inventory_adjust, name='admin_inventory_adjust'),
+    path('admin/inventory/movements/', views.admin_inventory_movements, name='admin_inventory_movements'),
+
+    # Content admin: news, customer feedback and review/comment moderation
+    # (CV70, CV71).
+    path('admin/news/', views.admin_news, name='admin_news'),
+    path('admin/news/data/', views.admin_news_data, name='admin_news_data'),
+    path('admin/news/create/', views.admin_news_create, name='admin_news_create'),
+    path('admin/news/<str:news_id>/update/', views.admin_news_update, name='admin_news_update'),
+    path('admin/news/<str:news_id>/hidden/', views.admin_news_hidden, name='admin_news_hidden'),
+    path('admin/news/<str:news_id>/delete/', views.admin_news_delete, name='admin_news_delete'),
+
+    path('admin/feedback/', views.admin_feedback, name='admin_feedback'),
+    path('admin/feedback/data/', views.admin_feedback_data, name='admin_feedback_data'),
+    path('admin/feedback/<str:feedback_id>/status/', views.admin_feedback_status, name='admin_feedback_status'),
+    path('admin/feedback/<str:feedback_id>/reply/', views.admin_feedback_reply, name='admin_feedback_reply'),
+
+    path('admin/moderation/', views.admin_moderation, name='admin_moderation'),
+    path('admin/moderation/data/', views.admin_moderation_data, name='admin_moderation_data'),
+    path('admin/moderation/reviews/<str:review_id>/hidden/', views.admin_moderation_review_hidden, name='admin_moderation_review_hidden'),
+    path('admin/moderation/comments/<str:comment_id>/hidden/', views.admin_moderation_comment_hidden, name='admin_moderation_comment_hidden'),
+    path('admin/moderation/comments/<str:comment_id>/reply/', views.admin_moderation_comment_reply, name='admin_moderation_comment_reply'),
 
     path('admin/dashboard/', sales_views.admin_dashboard, name='admin_dashboard'),
     path('admin/orders/', sales_views.admin_orders, name='admin_orders'),

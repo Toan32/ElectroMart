@@ -11,7 +11,6 @@
 
 <section class="faq-page">
 
-  <!-- Header -->
   <div class="faq-header">
 
     <span class="faq-eyebrow">
@@ -28,7 +27,6 @@
   </div>
 
 
-  <!-- Search -->
   <div class="faq-search">
 
     <span class="faq-search-icon" aria-hidden="true">
@@ -46,9 +44,9 @@
   </div>
 
 
-  <!-- FAQ list -->
   <div class="faq-list" id="faq-list">
 
+    {% for item in faq_items %}
 
     <div class="faq-item">
 
@@ -56,9 +54,9 @@
         type="button"
         class="faq-question"
         aria-expanded="false"
-        aria-controls="faq-answer-1"
+        aria-controls="faq-answer-{{ forloop.counter }}"
       >
-        <span>How do I know if a product is in stock?</span>
+        <span>{{ item.question }}</span>
 
         <span class="faq-icon" aria-hidden="true">
           +
@@ -67,173 +65,35 @@
 
       <div
         class="faq-answer"
-        id="faq-answer-1"
+        id="faq-answer-{{ forloop.counter }}"
       >
         <div class="faq-answer-inner">
           <p>
-            The product detail page displays the current stock quantity.
-            Products marked "In stock" are available for ordering.
+            {{ item.answer }}
           </p>
         </div>
       </div>
 
     </div>
 
+    {% empty %}
 
-    <div class="faq-item">
+    <div class="faq-empty show">
+      <div class="faq-empty-icon">?</div>
 
-      <button
-        type="button"
-        class="faq-question"
-        aria-expanded="false"
-        aria-controls="faq-answer-2"
-      >
-        <span>Does ElectroMart provide VAT invoices?</span>
+      <strong>No FAQ entries are available</strong>
 
-        <span class="faq-icon" aria-hidden="true">
-          +
-        </span>
-      </button>
-
-      <div
-        class="faq-answer"
-        id="faq-answer-2"
-      >
-        <div class="faq-answer-inner">
-          <p>
-            Yes. VAT invoices are available for eligible orders.
-            Please provide the required billing information when ordering.
-          </p>
-        </div>
-      </div>
-
+      <span>
+        FAQ content has not been configured yet.
+      </span>
     </div>
 
-
-    <div class="faq-item">
-
-      <button
-        type="button"
-        class="faq-question"
-        aria-expanded="false"
-        aria-controls="faq-answer-3"
-      >
-        <span>Can I return a defective electronic component?</span>
-
-        <span class="faq-icon" aria-hidden="true">
-          +
-        </span>
-      </button>
-
-      <div
-        class="faq-answer"
-        id="faq-answer-3"
-      >
-        <div class="faq-answer-inner">
-          <p>
-            Products with confirmed manufacturing defects may be returned
-            according to ElectroMart's return and warranty policy.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-
-    <div class="faq-item">
-
-      <button
-        type="button"
-        class="faq-question"
-        aria-expanded="false"
-        aria-controls="faq-answer-4"
-      >
-        <span>How long does delivery usually take?</span>
-
-        <span class="faq-icon" aria-hidden="true">
-          +
-        </span>
-      </button>
-
-      <div
-        class="faq-answer"
-        id="faq-answer-4"
-      >
-        <div class="faq-answer-inner">
-          <p>
-            Delivery time depends on the destination and shipping method.
-            Estimated delivery information will be provided during checkout.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-
-    <div class="faq-item">
-
-      <button
-        type="button"
-        class="faq-question"
-        aria-expanded="false"
-        aria-controls="faq-answer-5"
-      >
-        <span>Where can I find technical specifications?</span>
-
-        <span class="faq-icon" aria-hidden="true">
-          +
-        </span>
-      </button>
-
-      <div
-        class="faq-answer"
-        id="faq-answer-5"
-      >
-        <div class="faq-answer-inner">
-          <p>
-            Technical specifications are available on each product detail page
-            under the Specifications tab.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
-
-    <div class="faq-item">
-
-      <button
-        type="button"
-        class="faq-question"
-        aria-expanded="false"
-        aria-controls="faq-answer-6"
-      >
-        <span>Can I compare electronic components?</span>
-
-        <span class="faq-icon" aria-hidden="true">
-          +
-        </span>
-      </button>
-
-      <div
-        class="faq-answer"
-        id="faq-answer-6"
-      >
-        <div class="faq-answer-inner">
-          <p>
-            Yes. Use the Compare option on product cards or product detail pages
-            to add supported products to the comparison list.
-          </p>
-        </div>
-      </div>
-
-    </div>
-
+    {% endfor %}
 
   </div>
 
 
-  <!-- No results -->
+  {% if faq_items %}
   <div class="faq-empty" id="faq-empty">
 
     <div class="faq-empty-icon">
@@ -247,6 +107,7 @@
     </span>
 
   </div>
+  {% endif %}
 
 </section>
 
@@ -257,7 +118,7 @@
 <script>
 
 /* =========================
-   FAQ ACCORDION - CV31
+   FAQ ACCORDION - CV70
    ========================= */
 
 const faqQuestionButtons =
@@ -284,18 +145,18 @@ faqQuestionButtons.forEach(function (button) {
       item.classList.contains('open');
 
 
-    /* Toggle current FAQ */
-    item.classList.toggle('open', !isOpen);
+    item.classList.toggle(
+      'open',
+      !isOpen
+    );
 
 
-    /* Accessibility state */
     button.setAttribute(
       'aria-expanded',
       String(!isOpen)
     );
 
 
-    /* Icon state */
     if (icon) {
 
       icon.textContent =
@@ -309,7 +170,7 @@ faqQuestionButtons.forEach(function (button) {
 
 
 /* =========================
-   FAQ SEARCH - CV31
+   FAQ SEARCH - CV70
    ========================= */
 
 const faqSearchInput =
@@ -347,15 +208,12 @@ if (faqSearchInput) {
           text.includes(keyword);
 
 
+        item.style.display =
+          isMatch ? '' : 'none';
+
+
         if (isMatch) {
-
-          item.style.display = '';
           visibleCount++;
-
-        } else {
-
-          item.style.display = 'none';
-
         }
 
       });

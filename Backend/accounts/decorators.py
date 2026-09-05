@@ -13,7 +13,7 @@ Usage in any app's views.py::
 """
 from functools import wraps
 
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect
 
 from . import repo
@@ -47,6 +47,25 @@ def admin_required(view_func):
             return redirect('%s?next=%s' % (_login_url(), request.path))
         if user.get('role') != repo.ROLE_ADMIN:
             return HttpResponseForbidden('Admin access required.')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+def admin_required_json(view_func):
+    """Same rule as admin_required, but for the fetch() endpoints behind an
+    admin page (CV65-CV67, CV70, CV71).
+
+    admin_required answers with a redirect, which a fetch() follows and then
+    tries to parse the login page as JSON. These endpoints have to fail with a
+    status the caller can act on instead, so they get their own decorator
+    rather than being left unguarded.
+    """
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        user = current_user(request)
+        if not user or user.get('role') != repo.ROLE_ADMIN:
+            return JsonResponse({'ok': False, 'error': 'Admin access required.'},
+                                status=403)
         return view_func(request, *args, **kwargs)
     return wrapper
 

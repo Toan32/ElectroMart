@@ -137,14 +137,17 @@
 
         <div class="news-card-footer">
 
-          <button
-            type="button"
+          {% comment %} The mock-up had a dead <button> here. Articles come
+             from the news collection now, so it links to the real detail
+             page (catalogue.views.news_detail). {% endcomment %}
+          <a
             class="news-read-more"
+            href="{% url 'news_detail' item.slug %}"
             aria-label="Read more about {{ item.title }}"
           >
             Read more
             <span aria-hidden="true">→</span>
-          </button>
+          </a>
 
         </div>
 

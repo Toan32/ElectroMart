@@ -1,82 +1,335 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
+{% comment %} Admin shell, same as every other admin page in the project: the
+shared menu from admin/_admin_nav.html plus admin_sales.css, so this page sits
+in the same navigation as Orders, Users and the rest instead of being reachable
+only by typing its URL. {% endcomment %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
 
 {% block content %}
 
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Admin <span>&#8250;</span> Inventory</nav>
+
 {% include "admin/_admin_nav.html" %}
+
+<style>
+.inventory-summary {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 18px;
+}
+
+.inventory-summary-card {
+    min-width: 150px;
+    padding: 12px 14px;
+    border: 1px solid #e4e7ec;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.inventory-summary-card strong {
+    display: block;
+    font-size: 22px;
+    color: #101828;
+}
+
+.inventory-summary-card span {
+    color: #667085;
+    font-size: 12px;
+}
+
+.inventory-summary-card.danger strong {
+    color: #b42318;
+}
+
+.admin-inventory-panel-header {
+    gap: 12px;
+}
+
+.admin-inventory-header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.inventory-refresh-btn,
+.inventory-adjust-btn {
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+    padding: 8px 11px;
+    cursor: pointer;
+}
+
+.inventory-adjust-btn {
+    color: #175cd3;
+}
+
+.inventory-status {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.inventory-status-in {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.inventory-status-low {
+    background: #fff4e5;
+    color: #b54708;
+}
+
+.inventory-status-out {
+    background: #fef3f2;
+    color: #b42318;
+}
+
+.inventory-movement {
+    display: inline-flex;
+    min-width: 52px;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.inventory-movement-in {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.inventory-movement-out {
+    background: #fef3f2;
+    color: #b42318;
+}
+
+.inventory-movement-adjust {
+    background: #eff8ff;
+    color: #175cd3;
+}
+
+.inventory-hidden-label {
+    display: block;
+    margin-top: 2px;
+    color: #b54708;
+    font-size: 10px;
+}
+
+.inventory-empty-row td {
+    text-align: center;
+    padding: 24px 12px;
+    color: #667085;
+}
+
+.inventory-message {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.inventory-message.error {
+    background: #fef3f2;
+    color: #b42318;
+}
+
+.inventory-history-filter {
+    min-width: 230px;
+    padding: 8px 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* CV67 stock adjustment modal */
+.inventory-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.inventory-modal.show {
+    display: flex;
+}
+
+.inventory-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 24, 40, 0.55);
+}
+
+.inventory-modal-box {
+    position: relative;
+    width: min(560px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 18px 48px rgba(16, 24, 40, 0.2);
+}
+
+.inventory-modal-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px;
+    border-bottom: 1px solid #eaecf0;
+}
+
+.inventory-modal-header h2 {
+    margin: 0;
+}
+
+.inventory-modal-close {
+    border: 0;
+    background: transparent;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.inventory-modal-body {
+    padding: 18px;
+}
+
+.inventory-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.inventory-modal-group {
+    display: grid;
+    gap: 6px;
+}
+
+.inventory-modal-group.full {
+    grid-column: 1 / -1;
+}
+
+.inventory-modal-group input,
+.inventory-modal-group select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+}
+
+.inventory-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 18px;
+    border-top: 1px solid #eaecf0;
+}
+
+.inventory-modal-footer button {
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.inventory-modal-cancel {
+    border: 1px solid #d0d5dd;
+    background: #fff;
+}
+
+.inventory-modal-save {
+    border: 1px solid #175cd3;
+    background: #175cd3;
+    color: #fff;
+}
+
+@media (max-width: 700px) {
+    .inventory-modal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-modal-group.full {
+        grid-column: auto;
+    }
+}
+</style>
 
 <div class="admin-inventory-page">
 
-    <!-- PAGE HEADER -->
     <div class="admin-page-header">
         <div>
             <h1>Manage Inventory</h1>
-            <p>
-                Monitor product stock levels and inventory movements.
-            </p>
+            <p>Monitor SKU stock, low-stock alerts and MongoDB inventory movements.</p>
         </div>
     </div>
 
+    <div class="inventory-summary">
+        <div class="inventory-summary-card">
+            <strong id="inventory-total-count">0</strong>
+            <span>Variant SKUs</span>
+        </div>
 
-    <!-- INVENTORY LIST -->
+        <div class="inventory-summary-card danger">
+            <strong id="inventory-low-count">0</strong>
+            <span>Low / Out of Stock</span>
+        </div>
+    </div>
+
     <section class="admin-inventory-panel">
 
         <div class="admin-inventory-panel-header">
             <div>
                 <h2>Inventory List</h2>
-                <p>
-                    View and monitor current product stock.
-                </p>
+                <p>Stock is managed at product-variant SKU level.</p>
+            </div>
+
+            <div class="admin-inventory-header-actions">
+                <button
+                    type="button"
+                    class="inventory-refresh-btn"
+                    id="inventory-refresh-btn"
+                >
+                    Refresh
+                </button>
             </div>
         </div>
 
-
-        <!-- FILTERS -->
         <div class="admin-inventory-filters">
 
             <div class="admin-inventory-search">
-                <label for="inventory-search">
-                    Search
-                </label>
-
+                <label for="inventory-search">Search</label>
                 <input
                     type="text"
                     id="inventory-search"
-                    placeholder="Search by product name or SKU"
+                    placeholder="Search product, SKU or warehouse"
+                    autocomplete="off"
                 >
             </div>
 
-
             <div class="admin-inventory-filter-group">
-                <label for="inventory-stock-filter">
-                    Stock Status
-                </label>
-
+                <label for="inventory-stock-filter">Stock Status</label>
                 <select id="inventory-stock-filter">
-                    <option value="all">
-                        All Stock
-                    </option>
-
-                    <option value="low">
-                        Low Stock
-                    </option>
-
-                    <option value="out">
-                        Out of Stock
-                    </option>
+                    <option value="all">All Stock</option>
+                    <option value="low">Low Stock</option>
+                    <option value="out">Out of Stock</option>
+                    <option value="in">In Stock</option>
                 </select>
             </div>
 
         </div>
 
-
-        <!-- INVENTORY TABLE -->
         <div class="admin-inventory-table-wrapper">
 
             <table class="admin-inventory-table">
-
                 <thead>
                     <tr>
                         <th>SKU</th>
@@ -84,333 +337,228 @@
                         <th>Variant</th>
                         <th>Stock Qty</th>
                         <th>Reorder Level</th>
+                        <th>Warehouse</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
-                <tbody>
-
-                    <tr data-stock="in">
-                        <td>ESP32-DEVKIT-V1</td>
-
-                        <td>
-                            ESP32 Development Board
-                        </td>
-
-                        <td>
-                            Standard
-                        </td>
-
-                        <td>
-                            24
-                        </td>
-
-                        <td>
-                            10
-                        </td>
-
-                        <td>
-                            <span class="inventory-status inventory-status-in">
-                                In Stock
-                            </span>
-                        </td>
+                <tbody id="inventory-table-body">
+                    <tr class="inventory-empty-row">
+                        <td colspan="8">Loading inventory...</td>
                     </tr>
-
-
-                    <tr data-stock="low">
-    <td>ARD-UNO-R3</td>
-    <td>Arduino Uno R3</td>
-
-                        <td>
-                            Original
-                        </td>
-
-                        <td>
-                            7
-                        </td>
-
-                        <td>
-                            10
-                        </td>
-
-                        <td>
-                            <span class="inventory-status inventory-status-low">
-                                Low Stock
-                            </span>
-                        </td>
-                    </tr>
-
-
-                    <tr data-stock="out">
-                        <td>DHT22-SENSOR</td>
-
-                        <td>
-                            DHT22 Temperature Sensor
-                        </td>
-
-                        <td>
-                            Standard
-                        </td>
-
-                        <td>
-                            0
-                        </td>
-
-                        <td>
-                            5
-                        </td>
-
-                        <td>
-                            <span class="inventory-status inventory-status-out">
-                                Out of Stock
-                            </span>
-                        </td>
-                    </tr>
-
-
-                    <tr data-stock="in">
-                        <td>LM2596-MODULE</td>
-
-                        <td>
-                            LM2596 Step Down Module
-                        </td>
-
-                        <td>
-                            Adjustable
-                        </td>
-
-                        <td>
-                            15
-                        </td>
-
-                        <td>
-                            5
-                        </td>
-
-                        <td>
-                            <span class="inventory-status inventory-status-in">
-                                In Stock
-                            </span>
-                        </td>
-                    </tr>
-
                 </tbody>
+            </table>
 
+        </div>
+
+        <div
+            id="inventory-message"
+            class="inventory-message"
+            hidden
+        ></div>
+
+    </section>
+
+
+    <section class="admin-inventory-panel">
+
+        <div class="admin-inventory-panel-header">
+            <div>
+                <h2>Inventory Movement History</h2>
+                <p>View stock IN / OUT / ADJUST records by SKU.</p>
+            </div>
+
+            <select
+                id="inventory-history-sku"
+                class="inventory-history-filter"
+            >
+                <option value="">All SKUs</option>
+            </select>
+        </div>
+
+        <div class="admin-inventory-table-wrapper">
+
+            <table
+                class="admin-inventory-table"
+                id="inventory-history-table"
+            >
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Before → After</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+
+                <tbody id="inventory-history-body">
+                    <tr class="inventory-empty-row">
+                        <td colspan="7">No inventory movement yet.</td>
+                    </tr>
+                </tbody>
             </table>
 
         </div>
 
     </section>
 
-
-    <!-- STOCK IN -->
-<section class="admin-inventory-panel">
-
-    <div class="admin-inventory-panel-header">
-        <div>
-            <h2>Stock In</h2>
-            <p>
-                Add incoming stock for a product variant.
-            </p>
-        </div>
-    </div>
+</div>
 
 
-    <form
-        class="admin-inventory-stock-form"
-        id="inventory-stock-form"
-    >
-
-        <div class="admin-inventory-stock-grid">
-
-            <!-- SKU -->
-            <div class="admin-inventory-form-group">
-
-                <label for="stock-sku">
-                    Product / SKU
-                </label>
-
-                <select id="stock-sku">
-
-                    <option value="">
-                        Select product
-                    </option>
-
-                    <option value="ESP32-DEVKIT-V1">
-                        ESP32 Development Board - ESP32-DEVKIT-V1
-                    </option>
-
-                    <option value="ARD-UNO-R3">
-                        Arduino Uno R3 - ARD-UNO-R3
-                    </option>
-
-                    <option value="DHT22-SENSOR">
-                        DHT22 Temperature Sensor - DHT22-SENSOR
-                    </option>
-
-                    <option value="LM2596-MODULE">
-                        LM2596 Step Down Module - LM2596-MODULE
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- QUANTITY -->
-            <div class="admin-inventory-form-group">
-
-                <label for="stock-quantity">
-                    Quantity
-                </label>
-
-                <input
-                    type="number"
-                    id="stock-quantity"
-                    min="1"
-                    placeholder="Enter quantity"
-                >
-
-            </div>
-
-
-            <!-- REASON -->
-            <div class="admin-inventory-form-group admin-inventory-stock-reason">
-
-                <label for="stock-reason">
-                    Reason
-                </label>
-
-                <input
-                    type="text"
-                    id="stock-reason"
-                    placeholder="Example: Supplier delivery"
-                >
-
-            </div>
-
-        </div>
-
-
-        <!-- BUTTONS -->
-        <div class="admin-inventory-form-actions">
-
-            <button
-                type="reset"
-                class="btn btn-outline-secondary"
-            >
-                Cancel
-            </button>
-
-            <button
-                type="submit"
-                class="btn btn-primary"
-            >
-                Add Stock
-            </button>
-
-        </div>
-
-        <div
-    id="stock-success-message"
-    class="admin-inventory-success"
-    style="display: none;"
+<!-- CV67 STOCK MOVEMENT MODAL -->
+<div
+    class="inventory-modal"
+    id="inventory-modal"
+    aria-hidden="true"
 >
-    Stock added successfully. GUI mock-up only.
-</div>
+    <div
+        class="inventory-modal-backdrop"
+        id="inventory-modal-backdrop"
+    ></div>
 
-    </form>
+    <div class="inventory-modal-box">
 
-</section>
+        <div class="inventory-modal-header">
+            <div>
+                <h2>Stock Movement</h2>
+                <p id="inventory-modal-product">
+                    Select an SKU to adjust.
+                </p>
+            </div>
 
-
-    <!-- INVENTORY MOVEMENT HISTORY -->
-<section class="admin-inventory-panel">
-
-    <div class="admin-inventory-panel-header">
-        <div>
-            <h2>Inventory Movement History</h2>
-            <p>
-                View stock-in and stock-out activities.
-            </p>
+            <button
+                type="button"
+                class="inventory-modal-close"
+                id="inventory-modal-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
         </div>
+
+        <form id="inventory-adjust-form">
+            {% csrf_token %}
+
+            <div class="inventory-modal-body">
+
+                <input
+                    type="hidden"
+                    id="inventory-product-id"
+                >
+
+                <div class="inventory-modal-grid">
+
+                    <div class="inventory-modal-group full">
+                        <label for="inventory-sku">SKU</label>
+                        <select
+                            id="inventory-sku"
+                            required
+                        >
+                            <option value="">Select SKU</option>
+                        </select>
+                    </div>
+
+                    <div class="inventory-modal-group">
+                        <label for="inventory-movement-type">
+                            Movement Type
+                        </label>
+                        <select
+                            id="inventory-movement-type"
+                            required
+                        >
+                            <option value="IN">Stock In (+)</option>
+                            <option value="OUT">Stock Out (-)</option>
+                            <option value="ADJUST">Adjustment (+/-)</option>
+                        </select>
+                    </div>
+
+                    <div class="inventory-modal-group">
+                        <label for="inventory-quantity">Quantity</label>
+                        <input
+                            type="number"
+                            id="inventory-quantity"
+                            step="1"
+                            placeholder="Example: 20"
+                            required
+                        >
+                    </div>
+
+                    <div class="inventory-modal-group">
+                        <label for="inventory-reorder-level">
+                            Reorder Level
+                        </label>
+                        <input
+                            type="number"
+                            id="inventory-reorder-level"
+                            min="0"
+                            step="1"
+                            required
+                        >
+                    </div>
+
+                    <div class="inventory-modal-group">
+                        <label for="inventory-warehouse">
+                            Warehouse Location
+                        </label>
+                        <input
+                            type="text"
+                            id="inventory-warehouse"
+                            placeholder="Example: A1-01"
+                        >
+                    </div>
+
+                    <div class="inventory-modal-group full">
+                        <label for="inventory-reason">
+                            Reason *
+                        </label>
+                        <input
+                            type="text"
+                            id="inventory-reason"
+                            placeholder="Example: Supplier delivery"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="inventory-modal-footer">
+                <button
+                    type="button"
+                    class="inventory-modal-cancel"
+                    id="inventory-modal-cancel"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="inventory-modal-save"
+                    id="inventory-modal-save"
+                >
+                    Save Movement
+                </button>
+            </div>
+
+        </form>
+
     </div>
-
-
-    <div class="admin-inventory-table-wrapper">
-
-        <table class="admin-inventory-table" id="inventory-history-table">
-
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>SKU</th>
-                    <th>Product</th>
-                    <th>Type</th>
-                    <th>Quantity</th>
-                    <th>Reason</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>20/08/2026 09:15</td>
-                    <td>ESP32-DEVKIT-V1</td>
-                    <td>ESP32 Development Board</td>
-                    <td>
-                        <span class="inventory-movement inventory-movement-in">
-                            IN
-                        </span>
-                    </td>
-                    <td>+20</td>
-                    <td>Supplier delivery</td>
-                </tr>
-
-
-                <tr>
-                    <td>20/08/2026 10:40</td>
-                    <td>ARD-UNO-R3</td>
-                    <td>Arduino Uno R3</td>
-                    <td>
-                        <span class="inventory-movement inventory-movement-out">
-                            OUT
-                        </span>
-                    </td>
-                    <td>-3</td>
-                    <td>Customer order</td>
-                </tr>
-
-
-                <tr>
-                    <td>20/08/2026 11:25</td>
-                    <td>DHT22-SENSOR</td>
-                    <td>DHT22 Temperature Sensor</td>
-                    <td>
-                        <span class="inventory-movement inventory-movement-out">
-                            OUT
-                        </span>
-                    </td>
-                    <td>-5</td>
-                    <td>Customer order</td>
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
 </div>
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ==================================================
-    // INVENTORY FILTER
-    // ==================================================
+    const inventoryBody =
+        document.getElementById("inventory-table-body");
+
+    const historyBody =
+        document.getElementById("inventory-history-body");
 
     const searchInput =
         document.getElementById("inventory-search");
@@ -418,270 +566,994 @@ document.addEventListener("DOMContentLoaded", function () {
     const stockFilter =
         document.getElementById("inventory-stock-filter");
 
-    const inventoryRows =
-        document.querySelectorAll(
-            ".admin-inventory-table tbody tr"
+    const refreshButton =
+        document.getElementById("inventory-refresh-btn");
+
+    const totalCount =
+        document.getElementById("inventory-total-count");
+
+    const lowCount =
+        document.getElementById("inventory-low-count");
+
+    const message =
+        document.getElementById("inventory-message");
+
+    const historySku =
+        document.getElementById("inventory-history-sku");
+
+
+    const modal =
+        document.getElementById("inventory-modal");
+
+    const modalBackdrop =
+        document.getElementById("inventory-modal-backdrop");
+
+    const modalClose =
+        document.getElementById("inventory-modal-close");
+
+    const modalCancel =
+        document.getElementById("inventory-modal-cancel");
+
+    const modalProduct =
+        document.getElementById("inventory-modal-product");
+
+    const adjustForm =
+        document.getElementById("inventory-adjust-form");
+
+    const productId =
+        document.getElementById("inventory-product-id");
+
+    const skuSelect =
+        document.getElementById("inventory-sku");
+
+    const movementType =
+        document.getElementById("inventory-movement-type");
+
+    const quantity =
+        document.getElementById("inventory-quantity");
+
+    const reorderLevel =
+        document.getElementById("inventory-reorder-level");
+
+    const warehouse =
+        document.getElementById("inventory-warehouse");
+
+    const reason =
+        document.getElementById("inventory-reason");
+
+    const saveButton =
+        document.getElementById("inventory-modal-save");
+
+    const csrfToken =
+        adjustForm.querySelector(
+            'input[name="csrfmiddlewaretoken"]'
+        )?.value || "";
+
+
+    let inventoryItems = [];
+
+
+    function showMessage(text, isError = false) {
+
+        message.hidden = false;
+        message.textContent = text;
+        message.classList.toggle(
+            "error",
+            Boolean(isError)
         );
 
-
-    function filterInventory() {
-
-        const searchValue = searchInput.value
-            .toLowerCase()
-            .trim();
-
-        const stockValue = stockFilter.value;
+    }
 
 
-        inventoryRows.forEach(function (row) {
+    function hideMessage() {
 
-            const rowText =
-                row.textContent.toLowerCase();
+        message.hidden = true;
+        message.textContent = "";
+        message.classList.remove("error");
 
-            const rowStock =
-                row.dataset.stock;
-
-
-            const matchesSearch =
-                rowText.includes(searchValue);
-
-            const matchesStock =
-                stockValue === "all" ||
-                rowStock === stockValue;
+    }
 
 
-            if (matchesSearch && matchesStock) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
+    function statusLabel(status) {
+
+        if (status === "out") {
+            return "Out of Stock";
+        }
+
+        if (status === "low") {
+            return "Low Stock";
+        }
+
+        return "In Stock";
+
+    }
+
+
+    function renderInventory() {
+
+        const keyword =
+            searchInput.value.trim().toLowerCase();
+
+        const filter =
+            stockFilter.value;
+
+        const filtered =
+            inventoryItems.filter(function (item) {
+
+                const matchesStatus =
+                    filter === "all" ||
+                    item.status === filter;
+
+                const searchable = [
+                    item.sku,
+                    item.product_name,
+                    item.variant_name,
+                    item.warehouse_location
+                ]
+                    .join(" ")
+                    .toLowerCase();
+
+                return (
+                    matchesStatus &&
+                    searchable.includes(keyword)
+                );
+
+            });
+
+
+        inventoryBody.innerHTML = "";
+
+
+        if (filtered.length === 0) {
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "inventory-empty-row";
+
+            const cell =
+                document.createElement("td");
+
+            cell.colSpan = 8;
+            cell.textContent =
+                "No inventory rows match the current filter.";
+
+            row.appendChild(cell);
+            inventoryBody.appendChild(row);
+
+            return;
+
+        }
+
+
+        filtered.forEach(function (item) {
+
+            const row =
+                document.createElement("tr");
+
+            row.dataset.stock =
+                item.status;
+
+
+            const skuCell =
+                document.createElement("td");
+
+            const skuCode =
+                document.createElement("code");
+
+            skuCode.textContent =
+                item.sku;
+
+            skuCell.appendChild(skuCode);
+
+
+            const productCell =
+                document.createElement("td");
+
+            productCell.textContent =
+                item.product_name;
+
+            if (item.product_hidden) {
+
+                const hidden =
+                    document.createElement("span");
+
+                hidden.className =
+                    "inventory-hidden-label";
+
+                hidden.textContent =
+                    "Product hidden";
+
+                productCell.appendChild(hidden);
+
             }
+
+
+            const variantCell =
+                document.createElement("td");
+
+            variantCell.textContent =
+                item.variant_name || "Standard";
+
+
+            const stockCell =
+                document.createElement("td");
+
+            stockCell.textContent =
+                String(item.stock_qty);
+
+
+            const reorderCell =
+                document.createElement("td");
+
+            reorderCell.textContent =
+                String(item.reorder_level);
+
+
+            const warehouseCell =
+                document.createElement("td");
+
+            warehouseCell.textContent =
+                item.warehouse_location || "—";
+
+
+            const statusCell =
+                document.createElement("td");
+
+            const badge =
+                document.createElement("span");
+
+            badge.className =
+                `inventory-status inventory-status-${item.status}`;
+
+            badge.textContent =
+                statusLabel(item.status);
+
+            statusCell.appendChild(badge);
+
+
+            const actionCell =
+                document.createElement("td");
+
+            const actionButton =
+                document.createElement("button");
+
+            actionButton.type = "button";
+            actionButton.className =
+                "inventory-adjust-btn";
+
+            actionButton.textContent =
+                "Adjust";
+
+            actionButton.dataset.productId =
+                item.product_id;
+
+            actionButton.dataset.sku =
+                item.sku;
+
+            actionCell.appendChild(
+                actionButton
+            );
+
+
+            row.appendChild(skuCell);
+            row.appendChild(productCell);
+            row.appendChild(variantCell);
+            row.appendChild(stockCell);
+            row.appendChild(reorderCell);
+            row.appendChild(warehouseCell);
+            row.appendChild(statusCell);
+            row.appendChild(actionCell);
+
+            inventoryBody.appendChild(row);
 
         });
 
     }
 
 
+    function populateSkuSelects() {
+
+        const sorted =
+            [...inventoryItems].sort(
+                function (a, b) {
+                    return a.sku.localeCompare(b.sku);
+                }
+            );
+
+
+        const currentModalSku =
+            skuSelect.value;
+
+        skuSelect.innerHTML =
+            '<option value="">Select SKU</option>';
+
+        sorted.forEach(function (item) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                item.sku;
+
+            option.dataset.productId =
+                item.product_id;
+
+            option.textContent =
+                `${item.sku} — ${item.product_name} / ${item.variant_name}`;
+
+            skuSelect.appendChild(option);
+
+        });
+
+        if (
+            sorted.some(
+                function (item) {
+                    return item.sku === currentModalSku;
+                }
+            )
+        ) {
+            skuSelect.value =
+                currentModalSku;
+        }
+
+
+        const currentHistorySku =
+            historySku.value;
+
+        historySku.innerHTML =
+            '<option value="">All SKUs</option>';
+
+        sorted.forEach(function (item) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                item.sku;
+
+            option.textContent =
+                item.sku;
+
+            historySku.appendChild(option);
+
+        });
+
+        if (
+            sorted.some(
+                function (item) {
+                    return item.sku === currentHistorySku;
+                }
+            )
+        ) {
+            historySku.value =
+                currentHistorySku;
+        }
+
+    }
+
+
+    function inventoryItemBySku(
+        sku,
+        wantedProductId = null
+    ) {
+
+        return inventoryItems.find(
+            function (item) {
+
+                return (
+                    item.sku === sku &&
+                    (
+                        !wantedProductId ||
+                        item.product_id === wantedProductId
+                    )
+                );
+
+            }
+        ) || null;
+
+    }
+
+
+    function fillModalFromItem(item) {
+
+        if (!item) {
+            productId.value = "";
+            reorderLevel.value = "0";
+            warehouse.value = "";
+            modalProduct.textContent =
+                "Select an SKU to adjust.";
+            return;
+        }
+
+        productId.value =
+            item.product_id;
+
+        skuSelect.value =
+            item.sku;
+
+        reorderLevel.value =
+            item.reorder_level;
+
+        warehouse.value =
+            item.warehouse_location || "";
+
+        modalProduct.textContent =
+            `${item.product_name} — ${item.variant_name} | Current stock: ${item.stock_qty}`;
+
+    }
+
+
+    function openModal(item = null) {
+
+        adjustForm.reset();
+
+        movementType.value = "IN";
+        quantity.min = "1";
+
+        if (item) {
+            skuSelect.value = item.sku;
+            fillModalFromItem(item);
+        } else {
+            fillModalFromItem(null);
+        }
+
+        modal.classList.add("show");
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+    }
+
+
+    function closeModal() {
+
+        modal.classList.remove("show");
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        document.body.classList.remove(
+            "modal-open"
+        );
+
+    }
+
+
+    function updateQuantityRules() {
+
+        if (
+            movementType.value === "ADJUST"
+        ) {
+            quantity.removeAttribute("min");
+            quantity.placeholder =
+                "Example: -3 or 5";
+        } else {
+            quantity.min = "1";
+            quantity.placeholder =
+                "Example: 20";
+        }
+
+    }
+
+
+    async function loadInventory() {
+
+        hideMessage();
+
+        const response =
+            await fetch(
+                "/admin/inventory/data/",
+                {
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(
+                data.error ||
+                "Unable to load inventory."
+            );
+        }
+
+        inventoryItems =
+            Array.isArray(data.items)
+                ? data.items
+                : [];
+
+        totalCount.textContent =
+            String(data.count || 0);
+
+        lowCount.textContent =
+            String(data.low_stock_count || 0);
+
+        populateSkuSelects();
+        renderInventory();
+
+    }
+
+
+    function movementClass(type) {
+
+        type =
+            String(type || "").toLowerCase();
+
+        if (type === "in") {
+            return "inventory-movement-in";
+        }
+
+        if (type === "out") {
+            return "inventory-movement-out";
+        }
+
+        return "inventory-movement-adjust";
+
+    }
+
+
+    function formatMovementDate(value) {
+
+        if (!value) {
+            return "—";
+        }
+
+        const date =
+            new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleString(
+            "en-GB",
+            {
+                hour12: false
+            }
+        );
+
+    }
+
+
+    async function loadHistory() {
+
+        const params =
+            new URLSearchParams();
+
+        if (historySku.value) {
+            params.set(
+                "sku",
+                historySku.value
+            );
+        }
+
+        params.set("limit", "100");
+
+        const response =
+            await fetch(
+                `/admin/inventory/movements/?${params.toString()}`,
+                {
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(
+                data.error ||
+                "Unable to load movement history."
+            );
+        }
+
+
+        historyBody.innerHTML = "";
+
+        if (!data.movements.length) {
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "inventory-empty-row";
+
+            const cell =
+                document.createElement("td");
+
+            cell.colSpan = 7;
+            cell.textContent =
+                historySku.value
+                    ? "No movement history for this SKU."
+                    : "No inventory movement yet.";
+
+            row.appendChild(cell);
+            historyBody.appendChild(row);
+
+            return;
+
+        }
+
+
+        data.movements.forEach(
+            function (movement) {
+
+                const row =
+                    document.createElement("tr");
+
+
+                const dateCell =
+                    document.createElement("td");
+
+                dateCell.textContent =
+                    formatMovementDate(
+                        movement.created_at
+                    );
+
+
+                const skuCell =
+                    document.createElement("td");
+
+                skuCell.textContent =
+                    movement.sku;
+
+
+                const productCell =
+                    document.createElement("td");
+
+                productCell.textContent =
+                    movement.product_name;
+
+
+                const typeCell =
+                    document.createElement("td");
+
+                const badge =
+                    document.createElement("span");
+
+                badge.className =
+                    `inventory-movement ${
+                        movementClass(
+                            movement.type
+                        )
+                    }`;
+
+                badge.textContent =
+                    movement.type;
+
+                typeCell.appendChild(badge);
+
+
+                const qtyCell =
+                    document.createElement("td");
+
+                const delta =
+                    Number(
+                        movement.quantity || 0
+                    );
+
+                qtyCell.textContent =
+                    delta > 0
+                        ? `+${delta}`
+                        : String(delta);
+
+
+                const stockCell =
+                    document.createElement("td");
+
+                stockCell.textContent =
+                    `${movement.stock_before} → ${movement.stock_after}`;
+
+
+                const reasonCell =
+                    document.createElement("td");
+
+                reasonCell.textContent =
+                    movement.reason;
+
+
+                row.appendChild(dateCell);
+                row.appendChild(skuCell);
+                row.appendChild(productCell);
+                row.appendChild(typeCell);
+                row.appendChild(qtyCell);
+                row.appendChild(stockCell);
+                row.appendChild(reasonCell);
+
+                historyBody.appendChild(row);
+
+            }
+        );
+
+    }
+
+
+    inventoryBody.addEventListener(
+        "click",
+        function (event) {
+
+            const button =
+                event.target.closest(
+                    ".inventory-adjust-btn"
+                );
+
+            if (!button) {
+                return;
+            }
+
+            const item =
+                inventoryItemBySku(
+                    button.dataset.sku,
+                    button.dataset.productId
+                );
+
+            if (item) {
+                openModal(item);
+            }
+
+        }
+    );
+
+
+    skuSelect.addEventListener(
+        "change",
+        function () {
+
+            const selected =
+                skuSelect.options[
+                    skuSelect.selectedIndex
+                ];
+
+            const item =
+                inventoryItemBySku(
+                    skuSelect.value,
+                    selected?.dataset?.productId
+                );
+
+            fillModalFromItem(item);
+
+        }
+    );
+
+
+    movementType.addEventListener(
+        "change",
+        updateQuantityRules
+    );
+
+
     searchInput.addEventListener(
         "input",
-        filterInventory
+        renderInventory
     );
 
 
     stockFilter.addEventListener(
         "change",
-        filterInventory
+        renderInventory
     );
 
 
-    // ==================================================
-    // STOCK IN
-    // ==================================================
+    historySku.addEventListener(
+        "change",
+        function () {
 
-    const stockForm =
-        document.getElementById("inventory-stock-form");
+            loadHistory().catch(
+                function (error) {
+                    showMessage(
+                        error.message,
+                        true
+                    );
+                }
+            );
 
-    const stockSku =
-        document.getElementById("stock-sku");
-
-    const stockQuantity =
-        document.getElementById("stock-quantity");
-
-    const stockReason =
-        document.getElementById("stock-reason");
-
-    const successMessage =
-        document.getElementById("stock-success-message");
-
-    const historyTableBody =
-    document.querySelector(
-        "#inventory-history-table tbody"
+        }
     );
 
-    function updateStockStatus(row) {
 
-        const quantityCell = row.children[3];
-        const reorderCell = row.children[4];
-        const statusCell = row.children[5];
+    refreshButton.addEventListener(
+        "click",
+        async function () {
 
-        const quantity =
-            parseInt(quantityCell.textContent.trim());
+            refreshButton.disabled = true;
+            refreshButton.textContent =
+                "Refreshing...";
 
-        const reorderLevel =
-            parseInt(reorderCell.textContent.trim());
+            try {
 
+                await loadInventory();
+                await loadHistory();
 
-        let statusText = "";
-        let statusClass = "";
-        let stockType = "";
+            } catch (error) {
 
+                showMessage(
+                    error.message,
+                    true
+                );
 
-        if (quantity === 0) {
+            } finally {
 
-            statusText = "Out of Stock";
-            statusClass = "inventory-status-out";
-            stockType = "out";
+                refreshButton.disabled = false;
+                refreshButton.textContent =
+                    "Refresh";
 
-        } else if (quantity <= reorderLevel) {
-
-            statusText = "Low Stock";
-            statusClass = "inventory-status-low";
-            stockType = "low";
-
-        } else {
-
-            statusText = "In Stock";
-            statusClass = "inventory-status-in";
-            stockType = "in";
-
-        }
-
-
-        statusCell.innerHTML = `
-            <span class="inventory-status ${statusClass}">
-                ${statusText}
-            </span>
-        `;
-
-        row.dataset.stock = stockType;
-
-    }
-
-
-    stockForm.addEventListener("submit", function (event) {
-
-        event.preventDefault();
-
-
-        const selectedSku =
-            stockSku.value;
-
-        const quantityToAdd =
-            parseInt(stockQuantity.value);
-
-
-        if (selectedSku === "") {
-            alert("Please select a product.");
-            return;
-        }
-
-
-        if (
-            isNaN(quantityToAdd) ||
-            quantityToAdd <= 0
-        ) {
-            alert("Please enter a valid quantity.");
-            return;
-        }
-
-
-        let selectedRow = null;
-
-
-        inventoryRows.forEach(function (row) {
-
-            const rowSku =
-                row.children[0]
-                    .textContent
-                    .trim();
-
-            if (rowSku === selectedSku) {
-                selectedRow = row;
             }
 
-        });
-
-
-        if (!selectedRow) {
-            alert("Product not found.");
-            return;
         }
+    );
 
-        const productName =
-    selectedRow.children[1]
-        .textContent
-        .trim();
 
-const reason =
-    stockReason.value.trim() ||
-    "Stock replenishment";
+    modalClose.addEventListener(
+        "click",
+        closeModal
+    );
 
-        const quantityCell =
-            selectedRow.children[3];
 
-        const currentQuantity =
-            parseInt(
-                quantityCell.textContent.trim()
+    modalCancel.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    modalBackdrop.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    adjustForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+            hideMessage();
+
+
+            if (!reason.value.trim()) {
+
+                showMessage(
+                    "Reason is required.",
+                    true
+                );
+
+                reason.focus();
+                return;
+
+            }
+
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "product_id",
+                productId.value
+            );
+
+            formData.append(
+                "sku",
+                skuSelect.value
+            );
+
+            formData.append(
+                "movement_type",
+                movementType.value
+            );
+
+            formData.append(
+                "quantity",
+                quantity.value
+            );
+
+            formData.append(
+                "reorder_level",
+                reorderLevel.value
+            );
+
+            formData.append(
+                "warehouse_location",
+                warehouse.value.trim()
+            );
+
+            formData.append(
+                "reason",
+                reason.value.trim()
             );
 
 
-        quantityCell.textContent =
-            currentQuantity + quantityToAdd;
+            const oldText =
+                saveButton.textContent;
+
+            saveButton.disabled = true;
+            saveButton.textContent =
+                "Saving...";
 
 
-        updateStockStatus(selectedRow);
-        
-        const now = new Date();
+            try {
 
-const formattedDate =
-    now.toLocaleDateString("en-GB") +
-    " " +
-    now.toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit"
-    });
+                const response =
+                    await fetch(
+                        "/admin/inventory/adjust/",
+                        {
+                            method: "POST",
+                            headers: {
+                                "X-CSRFToken":
+                                    csrfToken,
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            },
+                            body: formData
+                        }
+                    );
 
+                const data =
+                    await response.json();
 
-const historyRow =
-    document.createElement("tr");
-
-historyRow.innerHTML = `
-    <td>${formattedDate}</td>
-    <td>${selectedSku}</td>
-    <td>${productName}</td>
-    <td>
-        <span class="inventory-movement inventory-movement-in">
-            IN
-        </span>
-    </td>
-    <td>+${quantityToAdd}</td>
-    <td>${reason}</td>
-`;
+                if (!response.ok || !data.ok) {
+                    throw new Error(
+                        data.error ||
+                        "Unable to save stock movement."
+                    );
+                }
 
 
-historyTableBody.prepend(historyRow);
+                closeModal();
 
-        stockForm.reset();
+                await loadInventory();
+                await loadHistory();
 
-
-        successMessage.style.display =
-            "block";
-
-
-        filterInventory();
-
-    });
+                showMessage(
+                    `Stock updated: ${data.item.sku} is now ${data.item.stock_qty}.`
+                );
 
 
-    // Hide success message when user edits form again
+            } catch (error) {
 
-    stockSku.addEventListener("change", function () {
-        successMessage.style.display = "none";
-    });
+                showMessage(
+                    error.message,
+                    true
+                );
+
+            } finally {
+
+                saveButton.disabled = false;
+                saveButton.textContent =
+                    oldText;
+
+            }
+
+        }
+    );
 
 
-    stockQuantity.addEventListener("input", function () {
-        successMessage.style.display = "none";
-    });
+    Promise.all([
+        loadInventory(),
+        loadHistory()
+    ]).catch(
+        function (error) {
 
+            showMessage(
+                error.message,
+                true
+            );
 
-    stockReason.addEventListener("input", function () {
-        successMessage.style.display = "none";
-    });
-
-
-    stockForm.addEventListener("reset", function () {
-        successMessage.style.display = "none";
-    });
+        }
+    );
 
 });
 </script>

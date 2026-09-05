@@ -1,0 +1,924 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% comment %} Admin shell, same as every other admin page in the project: the
+shared menu from admin/_admin_nav.html plus admin_sales.css, so this page sits
+in the same navigation as Orders, Users and the rest instead of being reachable
+only by typing its URL. {% endcomment %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
+
+{% block content %}
+
+<nav class="crumb">
+  <a href="{% url 'home' %}">Home</a>
+  <span>&#8250;</span>
+  Admin
+  <span>&#8250;</span>
+  News
+</nav>
+
+{% include "admin/_admin_nav.html" %}
+
+<div class="admin-news-page">
+
+  <div class="admin-news-header">
+    <div>
+      <span class="admin-news-eyebrow">CV70 · Content Management</span>
+      <h1>Manage News</h1>
+      <p>
+        Create, edit, schedule, hide/unhide and delete ElectroMart news articles.
+      </p>
+    </div>
+
+    <button type="button" class="admin-news-secondary-btn" id="admin-news-refresh">
+      Refresh
+    </button>
+  </div>
+
+  <div class="admin-news-layout">
+
+    <section class="admin-news-panel">
+      <div class="admin-news-panel-head">
+        <div>
+          <h2 id="admin-news-form-title">Create Article</h2>
+          <p id="admin-news-form-help">
+            Publish now or choose a future date/time to schedule the article.
+          </p>
+        </div>
+      </div>
+
+      <form id="admin-news-form">
+        {% csrf_token %}
+
+        <input type="hidden" id="admin-news-id">
+
+        <div class="admin-news-form-grid">
+
+          <div class="admin-news-field admin-news-full">
+            <label for="admin-news-title">Title <span>*</span></label>
+            <input
+              id="admin-news-title"
+              name="title"
+              type="text"
+              maxlength="200"
+              required
+              placeholder="Enter article title"
+            >
+          </div>
+
+          <div class="admin-news-field">
+            <label for="admin-news-type">Type <span>*</span></label>
+            <select id="admin-news-type" name="type" required>
+              <option value="product-news">Product News</option>
+              <option value="announcement">Announcement</option>
+              <option value="technical-guide">Technical Guide</option>
+            </select>
+          </div>
+
+          <div class="admin-news-field">
+            <label for="admin-news-publish-at">Publish at <span>*</span></label>
+            <input
+              id="admin-news-publish-at"
+              name="publish_at"
+              type="datetime-local"
+              required
+            >
+            <small>
+              A future time keeps the article scheduled until that time arrives.
+            </small>
+          </div>
+
+          <div class="admin-news-field admin-news-full">
+            <label for="admin-news-slug">Slug</label>
+            <input
+              id="admin-news-slug"
+              name="slug"
+              type="text"
+              placeholder="Leave blank to generate from title"
+            >
+          </div>
+
+          <div class="admin-news-field admin-news-full">
+            <label for="admin-news-summary">Summary <span>*</span></label>
+            <textarea
+              id="admin-news-summary"
+              name="summary"
+              rows="3"
+              maxlength="500"
+              required
+              placeholder="Short article summary"
+            ></textarea>
+          </div>
+
+          <div class="admin-news-field admin-news-full">
+            <label for="admin-news-content">Content <span>*</span></label>
+            <textarea
+              id="admin-news-content"
+              name="content"
+              rows="10"
+              required
+              placeholder="Full article content"
+            ></textarea>
+          </div>
+
+          <div class="admin-news-field admin-news-full">
+            <label class="admin-news-check">
+              <input id="admin-news-hidden" type="checkbox">
+              <span>Hide this article from customers</span>
+            </label>
+          </div>
+
+        </div>
+
+        <div class="admin-news-form-actions">
+          <button type="button" class="admin-news-secondary-btn" id="admin-news-cancel">
+            Clear
+          </button>
+
+          <button type="submit" class="admin-news-primary-btn" id="admin-news-save">
+            Create Article
+          </button>
+        </div>
+
+        <div id="admin-news-message" class="admin-news-message" hidden></div>
+      </form>
+    </section>
+
+    <section class="admin-news-panel admin-news-list-panel">
+
+      <div class="admin-news-panel-head admin-news-list-head">
+        <div>
+          <h2>Articles</h2>
+          <p>
+            Scheduled articles are visible here but stay hidden from the public News page.
+          </p>
+        </div>
+
+        <input
+          type="search"
+          id="admin-news-search"
+          class="admin-news-search"
+          placeholder="Search title..."
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="admin-news-list-meta">
+        <strong id="admin-news-count">0 articles</strong>
+
+        <div class="admin-news-legend">
+          <span><i class="published"></i> Published</span>
+          <span><i class="scheduled"></i> Scheduled</span>
+          <span><i class="hidden"></i> Hidden</span>
+        </div>
+      </div>
+
+      <div class="admin-news-table-wrap">
+        <table class="admin-news-table">
+          <thead>
+            <tr>
+              <th>Article</th>
+              <th>Type</th>
+              <th>Publish at</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="admin-news-table-body">
+            <tr>
+              <td colspan="5" class="admin-news-empty">Loading articles...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </div>
+
+</div>
+
+<style>
+.admin-news-page {
+  padding-bottom: 40px;
+}
+
+.admin-news-header,
+.admin-news-panel-head,
+.admin-news-list-meta,
+.admin-news-form-actions,
+.admin-news-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-news-header {
+  margin-bottom: 18px;
+}
+
+.admin-news-header h1,
+.admin-news-panel h2 {
+  margin: 0;
+}
+
+.admin-news-header p,
+.admin-news-panel-head p {
+  margin: 5px 0 0;
+  color: #667085;
+}
+
+.admin-news-eyebrow {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.admin-news-layout {
+  display: grid;
+  grid-template-columns: minmax(360px, .9fr) minmax(0, 1.5fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.admin-news-panel {
+  background: #fff;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+}
+
+.admin-news-panel-head {
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.admin-news-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.admin-news-full {
+  grid-column: 1 / -1;
+}
+
+.admin-news-field label:not(.admin-news-check) {
+  display: block;
+  margin-bottom: 6px;
+  color: #344054;
+  font-weight: 600;
+}
+
+.admin-news-field label span {
+  color: #e30019;
+}
+
+.admin-news-field input[type="text"],
+.admin-news-field input[type="datetime-local"],
+.admin-news-field select,
+.admin-news-field textarea,
+.admin-news-search {
+  width: 100%;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 11px;
+  color: #101828;
+  font: inherit;
+  outline: none;
+}
+
+.admin-news-field textarea {
+  resize: vertical;
+}
+
+.admin-news-field input:focus,
+.admin-news-field select:focus,
+.admin-news-field textarea:focus,
+.admin-news-search:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+}
+
+.admin-news-field small {
+  display: block;
+  margin-top: 6px;
+  color: #667085;
+  font-size: 12px;
+}
+
+.admin-news-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #344054;
+  cursor: pointer;
+}
+
+.admin-news-check input {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-news-form-actions {
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.admin-news-primary-btn,
+.admin-news-secondary-btn,
+.admin-news-action-btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 13px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-news-primary-btn {
+  background: #1435c3;
+  color: #fff;
+}
+
+.admin-news-primary-btn:hover {
+  background: #0f2a9c;
+}
+
+.admin-news-secondary-btn,
+.admin-news-action-btn {
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #344054;
+}
+
+.admin-news-message {
+  margin-top: 14px;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.admin-news-message.success {
+  display: block;
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.admin-news-message.error {
+  display: block;
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.admin-news-search {
+  max-width: 250px;
+}
+
+.admin-news-list-meta {
+  margin-bottom: 12px;
+  color: #475467;
+}
+
+.admin-news-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+
+.admin-news-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.admin-news-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.admin-news-legend i.published {
+  background: #12b76a;
+}
+
+.admin-news-legend i.scheduled {
+  background: #f79009;
+}
+
+.admin-news-legend i.hidden {
+  background: #98a2b3;
+}
+
+.admin-news-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-news-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+}
+
+.admin-news-table th,
+.admin-news-table td {
+  padding: 11px 9px;
+  border-bottom: 1px solid #eaecf0;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-news-table th {
+  background: #f9fafb;
+  color: #475467;
+  font-size: 12px;
+}
+
+.admin-news-table td {
+  color: #344054;
+  font-size: 13px;
+}
+
+.admin-news-title-cell strong {
+  display: block;
+  color: #101828;
+}
+
+.admin-news-title-cell small {
+  display: block;
+  margin-top: 3px;
+  color: #667085;
+}
+
+.admin-news-status {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-news-status.published {
+  background: #ecfdf3;
+  color: #027a48;
+}
+
+.admin-news-status.scheduled {
+  background: #fffaeb;
+  color: #b54708;
+}
+
+.admin-news-status.hidden {
+  background: #f2f4f7;
+  color: #475467;
+}
+
+.admin-news-actions {
+  white-space: nowrap;
+}
+
+.admin-news-action-btn {
+  padding: 6px 8px;
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.admin-news-action-btn.danger {
+  color: #b42318;
+}
+
+.admin-news-action-btn.success {
+  color: #027a48;
+}
+
+.admin-news-empty {
+  padding: 30px !important;
+  text-align: center !important;
+  color: #667085 !important;
+}
+
+@media (max-width: 1050px) {
+  .admin-news-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .admin-news-header,
+  .admin-news-list-head,
+  .admin-news-list-meta {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-news-search {
+    max-width: none;
+  }
+
+  .admin-news-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-news-full {
+    grid-column: auto;
+  }
+}
+</style>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const form = document.getElementById('admin-news-form');
+  const idInput = document.getElementById('admin-news-id');
+  const titleInput = document.getElementById('admin-news-title');
+  const slugInput = document.getElementById('admin-news-slug');
+  const typeInput = document.getElementById('admin-news-type');
+  const publishInput = document.getElementById('admin-news-publish-at');
+  const summaryInput = document.getElementById('admin-news-summary');
+  const contentInput = document.getElementById('admin-news-content');
+  const hiddenInput = document.getElementById('admin-news-hidden');
+
+  const formTitle = document.getElementById('admin-news-form-title');
+  const formHelp = document.getElementById('admin-news-form-help');
+  const saveButton = document.getElementById('admin-news-save');
+  const cancelButton = document.getElementById('admin-news-cancel');
+  const refreshButton = document.getElementById('admin-news-refresh');
+  const searchInput = document.getElementById('admin-news-search');
+  const tableBody = document.getElementById('admin-news-table-body');
+  const countLabel = document.getElementById('admin-news-count');
+  const messageBox = document.getElementById('admin-news-message');
+
+  const csrfToken =
+    form.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+  let articles = [];
+
+  function localDateTimeValue(date) {
+    const pad = function (value) {
+      return String(value).padStart(2, '0');
+    };
+
+    return (
+      date.getFullYear() + '-' +
+      pad(date.getMonth() + 1) + '-' +
+      pad(date.getDate()) + 'T' +
+      pad(date.getHours()) + ':' +
+      pad(date.getMinutes())
+    );
+  }
+
+  function setDefaultPublishTime() {
+    publishInput.value = localDateTimeValue(new Date());
+  }
+
+  function showMessage(text, kind) {
+    messageBox.textContent = text;
+    messageBox.className = 'admin-news-message ' + kind;
+    messageBox.hidden = false;
+  }
+
+  function clearMessage() {
+    messageBox.textContent = '';
+    messageBox.className = 'admin-news-message';
+    messageBox.hidden = true;
+  }
+
+  function resetForm() {
+    form.reset();
+    idInput.value = '';
+    setDefaultPublishTime();
+
+    formTitle.textContent = 'Create Article';
+    formHelp.textContent =
+      'Publish now or choose a future date/time to schedule the article.';
+    saveButton.textContent = 'Create Article';
+
+    clearMessage();
+  }
+
+  function displayDate(value) {
+    if (!value) {
+      return '-';
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleString();
+  }
+
+  function statusLabel(status) {
+    if (status === 'scheduled') {
+      return 'Scheduled';
+    }
+
+    if (status === 'hidden') {
+      return 'Hidden';
+    }
+
+    return 'Published';
+  }
+
+  function renderArticles() {
+    const keyword = searchInput.value.trim().toLowerCase();
+
+    const filtered = articles.filter(function (item) {
+      return !keyword ||
+        item.title.toLowerCase().includes(keyword) ||
+        item.slug.toLowerCase().includes(keyword);
+    });
+
+    countLabel.textContent =
+      filtered.length + (filtered.length === 1 ? ' article' : ' articles');
+
+    if (!filtered.length) {
+      tableBody.innerHTML =
+        '<tr><td colspan="5" class="admin-news-empty">No articles found.</td></tr>';
+      return;
+    }
+
+    tableBody.innerHTML = filtered.map(function (item) {
+      const hideLabel = item.is_hidden ? 'Unhide' : 'Hide';
+      const hideClass = item.is_hidden ? ' success' : '';
+
+      return `
+        <tr>
+          <td class="admin-news-title-cell">
+            <strong>${escapeHtml(item.title)}</strong>
+            <small>${escapeHtml(item.slug)}</small>
+          </td>
+
+          <td>${escapeHtml(item.type_label || item.type)}</td>
+
+          <td>${escapeHtml(displayDate(item.publish_at))}</td>
+
+          <td>
+            <span class="admin-news-status ${escapeHtml(item.status)}">
+              ${statusLabel(item.status)}
+            </span>
+          </td>
+
+          <td class="admin-news-actions">
+            <button
+              type="button"
+              class="admin-news-action-btn"
+              data-action="edit"
+              data-id="${item.id}"
+            >Edit</button>
+
+            <button
+              type="button"
+              class="admin-news-action-btn${hideClass}"
+              data-action="hidden"
+              data-id="${item.id}"
+            >${hideLabel}</button>
+
+            <button
+              type="button"
+              class="admin-news-action-btn danger"
+              data-action="delete"
+              data-id="${item.id}"
+            >Delete</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = String(value == null ? '' : value);
+    return div.innerHTML;
+  }
+
+  async function loadArticles() {
+    tableBody.innerHTML =
+      '<tr><td colspan="5" class="admin-news-empty">Loading articles...</td></tr>';
+
+    try {
+      const response = await fetch('{% url "admin_news_data" %}', {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Unable to load news articles.');
+      }
+
+      articles = Array.isArray(data.news) ? data.news : [];
+      renderArticles();
+
+    } catch (error) {
+      tableBody.innerHTML =
+        '<tr><td colspan="5" class="admin-news-empty">' +
+        escapeHtml(error.message) +
+        '</td></tr>';
+    }
+  }
+
+  function startEdit(item) {
+    idInput.value = item.id;
+    titleInput.value = item.title || '';
+    slugInput.value = item.slug || '';
+    typeInput.value = item.type || 'product-news';
+    summaryInput.value = item.summary || '';
+    contentInput.value = item.content || '';
+    hiddenInput.checked = Boolean(item.is_hidden);
+
+    if (item.publish_at) {
+      publishInput.value = item.publish_at.slice(0, 16);
+    } else {
+      setDefaultPublishTime();
+    }
+
+    formTitle.textContent = 'Edit Article';
+    formHelp.textContent = 'Update the selected news article.';
+    saveButton.textContent = 'Save Changes';
+
+    clearMessage();
+
+    window.scrollTo({
+      top: form.getBoundingClientRect().top + window.scrollY - 100,
+      behavior: 'smooth'
+    });
+  }
+
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    clearMessage();
+
+    const articleId = idInput.value.trim();
+
+    const url = articleId
+      ? '/admin/news/' + encodeURIComponent(articleId) + '/update/'
+      : '{% url "admin_news_create" %}';
+
+    const payload = new FormData(form);
+
+    payload.set(
+      'is_hidden',
+      hiddenInput.checked ? 'true' : 'false'
+    );
+
+    saveButton.disabled = true;
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: payload,
+        headers: {
+          'X-CSRFToken': csrfToken,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || 'Unable to save article.');
+      }
+
+      showMessage(
+        articleId
+          ? 'Article updated successfully.'
+          : 'Article created successfully.',
+        'success'
+      );
+
+      const keepMessage = messageBox.textContent;
+      resetForm();
+      showMessage(keepMessage, 'success');
+
+      await loadArticles();
+
+    } catch (error) {
+      showMessage(error.message, 'error');
+
+    } finally {
+      saveButton.disabled = false;
+    }
+  });
+
+  tableBody.addEventListener('click', async function (event) {
+    const button = event.target.closest('[data-action]');
+
+    if (!button) {
+      return;
+    }
+
+    const articleId = button.dataset.id;
+    const action = button.dataset.action;
+    const item = articles.find(function (article) {
+      return article.id === articleId;
+    });
+
+    if (!item) {
+      return;
+    }
+
+    if (action === 'edit') {
+      startEdit(item);
+      return;
+    }
+
+    if (action === 'delete') {
+      if (!window.confirm('Delete "' + item.title + '" permanently?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          '/admin/news/' + encodeURIComponent(articleId) + '/delete/',
+          {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || 'Unable to delete article.');
+        }
+
+        if (idInput.value === articleId) {
+          resetForm();
+        }
+
+        await loadArticles();
+
+      } catch (error) {
+        showMessage(error.message, 'error');
+      }
+
+      return;
+    }
+
+    if (action === 'hidden') {
+      const payload = new FormData();
+
+      payload.append(
+        'hidden',
+        item.is_hidden ? 'false' : 'true'
+      );
+
+      try {
+        const response = await fetch(
+          '/admin/news/' + encodeURIComponent(articleId) + '/hidden/',
+          {
+            method: 'POST',
+            body: payload,
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(
+            data.error || 'Unable to change article visibility.'
+          );
+        }
+
+        await loadArticles();
+
+      } catch (error) {
+        showMessage(error.message, 'error');
+      }
+    }
+  });
+
+  cancelButton.addEventListener('click', resetForm);
+  refreshButton.addEventListener('click', loadArticles);
+  searchInput.addEventListener('input', renderArticles);
+
+  resetForm();
+  loadArticles();
+});
+</script>
+{% endblock %}
