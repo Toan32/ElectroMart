@@ -103,6 +103,7 @@ urlpatterns = [
     path('admin/products/<str:product_id>/variants/', views.admin_product_variants, name='admin_product_variants'),
 
     path('admin/inventory/', views.admin_inventory, name='admin_inventory'),
+    path('admin/inventory/history/', views.admin_inventory_history, name='admin_inventory_history'),
     path('admin/inventory/data/', views.admin_inventory_data, name='admin_inventory_data'),
     path('admin/inventory/low-stock/', views.admin_inventory_low_stock, name='admin_inventory_low_stock'),
     path('admin/inventory/adjust/', views.admin_inventory_adjust, name='admin_inventory_adjust'),

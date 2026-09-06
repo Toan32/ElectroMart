@@ -1,0 +1,705 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<nav class="crumb">
+    <a href="{% url 'home' %}">Home</a>
+    <span>&#8250;</span>
+    Admin
+    <span>&#8250;</span>
+    Inventory History
+</nav>
+
+{% include "admin/_admin_nav.html" %}
+
+<style>
+.inventory-history-page {
+    display: grid;
+    gap: 18px;
+}
+
+.inventory-history-panel {
+    background: #fff;
+    border: 1px solid #e4e7ec;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.inventory-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid #eaecf0;
+}
+
+.inventory-history-header h2 {
+    margin: 0 0 4px;
+    color: #101828;
+}
+
+.inventory-history-header p {
+    margin: 0;
+    color: #667085;
+    font-size: 13px;
+}
+
+.inventory-history-filters {
+    display: grid;
+    grid-template-columns: minmax(190px, 1.2fr) minmax(155px, 1fr) minmax(155px, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+    min-width: min(720px, 58vw);
+}
+
+.inventory-history-filter-wrap {
+    min-width: 0;
+}
+
+.inventory-history-filter-wrap label {
+    display: block;
+    margin-bottom: 6px;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.inventory-history-filter {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 11px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.inventory-history-clear-btn {
+    min-height: 40px;
+    padding: 9px 14px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    background: #fff;
+    color: #344054;
+    cursor: pointer;
+    font: inherit;
+}
+
+.inventory-history-clear-btn:hover {
+    background: #f9fafb;
+}
+
+.inventory-history-meta {
+    display: flex;
+    align-items: center;
+    padding: 12px 22px 0;
+}
+
+.inventory-history-count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 6px 12px;
+    border: 1px solid #dbe7ff;
+    border-radius: 999px;
+    background: #f2f6ff;
+    color: #1849a9;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.inventory-history-table-wrap {
+    overflow-x: auto;
+    padding: 12px 22px 22px;
+}
+
+.inventory-history-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+}
+
+.inventory-history-table th,
+.inventory-history-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eaecf0;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.inventory-history-table th {
+    background: #f9fafb;
+    color: #475467;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.inventory-history-table td {
+    color: #344054;
+    font-size: 13px;
+}
+
+.inventory-movement {
+    display: inline-flex;
+    min-width: 52px;
+    justify-content: center;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.inventory-movement-in {
+    background: #ecfdf3;
+    color: #027a48;
+}
+
+.inventory-movement-out {
+    background: #fef3f2;
+    color: #b42318;
+}
+
+.inventory-movement-adjust {
+    background: #eff8ff;
+    color: #175cd3;
+}
+
+.inventory-history-empty td {
+    padding: 28px 12px;
+    text-align: center;
+    color: #667085;
+}
+
+.inventory-history-message {
+    margin: 0 22px 20px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fef3f2;
+    color: #b42318;
+}
+
+@media (max-width: 760px) {
+    .inventory-history-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .inventory-history-filters {
+        grid-template-columns: 1fr;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .inventory-history-filter-wrap {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .inventory-history-clear-btn {
+        width: 100%;
+    }
+}
+</style>
+
+<div class="inventory-history-page">
+
+    <section class="inventory-history-panel">
+
+        <div class="inventory-history-header">
+            <div>
+                <h2>Inventory Movement History</h2>
+                <p>View stock IN / OUT / ADJUST records by SKU.</p>
+            </div>
+
+            <div class="inventory-history-filters">
+
+                <div class="inventory-history-filter-wrap">
+                    <label for="inventory-history-sku">SKU</label>
+                    <select
+                        id="inventory-history-sku"
+                        class="inventory-history-filter"
+                    >
+                        <option value="">All SKUs</option>
+                    </select>
+                </div>
+
+                <div class="inventory-history-filter-wrap">
+                    <label for="inventory-history-from-date">From date</label>
+                    <input
+                        type="date"
+                        id="inventory-history-from-date"
+                        class="inventory-history-filter"
+                    >
+                </div>
+
+                <div class="inventory-history-filter-wrap">
+                    <label for="inventory-history-to-date">To date</label>
+                    <input
+                        type="date"
+                        id="inventory-history-to-date"
+                        class="inventory-history-filter"
+                    >
+                </div>
+
+                <button
+                    type="button"
+                    class="inventory-history-clear-btn"
+                    id="inventory-history-clear-btn"
+                >
+                    Clear
+                </button>
+
+            </div>
+        </div>
+
+        <div class="inventory-history-meta">
+            <span
+                class="inventory-history-count"
+                id="inventory-history-count"
+            >
+                0 Movements
+            </span>
+        </div>
+
+        <div class="inventory-history-table-wrap">
+            <table class="inventory-history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>SKU</th>
+                        <th>Product</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Before → After</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+
+                <tbody id="inventory-history-body">
+                    <tr class="inventory-history-empty">
+                        <td colspan="7">Loading movement history...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div
+            id="inventory-history-message"
+            class="inventory-history-message"
+            hidden
+        ></div>
+
+    </section>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const historyBody =
+        document.getElementById("inventory-history-body");
+
+    const historySku =
+        document.getElementById("inventory-history-sku");
+
+    const historyCount =
+        document.getElementById("inventory-history-count");
+
+    const fromDate =
+        document.getElementById("inventory-history-from-date");
+
+    const toDate =
+        document.getElementById("inventory-history-to-date");
+
+    const clearFiltersButton =
+        document.getElementById("inventory-history-clear-btn");
+
+    const message =
+        document.getElementById("inventory-history-message");
+
+
+    function showError(text) {
+        message.hidden = false;
+        message.textContent = text;
+    }
+
+
+    function clearError() {
+        message.hidden = true;
+        message.textContent = "";
+    }
+
+
+    function movementClass(type) {
+
+        type =
+            String(type || "").toLowerCase();
+
+        if (type === "in") {
+            return "inventory-movement-in";
+        }
+
+        if (type === "out") {
+            return "inventory-movement-out";
+        }
+
+        return "inventory-movement-adjust";
+
+    }
+
+
+    function formatMovementDate(value) {
+
+        if (!value) {
+            return "—";
+        }
+
+        const date =
+            new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleString(
+            "en-GB",
+            {
+                hour12: false
+            }
+        );
+
+    }
+
+
+    async function loadSkuOptions() {
+
+        const response =
+            await fetch(
+                "/admin/inventory/data/",
+                {
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(
+                data.error ||
+                "Unable to load inventory SKUs."
+            );
+        }
+
+        const currentValue =
+            historySku.value;
+
+        const seen =
+            new Set();
+
+        const items =
+            Array.isArray(data.items)
+                ? data.items
+                : [];
+
+        const sorted =
+            [...items].sort(
+                function (a, b) {
+                    return String(a.sku || "")
+                        .localeCompare(
+                            String(b.sku || "")
+                        );
+                }
+            );
+
+        historySku.innerHTML =
+            '<option value="">All SKUs</option>';
+
+        sorted.forEach(function (item) {
+
+            const sku =
+                String(item.sku || "").trim();
+
+            if (!sku || seen.has(sku)) {
+                return;
+            }
+
+            seen.add(sku);
+
+            const option =
+                document.createElement("option");
+
+            option.value = sku;
+            option.textContent = sku;
+
+            historySku.appendChild(option);
+
+        });
+
+        if (seen.has(currentValue)) {
+            historySku.value = currentValue;
+        }
+
+    }
+
+
+    async function loadHistory() {
+
+        clearError();
+
+        const params =
+            new URLSearchParams();
+
+        if (historySku.value) {
+            params.set(
+                "sku",
+                historySku.value
+            );
+        }
+
+        if (fromDate.value) {
+            params.set(
+                "from_date",
+                fromDate.value
+            );
+        }
+
+        if (toDate.value) {
+            params.set(
+                "to_date",
+                toDate.value
+            );
+        }
+
+        if (
+            fromDate.value
+            && toDate.value
+            && fromDate.value > toDate.value
+        ) {
+            throw new Error(
+                "From date cannot be after To date."
+            );
+        }
+
+        params.set("limit", "500");
+
+        const response =
+            await fetch(
+                `/admin/inventory/movements/?${params.toString()}`,
+                {
+                    headers: {
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.ok) {
+            throw new Error(
+                data.error ||
+                "Unable to load movement history."
+            );
+        }
+
+        const movements =
+            Array.isArray(data.movements)
+                ? data.movements
+                : [];
+
+        historyCount.textContent =
+            `${movements.length} ${
+                movements.length === 1
+                    ? "Movement"
+                    : "Movements"
+            }`;
+
+        historyBody.innerHTML = "";
+
+        if (!movements.length) {
+
+            const row =
+                document.createElement("tr");
+
+            row.className =
+                "inventory-history-empty";
+
+            const cell =
+                document.createElement("td");
+
+            cell.colSpan = 7;
+            const hasFilter =
+                Boolean(
+                    historySku.value
+                    || fromDate.value
+                    || toDate.value
+                );
+
+            cell.textContent =
+                hasFilter
+                    ? "No movement history matches these filters."
+                    : "No inventory movement yet.";
+
+            row.appendChild(cell);
+            historyBody.appendChild(row);
+
+            return;
+
+        }
+
+        movements.forEach(
+            function (movement) {
+
+                const row =
+                    document.createElement("tr");
+
+                const dateCell =
+                    document.createElement("td");
+
+                dateCell.textContent =
+                    formatMovementDate(
+                        movement.created_at
+                    );
+
+                const skuCell =
+                    document.createElement("td");
+
+                skuCell.textContent =
+                    movement.sku || "—";
+
+                const productCell =
+                    document.createElement("td");
+
+                productCell.textContent =
+                    movement.product_name || "—";
+
+                const typeCell =
+                    document.createElement("td");
+
+                const badge =
+                    document.createElement("span");
+
+                badge.className =
+                    `inventory-movement ${
+                        movementClass(
+                            movement.type
+                        )
+                    }`;
+
+                badge.textContent =
+                    movement.type || "—";
+
+                typeCell.appendChild(badge);
+
+                const qtyCell =
+                    document.createElement("td");
+
+                const delta =
+                    Number(
+                        movement.quantity || 0
+                    );
+
+                qtyCell.textContent =
+                    delta > 0
+                        ? `+${delta}`
+                        : String(delta);
+
+                const stockCell =
+                    document.createElement("td");
+
+                stockCell.textContent =
+                    `${movement.stock_before} → ${movement.stock_after}`;
+
+                const reasonCell =
+                    document.createElement("td");
+
+                reasonCell.textContent =
+                    movement.reason || "—";
+
+                row.appendChild(dateCell);
+                row.appendChild(skuCell);
+                row.appendChild(productCell);
+                row.appendChild(typeCell);
+                row.appendChild(qtyCell);
+                row.appendChild(stockCell);
+                row.appendChild(reasonCell);
+
+                historyBody.appendChild(row);
+
+            }
+        );
+
+    }
+
+
+    function reloadHistoryFromFilters() {
+
+        loadHistory().catch(
+            function (error) {
+                showError(
+                    error.message
+                );
+            }
+        );
+
+    }
+
+
+    historySku.addEventListener(
+        "change",
+        reloadHistoryFromFilters
+    );
+
+    fromDate.addEventListener(
+        "change",
+        reloadHistoryFromFilters
+    );
+
+    toDate.addEventListener(
+        "change",
+        reloadHistoryFromFilters
+    );
+
+    clearFiltersButton.addEventListener(
+        "click",
+        function () {
+
+            historySku.value = "";
+            fromDate.value = "";
+            toDate.value = "";
+
+            reloadHistoryFromFilters();
+
+        }
+    );
+
+
+    Promise.all([
+        loadSkuOptions(),
+        loadHistory()
+    ]).catch(
+        function (error) {
+
+            showError(
+                error.message
+            );
+
+        }
+    );
+
+});
+</script>
+
+{% endblock %}

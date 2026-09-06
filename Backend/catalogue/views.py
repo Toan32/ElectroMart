@@ -15,7 +15,7 @@ Reviews and Q&A live in the interaction app; this module only reads them
 for product_detail.
 """
 import json
-from datetime import timezone as datetime_timezone
+from datetime import datetime as py_datetime, time as py_time, timezone as datetime_timezone
 from pathlib import Path
 from urllib.parse import urlencode
 from uuid import uuid4
@@ -27,7 +27,7 @@ from django.core.validators import validate_email
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone as django_timezone
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_date, parse_datetime
 
 from accounts import mailer as accounts_mailer
 from accounts import repo as accounts_repo
@@ -2670,8 +2670,16 @@ def _serialize_stock_movement(movement):
 @admin_required
 def admin_inventory(request):
     return render(request, 'admin_inventory.html', {
-        'page_title': 'Manage Inventory - ElectroMart',
+        'page_title': 'Inventory - ElectroMart',
         'admin_page': 'inventory',
+    })
+
+
+@admin_required
+def admin_inventory_history(request):
+    return render(request, 'admin_inventory_history.html', {
+        'page_title': 'Inventory History - ElectroMart',
+        'admin_page': 'inventory_history',
     })
 
 
@@ -2705,15 +2713,96 @@ def admin_inventory_low_stock(request):
     })
 
 
+def _inventory_history_date_boundary(
+    raw_value,
+    field_label,
+    end_of_day=False,
+):
+    """
+    Convert an HTML date value (YYYY-MM-DD) into the corresponding
+    project-local day boundary, then convert it to UTC for MongoDB.
+    """
+    raw_value = str(raw_value or '').strip()
+
+    if not raw_value:
+        return None
+
+    value = parse_date(raw_value)
+
+    if value is None:
+        raise ValueError(
+            f'{field_label} is invalid.'
+        )
+
+    boundary_time = (
+        py_time.max
+        if end_of_day
+        else py_time.min
+    )
+
+    naive_boundary = py_datetime.combine(
+        value,
+        boundary_time,
+    )
+
+    aware_boundary = django_timezone.make_aware(
+        naive_boundary,
+        django_timezone.get_current_timezone(),
+    )
+
+    return aware_boundary.astimezone(
+        datetime_timezone.utc
+    )
+
+
 @admin_required_json
 def admin_inventory_movements(request):
     sku = request.GET.get('sku', '')
     limit = request.GET.get('limit', 100)
 
-    movements = repo.admin_inventory_movements(
-        sku=sku,
-        limit=limit,
+    raw_from_date = request.GET.get(
+        'from_date',
+        '',
     )
+    raw_to_date = request.GET.get(
+        'to_date',
+        '',
+    )
+
+    try:
+        from_date = _inventory_history_date_boundary(
+            raw_from_date,
+            'From date',
+            end_of_day=False,
+        )
+
+        to_date = _inventory_history_date_boundary(
+            raw_to_date,
+            'To date',
+            end_of_day=True,
+        )
+
+        if (
+            from_date is not None
+            and to_date is not None
+            and from_date > to_date
+        ):
+            raise ValueError(
+                'From date cannot be after To date.'
+            )
+
+        movements = repo.admin_inventory_movements(
+            sku=sku,
+            from_date=from_date,
+            to_date=to_date,
+            limit=limit,
+        )
+
+    except ValueError as exc:
+        return JsonResponse({
+            'ok': False,
+            'error': str(exc),
+        }, status=400)
 
     return JsonResponse({
         'ok': True,
@@ -2723,6 +2812,8 @@ def admin_inventory_movements(request):
         ],
         'count': len(movements),
         'sku': sku,
+        'from_date': raw_from_date,
+        'to_date': raw_to_date,
     })
 
 

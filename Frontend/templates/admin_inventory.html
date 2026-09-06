@@ -15,19 +15,35 @@ only by typing its URL. {% endcomment %}
 {% include "admin/_admin_nav.html" %}
 
 <style>
+/* Align Inventory with the shared admin page width used by Products/History. */
+.admin-inventory-page {
+    width: 100%;
+    max-width: none;
+    padding: 0 !important;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.admin-inventory-panel {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .inventory-summary {
     display: flex;
-    gap: 12px;
+    justify-content: flex-end;
+    align-items: stretch;
+    gap: 10px;
     flex-wrap: wrap;
-    margin: 0 0 18px;
+    margin: 0;
 }
 
 .inventory-summary-card {
-    min-width: 150px;
-    padding: 12px 14px;
+    min-width: 142px;
+    padding: 10px 13px;
     border: 1px solid #e4e7ec;
     border-radius: 10px;
-    background: #fff;
+    background: #f9fafb;
 }
 
 .inventory-summary-card strong {
@@ -46,13 +62,21 @@ only by typing its URL. {% endcomment %}
 }
 
 .admin-inventory-panel-header {
-    gap: 12px;
+    gap: 18px;
 }
 
-.admin-inventory-header-actions {
+.inventory-list-header {
     display: flex;
-    gap: 8px;
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.inventory-list-heading {
+    min-width: 0;
+}
+
+.inventory-list-heading .inventory-refresh-btn {
+    margin-top: 8px;
 }
 
 .inventory-refresh-btn,
@@ -91,31 +115,6 @@ only by typing its URL. {% endcomment %}
     color: #b42318;
 }
 
-.inventory-movement {
-    display: inline-flex;
-    min-width: 52px;
-    justify-content: center;
-    padding: 4px 8px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.inventory-movement-in {
-    background: #ecfdf3;
-    color: #027a48;
-}
-
-.inventory-movement-out {
-    background: #fef3f2;
-    color: #b42318;
-}
-
-.inventory-movement-adjust {
-    background: #eff8ff;
-    color: #175cd3;
-}
-
 .inventory-hidden-label {
     display: block;
     margin-top: 2px;
@@ -140,14 +139,6 @@ only by typing its URL. {% endcomment %}
 .inventory-message.error {
     background: #fef3f2;
     color: #b42318;
-}
-
-.inventory-history-filter {
-    min-width: 230px;
-    padding: 8px 10px;
-    border: 1px solid #d0d5dd;
-    border-radius: 8px;
-    background: #fff;
 }
 
 /* CV67 stock adjustment modal */
@@ -253,6 +244,20 @@ only by typing its URL. {% endcomment %}
 }
 
 @media (max-width: 700px) {
+    .inventory-list-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .inventory-summary {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .inventory-summary-card {
+        flex: 1 1 140px;
+    }
+
     .inventory-modal-grid {
         grid-template-columns: 1fr;
     }
@@ -265,34 +270,14 @@ only by typing its URL. {% endcomment %}
 
 <div class="admin-inventory-page">
 
-    <div class="admin-page-header">
-        <div>
-            <h1>Manage Inventory</h1>
-            <p>Monitor SKU stock, low-stock alerts and MongoDB inventory movements.</p>
-        </div>
-    </div>
-
-    <div class="inventory-summary">
-        <div class="inventory-summary-card">
-            <strong id="inventory-total-count">0</strong>
-            <span>Variant SKUs</span>
-        </div>
-
-        <div class="inventory-summary-card danger">
-            <strong id="inventory-low-count">0</strong>
-            <span>Low / Out of Stock</span>
-        </div>
-    </div>
-
     <section class="admin-inventory-panel">
 
-        <div class="admin-inventory-panel-header">
-            <div>
+        <div class="admin-inventory-panel-header inventory-list-header">
+
+            <div class="inventory-list-heading">
                 <h2>Inventory List</h2>
                 <p>Stock is managed at product-variant SKU level.</p>
-            </div>
 
-            <div class="admin-inventory-header-actions">
                 <button
                     type="button"
                     class="inventory-refresh-btn"
@@ -301,6 +286,19 @@ only by typing its URL. {% endcomment %}
                     Refresh
                 </button>
             </div>
+
+            <div class="inventory-summary">
+                <div class="inventory-summary-card">
+                    <strong id="inventory-total-count">0</strong>
+                    <span>Variant SKUs</span>
+                </div>
+
+                <div class="inventory-summary-card danger">
+                    <strong id="inventory-low-count">0</strong>
+                    <span>Low / Out of Stock</span>
+                </div>
+            </div>
+
         </div>
 
         <div class="admin-inventory-filters">
@@ -360,51 +358,6 @@ only by typing its URL. {% endcomment %}
 
     </section>
 
-
-    <section class="admin-inventory-panel">
-
-        <div class="admin-inventory-panel-header">
-            <div>
-                <h2>Inventory Movement History</h2>
-                <p>View stock IN / OUT / ADJUST records by SKU.</p>
-            </div>
-
-            <select
-                id="inventory-history-sku"
-                class="inventory-history-filter"
-            >
-                <option value="">All SKUs</option>
-            </select>
-        </div>
-
-        <div class="admin-inventory-table-wrapper">
-
-            <table
-                class="admin-inventory-table"
-                id="inventory-history-table"
-            >
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>SKU</th>
-                        <th>Product</th>
-                        <th>Type</th>
-                        <th>Quantity</th>
-                        <th>Before → After</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-
-                <tbody id="inventory-history-body">
-                    <tr class="inventory-empty-row">
-                        <td colspan="7">No inventory movement yet.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-    </section>
 
 </div>
 
@@ -557,9 +510,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const inventoryBody =
         document.getElementById("inventory-table-body");
 
-    const historyBody =
-        document.getElementById("inventory-history-body");
-
     const searchInput =
         document.getElementById("inventory-search");
 
@@ -577,9 +527,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const message =
         document.getElementById("inventory-message");
-
-    const historySku =
-        document.getElementById("inventory-history-sku");
 
 
     const modal =
@@ -899,38 +846,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        const currentHistorySku =
-            historySku.value;
-
-        historySku.innerHTML =
-            '<option value="">All SKUs</option>';
-
-        sorted.forEach(function (item) {
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                item.sku;
-
-            option.textContent =
-                item.sku;
-
-            historySku.appendChild(option);
-
-        });
-
-        if (
-            sorted.some(
-                function (item) {
-                    return item.sku === currentHistorySku;
-                }
-            )
-        ) {
-            historySku.value =
-                currentHistorySku;
-        }
-
     }
 
 
@@ -1086,203 +1001,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    function movementClass(type) {
-
-        type =
-            String(type || "").toLowerCase();
-
-        if (type === "in") {
-            return "inventory-movement-in";
-        }
-
-        if (type === "out") {
-            return "inventory-movement-out";
-        }
-
-        return "inventory-movement-adjust";
-
-    }
-
-
-    function formatMovementDate(value) {
-
-        if (!value) {
-            return "—";
-        }
-
-        const date =
-            new Date(value);
-
-        if (Number.isNaN(date.getTime())) {
-            return value;
-        }
-
-        return date.toLocaleString(
-            "en-GB",
-            {
-                hour12: false
-            }
-        );
-
-    }
-
-
-    async function loadHistory() {
-
-        const params =
-            new URLSearchParams();
-
-        if (historySku.value) {
-            params.set(
-                "sku",
-                historySku.value
-            );
-        }
-
-        params.set("limit", "100");
-
-        const response =
-            await fetch(
-                `/admin/inventory/movements/?${params.toString()}`,
-                {
-                    headers: {
-                        "X-Requested-With":
-                            "XMLHttpRequest"
-                    }
-                }
-            );
-
-        const data =
-            await response.json();
-
-        if (!response.ok || !data.ok) {
-            throw new Error(
-                data.error ||
-                "Unable to load movement history."
-            );
-        }
-
-
-        historyBody.innerHTML = "";
-
-        if (!data.movements.length) {
-
-            const row =
-                document.createElement("tr");
-
-            row.className =
-                "inventory-empty-row";
-
-            const cell =
-                document.createElement("td");
-
-            cell.colSpan = 7;
-            cell.textContent =
-                historySku.value
-                    ? "No movement history for this SKU."
-                    : "No inventory movement yet.";
-
-            row.appendChild(cell);
-            historyBody.appendChild(row);
-
-            return;
-
-        }
-
-
-        data.movements.forEach(
-            function (movement) {
-
-                const row =
-                    document.createElement("tr");
-
-
-                const dateCell =
-                    document.createElement("td");
-
-                dateCell.textContent =
-                    formatMovementDate(
-                        movement.created_at
-                    );
-
-
-                const skuCell =
-                    document.createElement("td");
-
-                skuCell.textContent =
-                    movement.sku;
-
-
-                const productCell =
-                    document.createElement("td");
-
-                productCell.textContent =
-                    movement.product_name;
-
-
-                const typeCell =
-                    document.createElement("td");
-
-                const badge =
-                    document.createElement("span");
-
-                badge.className =
-                    `inventory-movement ${
-                        movementClass(
-                            movement.type
-                        )
-                    }`;
-
-                badge.textContent =
-                    movement.type;
-
-                typeCell.appendChild(badge);
-
-
-                const qtyCell =
-                    document.createElement("td");
-
-                const delta =
-                    Number(
-                        movement.quantity || 0
-                    );
-
-                qtyCell.textContent =
-                    delta > 0
-                        ? `+${delta}`
-                        : String(delta);
-
-
-                const stockCell =
-                    document.createElement("td");
-
-                stockCell.textContent =
-                    `${movement.stock_before} → ${movement.stock_after}`;
-
-
-                const reasonCell =
-                    document.createElement("td");
-
-                reasonCell.textContent =
-                    movement.reason;
-
-
-                row.appendChild(dateCell);
-                row.appendChild(skuCell);
-                row.appendChild(productCell);
-                row.appendChild(typeCell);
-                row.appendChild(qtyCell);
-                row.appendChild(stockCell);
-                row.appendChild(reasonCell);
-
-                historyBody.appendChild(row);
-
-            }
-        );
-
-    }
-
-
     inventoryBody.addEventListener(
         "click",
         function (event) {
@@ -1349,23 +1067,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-    historySku.addEventListener(
-        "change",
-        function () {
-
-            loadHistory().catch(
-                function (error) {
-                    showMessage(
-                        error.message,
-                        true
-                    );
-                }
-            );
-
-        }
-    );
-
-
     refreshButton.addEventListener(
         "click",
         async function () {
@@ -1377,7 +1078,6 @@ document.addEventListener("DOMContentLoaded", function () {
             try {
 
                 await loadInventory();
-                await loadHistory();
 
             } catch (error) {
 
@@ -1515,7 +1215,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 closeModal();
 
                 await loadInventory();
-                await loadHistory();
 
                 showMessage(
                     `Stock updated: ${data.item.sku} is now ${data.item.stock_qty}.`
@@ -1541,10 +1240,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-    Promise.all([
-        loadInventory(),
-        loadHistory()
-    ]).catch(
+    loadInventory().catch(
         function (error) {
 
             showMessage(

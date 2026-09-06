@@ -16,25 +16,24 @@ only by typing its URL. {% endcomment %}
 
 <div class="admin-product-page">
 
-    <div class="admin-page-header">
-        <div>
-            <h1>Manage Products</h1>
-            <p>
-                Manage product information, dynamic specifications
-                and product variants.
-            </p>
-        </div>
-    </div>
-
-
-
     <!-- PRODUCT LIST -->
     <section class="admin-product-panel admin-product-list-panel">
 
         <div class="admin-product-panel-header admin-product-list-header">
             <div>
-                <h2>Products</h2>
-                <p>Choose a product to edit, manage variants, or hide/unhide it.</p>
+                <div class="admin-product-title-block">
+                    <div class="admin-product-title-line">
+                        <span
+                            id="admin-product-list-count"
+                            class="admin-product-title-count"
+                        >
+                            0
+                        </span>
+                        <h2>Products</h2>
+                    </div>
+
+                    <p>Choose a product to edit, manage variants, or hide/unhide it.</p>
+                </div>
             </div>
 
             <div class="admin-product-list-tools">
@@ -47,6 +46,14 @@ only by typing its URL. {% endcomment %}
 
                 <button
                     type="button"
+                    class="admin-product-add-btn"
+                    id="admin-product-add-btn"
+                >
+                    + Add Product
+                </button>
+
+                <button
+                    type="button"
                     class="admin-product-refresh-btn"
                     id="admin-product-refresh-btn"
                 >
@@ -55,12 +62,6 @@ only by typing its URL. {% endcomment %}
             </div>
         </div>
 
-        <div class="admin-product-list-meta">
-            <span id="admin-product-list-count">0 products</span>
-            <span>
-                Hidden products stay in MongoDB and are not shown to customers.
-            </span>
-        </div>
 
         <div class="admin-product-list-table-wrapper">
             <table class="admin-product-list-table">
@@ -88,14 +89,38 @@ only by typing its URL. {% endcomment %}
 
     <div class="admin-product-layout">
 
-        <!-- PRODUCT FORM -->
-        <section class="admin-product-panel">
+        <!-- PRODUCT FORM MODAL -->
+        <div
+            class="admin-product-editor-modal"
+            id="admin-product-editor-panel"
+            aria-hidden="true"
+        >
+            <div
+                class="admin-product-editor-backdrop"
+                id="admin-product-editor-backdrop"
+            ></div>
 
-            <div class="admin-product-panel-header">
+            <section
+                class="admin-product-panel admin-product-editor-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="admin-product-form-title"
+            >
+
+            <div class="admin-product-panel-header admin-product-editor-header">
                 <div>
                     <h2 id="admin-product-form-title">Create Product</h2>
                     <p id="admin-product-form-description">Create a new product.</p>
                 </div>
+
+                <button
+                    type="button"
+                    class="admin-product-editor-close"
+                    id="admin-product-editor-close"
+                    aria-label="Close product form"
+                >
+                    ×
+                </button>
             </div>
 
             <form class="admin-product-form" id="admin-product-form" enctype="multipart/form-data">
@@ -324,16 +349,43 @@ only by typing its URL. {% endcomment %}
 
 </form>
 
-        </section>
+            </section>
+        </div>
 
 
-        <!-- VARIANT TABLE -->
-        <section class="admin-product-panel">
+        <!-- PRODUCT VARIANTS MODAL -->
+        <div
+            class="admin-product-variants-modal"
+            id="admin-product-variant-panel"
+            aria-hidden="true"
+        >
+            <div
+                class="admin-product-variants-backdrop"
+                id="admin-product-variants-backdrop"
+            ></div>
 
-            <div class="admin-product-panel-header">
+            <section
+                class="admin-product-panel admin-product-variants-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="admin-product-variants-title"
+            >
+
+            <div class="admin-product-panel-header admin-product-variants-header">
                 <div>
-                    <h2>Product Variants</h2>
+                    <h2 id="admin-product-variants-title">Product Variants</h2>
                     <p>Manage variants of the selected product.</p>
+                </div>
+
+                <div class="admin-product-list-tools">
+                    <button
+                        type="button"
+                        class="admin-product-editor-close"
+                        id="close-variants-btn"
+                        aria-label="Close product variants"
+                    >
+                        ×
+                    </button>
                 </div>
             </div>
 
@@ -387,7 +439,8 @@ only by typing its URL. {% endcomment %}
 
 </div>
 
-        </section>
+            </section>
+        </div>
 
     </div>
 
@@ -688,8 +741,41 @@ only by typing its URL. {% endcomment %}
 }
 
 .admin-product-list-header {
-    gap: 16px;
+    gap: 24px;
     align-items: center;
+}
+
+.admin-product-title-block {
+    min-width: 0;
+}
+
+.admin-product-title-line {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    margin-bottom: 4px;
+}
+
+.admin-product-title-line h2 {
+    margin: 0;
+    color: #101828;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.admin-product-title-count {
+    color: #175cd3;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.admin-product-title-block p {
+    margin: 0;
+    color: #667085;
+    font-size: 13px;
 }
 
 .admin-product-list-tools {
@@ -697,6 +783,7 @@ only by typing its URL. {% endcomment %}
     gap: 8px;
     align-items: center;
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .admin-product-list-tools input {
@@ -715,14 +802,120 @@ only by typing its URL. {% endcomment %}
     cursor: pointer;
 }
 
-.admin-product-list-meta {
+.admin-product-add-btn {
+    border: 1px solid #175cd3;
+    background: #175cd3;
+    color: #fff;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#admin-product-variant-panel[hidden] {
+    display: none !important;
+}
+
+.admin-product-editor-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.admin-product-editor-modal.show {
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin: 0 0 12px;
+}
+
+.admin-product-editor-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 24, 40, 0.58);
+    backdrop-filter: blur(1px);
+}
+
+.admin-product-editor-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(1080px, 96vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 0;
+    box-shadow: 0 24px 64px rgba(16, 24, 40, 0.28);
+    border-radius: 14px;
+}
+
+.admin-product-editor-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #fff;
+}
+
+.admin-product-editor-close {
+    border: 0;
+    background: transparent;
     color: #667085;
-    font-size: 12px;
+    font-size: 28px;
+    line-height: 1;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.admin-product-editor-close:hover {
+    color: #101828;
+}
+
+body.admin-product-modal-open,
+body.admin-product-variants-modal-open {
+    overflow: hidden;
+}
+
+.admin-product-variants-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1250;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.admin-product-variants-modal.show {
+    display: flex;
+}
+
+.admin-product-variants-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 24, 40, 0.58);
+    backdrop-filter: blur(1px);
+}
+
+.admin-product-variants-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(1120px, 96vw);
+    max-height: 88vh;
+    overflow-y: auto;
+    margin: 0;
+    box-shadow: 0 24px 64px rgba(16, 24, 40, 0.28);
+    border-radius: 14px;
+}
+
+.admin-product-variants-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #fff;
+}
+
+/* The Add/Edit Variant modal must sit above the Product Variants modal. */
+#variant-modal {
+    z-index: 1500;
 }
 
 .admin-product-list-table-wrapper {
@@ -789,7 +982,7 @@ only by typing its URL. {% endcomment %}
 .admin-product-list-table th:last-child,
 .admin-product-list-table td:last-child {
     width: 1%;
-    min-width: 118px;
+    min-width: 205px;
     white-space: nowrap;
 }
 
@@ -811,6 +1004,10 @@ only by typing its URL. {% endcomment %}
 
 .admin-product-list-actions button + button {
     margin-left: 6px;
+}
+
+.admin-product-list-actions .admin-product-list-variants-btn {
+    color: #175cd3;
 }
 
 .admin-product-list-actions .admin-product-list-hide-btn {
@@ -891,8 +1088,31 @@ only by typing its URL. {% endcomment %}
 }
 
 @media (max-width: 760px) {
+    .admin-product-editor-modal {
+        padding: 10px;
+    }
+
+    .admin-product-editor-dialog {
+        width: 100%;
+        max-height: 94vh;
+    }
+
+    .admin-product-variants-modal {
+        padding: 10px;
+    }
+
+    .admin-product-variants-dialog {
+        width: 100%;
+        max-height: 94vh;
+    }
+
+    .admin-product-list-header {
+        align-items: flex-start;
+    }
+
     .admin-product-list-tools {
         width: 100%;
+        justify-content: flex-start;
     }
 
     .admin-product-list-tools input {
@@ -908,6 +1128,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const productForm =
         document.getElementById("admin-product-form");
+
+    const productEditorPanel =
+        document.getElementById("admin-product-editor-panel");
+
+    const productEditorBackdrop =
+        document.getElementById("admin-product-editor-backdrop");
+
+    const productEditorClose =
+        document.getElementById("admin-product-editor-close");
+
+    const productVariantPanel =
+        document.getElementById("admin-product-variant-panel");
+
+    const productVariantsBackdrop =
+        document.getElementById("admin-product-variants-backdrop");
+
+    const productAddButton =
+        document.getElementById("admin-product-add-btn");
+
+    const closeVariantsButton =
+        document.getElementById("close-variants-btn");
 
     const productCancelButton =
         document.getElementById("product-cancel-btn");
@@ -1086,11 +1327,7 @@ document.addEventListener("DOMContentLoaded", function () {
         productListBody.innerHTML = "";
 
         productListCount.textContent =
-            `${adminProducts.length} ${
-                adminProducts.length === 1
-                    ? "product"
-                    : "products"
-            }`;
+            String(adminProducts.length);
 
 
         if (filtered.length === 0) {
@@ -1225,6 +1462,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             actionsCell.appendChild(
                 createProductListButton(
+                    "Variants",
+                    "admin-product-list-variants-btn",
+                    product.id
+                )
+            );
+
+            actionsCell.appendChild(
+                createProductListButton(
                     product.is_hidden
                         ? "Unhide"
                         : "Hide",
@@ -1312,6 +1557,44 @@ document.addEventListener("DOMContentLoaded", function () {
             existingDatasheet.appendChild(link);
 
         }
+
+    }
+
+
+    function showProductEditor() {
+
+        productVariantPanel.hidden = true;
+        productEditorPanel.classList.add("show");
+        productEditorPanel.setAttribute("aria-hidden", "false");
+        document.body.classList.add("admin-product-modal-open");
+
+    }
+
+
+    function hideProductEditor() {
+
+        productEditorPanel.classList.remove("show");
+        productEditorPanel.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("admin-product-modal-open");
+
+    }
+
+
+    function showProductVariantPanel() {
+
+        hideProductEditor();
+        productVariantPanel.classList.add("show");
+        productVariantPanel.setAttribute("aria-hidden", "false");
+        document.body.classList.add("admin-product-variants-modal-open");
+
+    }
+
+
+    function hideProductVariantPanel() {
+
+        productVariantPanel.classList.remove("show");
+        productVariantPanel.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("admin-product-variants-modal-open");
 
     }
 
@@ -1417,7 +1700,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 `Edit Product: ${product.name}`;
 
             productFormDescription.textContent =
-                "Update product information. Existing variants are managed in the panel beside this form.";
+                "Update product information. Use the Variants button in the product list to manage variants.";
 
             productSaveButton.textContent =
                 "Update Product";
@@ -1429,13 +1712,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
             renderExistingProductMedia(product);
 
-            selectProductForVariants(product);
+            selectProductForVariants(null);
             renderProductList();
 
-            productForm.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+            showProductEditor();
+
+        } catch (error) {
+
+            showProductMessage(
+                error.message,
+                true
+            );
+
+        }
+
+    }
+
+
+    async function openAdminProductVariants(productId) {
+
+        hideProductMessage();
+
+        try {
+
+            const response =
+                await fetch(
+                    `/admin/products/${
+                        encodeURIComponent(productId)
+                    }/data/`,
+                    {
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+                        }
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (!response.ok || !data.ok) {
+                throw new Error(
+                    data.error ||
+                    "Unable to load product variants."
+                );
+            }
+
+            editingProductId = null;
+            selectProductForVariants(data.product);
+            renderProductList();
+
+            showProductVariantPanel();
 
         } catch (error) {
 
@@ -3141,9 +3468,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     } successfully.`
                 );
 
-                selectProductForVariants(
-                    data.product
-                );
+                selectProductForVariants(null);
 
                 renderExistingProductMedia(
                     data.product
@@ -3158,7 +3483,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     `Edit Product: ${data.product.name}`;
 
                 productFormDescription.textContent =
-                    "Update product information. Existing variants are managed in the panel beside this form.";
+                    "Update product information. Use the Variants button in the product list to manage variants.";
 
                 productSaveButton.textContent =
                     "Update Product";
@@ -3198,12 +3523,113 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
+    productAddButton.addEventListener(
+        "click",
+        function () {
+
+            hideProductMessage();
+            resetProductEditor();
+            showProductEditor();
+
+            productName.focus();
+
+        }
+    );
+
+
     productCancelButton.addEventListener(
         "click",
         function () {
 
             hideProductMessage();
             resetProductEditor();
+            hideProductEditor();
+
+        }
+    );
+
+
+    productEditorClose.addEventListener(
+        "click",
+        function () {
+
+            hideProductMessage();
+            resetProductEditor();
+            hideProductEditor();
+
+        }
+    );
+
+
+    productEditorBackdrop.addEventListener(
+        "click",
+        function () {
+
+            hideProductMessage();
+            resetProductEditor();
+            hideProductEditor();
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                productEditorPanel.classList.contains("show")
+            ) {
+                hideProductMessage();
+                resetProductEditor();
+                hideProductEditor();
+            }
+
+        }
+    );
+
+
+    closeVariantsButton.addEventListener(
+        "click",
+        function () {
+
+            hideProductMessage();
+            selectProductForVariants(null);
+            hideProductVariantPanel();
+            renderProductList();
+
+        }
+    );
+
+
+    productVariantsBackdrop.addEventListener(
+        "click",
+        function () {
+
+            hideProductMessage();
+            selectProductForVariants(null);
+            hideProductVariantPanel();
+            renderProductList();
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Escape" &&
+                productVariantPanel.classList.contains("show") &&
+                !variantModal.classList.contains("show")
+            ) {
+                hideProductMessage();
+                selectProductForVariants(null);
+                hideProductVariantPanel();
+                renderProductList();
+            }
 
         }
     );
@@ -3259,6 +3685,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 editAdminProduct(
                     editButton.dataset.productId
+                );
+
+                return;
+
+            }
+
+
+            const variantsButton =
+                event.target.closest(
+                    ".admin-product-list-variants-btn"
+                );
+
+            if (variantsButton) {
+
+                openAdminProductVariants(
+                    variantsButton.dataset.productId
                 );
 
                 return;

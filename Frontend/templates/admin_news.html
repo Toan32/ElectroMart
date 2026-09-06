@@ -24,7 +24,6 @@ only by typing its URL. {% endcomment %}
 
   <div class="admin-news-header">
     <div>
-      <span class="admin-news-eyebrow">CV70 · Content Management</span>
       <h1>Manage News</h1>
       <p>
         Create, edit, schedule, hide/unhide and delete ElectroMart news articles.
@@ -38,15 +37,39 @@ only by typing its URL. {% endcomment %}
 
   <div class="admin-news-layout">
 
-    <section class="admin-news-panel">
-      <div class="admin-news-panel-head">
-        <div>
-          <h2 id="admin-news-form-title">Create Article</h2>
-          <p id="admin-news-form-help">
-            Publish now or choose a future date/time to schedule the article.
-          </p>
+    <div
+      class="admin-news-modal"
+      id="admin-news-modal"
+      aria-hidden="true"
+    >
+      <div
+        class="admin-news-modal-backdrop"
+        id="admin-news-modal-backdrop"
+      ></div>
+
+      <section
+        class="admin-news-panel admin-news-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="admin-news-form-title"
+      >
+        <div class="admin-news-panel-head admin-news-modal-head">
+          <div>
+            <h2 id="admin-news-form-title">Create Article</h2>
+            <p id="admin-news-form-help">
+              Publish now or choose a future date/time to schedule the article.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="admin-news-modal-close"
+            id="admin-news-modal-close"
+            aria-label="Close article form"
+          >
+            ×
+          </button>
         </div>
-      </div>
 
       <form id="admin-news-form">
         {% csrf_token %}
@@ -143,7 +166,8 @@ only by typing its URL. {% endcomment %}
 
         <div id="admin-news-message" class="admin-news-message" hidden></div>
       </form>
-    </section>
+      </section>
+    </div>
 
     <section class="admin-news-panel admin-news-list-panel">
 
@@ -155,13 +179,23 @@ only by typing its URL. {% endcomment %}
           </p>
         </div>
 
-        <input
-          type="search"
-          id="admin-news-search"
-          class="admin-news-search"
-          placeholder="Search title..."
-          autocomplete="off"
-        >
+        <div class="admin-news-list-tools">
+          <input
+            type="search"
+            id="admin-news-search"
+            class="admin-news-search"
+            placeholder="Search title..."
+            autocomplete="off"
+          >
+
+          <button
+            type="button"
+            class="admin-news-primary-btn"
+            id="admin-news-add"
+          >
+            + Add Article
+          </button>
+        </div>
       </div>
 
       <div class="admin-news-list-meta">
@@ -217,7 +251,7 @@ only by typing its URL. {% endcomment %}
 }
 
 .admin-news-header {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .admin-news-header h1,
@@ -231,21 +265,13 @@ only by typing its URL. {% endcomment %}
   color: #667085;
 }
 
-.admin-news-eyebrow {
-  display: inline-block;
-  margin-bottom: 5px;
-  color: #2563eb;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .07em;
-  text-transform: uppercase;
+.admin-news-layout {
+  display: block;
 }
 
-.admin-news-layout {
-  display: grid;
-  grid-template-columns: minmax(360px, .9fr) minmax(0, 1.5fr);
-  gap: 18px;
-  align-items: start;
+.admin-news-list-panel {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-news-panel {
@@ -254,6 +280,74 @@ only by typing its URL. {% endcomment %}
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+}
+
+.admin-news-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.admin-news-modal.show {
+  display: flex;
+}
+
+.admin-news-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 24, 40, .58);
+  backdrop-filter: blur(1px);
+}
+
+.admin-news-modal-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 96vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(16, 24, 40, .28);
+  border-radius: 14px;
+}
+
+.admin-news-modal-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: -20px -20px 18px;
+  padding: 20px;
+  background: #fff;
+  border-bottom: 1px solid #eaecf0;
+  border-radius: 14px 14px 0 0;
+}
+
+.admin-news-modal-close {
+  border: 0;
+  background: transparent;
+  color: #667085;
+  font-size: 28px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.admin-news-modal-close:hover {
+  color: #101828;
+}
+
+body.admin-news-modal-open {
+  overflow: hidden;
+}
+
+.admin-news-list-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .admin-news-panel-head {
@@ -448,6 +542,26 @@ only by typing its URL. {% endcomment %}
   font-size: 13px;
 }
 
+.admin-news-table th:last-child,
+.admin-news-table td:last-child {
+  width: 210px;
+  min-width: 210px;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.admin-news-table th:nth-child(2) {
+  width: 150px;
+}
+
+.admin-news-table th:nth-child(3) {
+  width: 210px;
+}
+
+.admin-news-table th:nth-child(4) {
+  width: 120px;
+}
+
 .admin-news-title-cell strong {
   display: block;
   color: #101828;
@@ -484,12 +598,18 @@ only by typing its URL. {% endcomment %}
 
 .admin-news-actions {
   white-space: nowrap;
+  text-align: left;
 }
 
 .admin-news-action-btn {
-  padding: 6px 8px;
-  margin-right: 4px;
+  padding: 6px 10px;
+  margin: 0 0 0 5px;
   font-size: 12px;
+  vertical-align: middle;
+}
+
+.admin-news-actions .admin-news-action-btn:first-child {
+  margin-left: 0;
 }
 
 .admin-news-action-btn.danger {
@@ -506,12 +626,6 @@ only by typing its URL. {% endcomment %}
   color: #667085 !important;
 }
 
-@media (max-width: 1050px) {
-  .admin-news-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 680px) {
   .admin-news-header,
   .admin-news-list-head,
@@ -520,8 +634,23 @@ only by typing its URL. {% endcomment %}
     flex-direction: column;
   }
 
+  .admin-news-list-tools {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .admin-news-search {
     max-width: none;
+    flex: 1 1 220px;
+  }
+
+  .admin-news-modal {
+    padding: 10px;
+  }
+
+  .admin-news-modal-dialog {
+    width: 100%;
+    max-height: 94vh;
   }
 
   .admin-news-form-grid {
@@ -556,6 +685,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const saveButton = document.getElementById('admin-news-save');
   const cancelButton = document.getElementById('admin-news-cancel');
   const refreshButton = document.getElementById('admin-news-refresh');
+  const addButton = document.getElementById('admin-news-add');
+  const modal = document.getElementById('admin-news-modal');
+  const modalBackdrop = document.getElementById('admin-news-modal-backdrop');
+  const modalClose = document.getElementById('admin-news-modal-close');
   const searchInput = document.getElementById('admin-news-search');
   const tableBody = document.getElementById('admin-news-table-body');
   const countLabel = document.getElementById('admin-news-count');
@@ -609,6 +742,23 @@ document.addEventListener('DOMContentLoaded', function () {
     clearMessage();
   }
 
+  function openModal() {
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('admin-news-modal-open');
+  }
+
+  function closeModal() {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('admin-news-modal-open');
+  }
+
+  function closeAndResetModal() {
+    closeModal();
+    resetForm();
+  }
+
   function displayDate(value) {
     if (!value) {
       return '-';
@@ -645,7 +795,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     countLabel.textContent =
-      filtered.length + (filtered.length === 1 ? ' article' : ' articles');
+      filtered.length + (filtered.length === 1 ? ' Article' : ' Articles');
 
     if (!filtered.length) {
       tableBody.innerHTML =
@@ -755,11 +905,7 @@ document.addEventListener('DOMContentLoaded', function () {
     saveButton.textContent = 'Save Changes';
 
     clearMessage();
-
-    window.scrollTo({
-      top: form.getBoundingClientRect().top + window.scrollY - 100,
-      behavior: 'smooth'
-    });
+    openModal();
   }
 
   form.addEventListener('submit', async function (event) {
@@ -797,18 +943,8 @@ document.addEventListener('DOMContentLoaded', function () {
         throw new Error(data.error || 'Unable to save article.');
       }
 
-      showMessage(
-        articleId
-          ? 'Article updated successfully.'
-          : 'Article created successfully.',
-        'success'
-      );
-
-      const keepMessage = messageBox.textContent;
-      resetForm();
-      showMessage(keepMessage, 'success');
-
       await loadArticles();
+      closeAndResetModal();
 
     } catch (error) {
       showMessage(error.message, 'error');
@@ -864,7 +1000,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (idInput.value === articleId) {
-          resetForm();
+          closeAndResetModal();
         }
 
         await loadArticles();
@@ -913,11 +1049,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  cancelButton.addEventListener('click', resetForm);
+  addButton.addEventListener('click', function () {
+    resetForm();
+    openModal();
+    titleInput.focus();
+  });
+
+  cancelButton.addEventListener('click', closeAndResetModal);
+  modalClose.addEventListener('click', closeAndResetModal);
+  modalBackdrop.addEventListener('click', closeAndResetModal);
+
+  document.addEventListener('keydown', function (event) {
+    if (
+      event.key === 'Escape' &&
+      modal.classList.contains('show')
+    ) {
+      closeAndResetModal();
+    }
+  });
+
   refreshButton.addEventListener('click', loadArticles);
   searchInput.addEventListener('input', renderArticles);
 
   resetForm();
+  closeModal();
   loadArticles();
 });
 </script>

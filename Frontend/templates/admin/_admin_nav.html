@@ -14,8 +14,8 @@ Orders). {% endcomment %}
 {% url 'admin_categories' as u_categories %}
 {% url 'admin_products' as u_products %}
 {% url 'admin_inventory' as u_inventory %}
+{% url 'admin_inventory_history' as u_inventory_history %}
 {% url 'admin_news' as u_news %}
-{% url 'admin_feedback' as u_feedback %}
 {% url 'admin_moderation' as u_moderation %}
 {% url 'admin_manage_user' as u_users %}
 
@@ -26,22 +26,26 @@ Orders). {% endcomment %}
     <a href="{{ u_orders }}" class="admin-nav-link {% if admin_page == 'orders' or request.path == u_orders %}is-active{% endif %}">Orders</a>
     <a href="{{ u_promotions }}" class="admin-nav-link {% if admin_page == 'promotions' or request.path == u_promotions %}is-active{% endif %}">Promotions</a>
   </div>
+
   <div class="admin-nav-group">
     <span class="admin-nav-label">Catalogue</span>
     <a href="{{ u_categories }}" class="admin-nav-link {% if admin_page == 'categories' or request.path == u_categories %}is-active{% endif %}">Categories</a>
     <a href="{{ u_products }}" class="admin-nav-link {% if admin_page == 'products' or request.path == u_products %}is-active{% endif %}">Products</a>
     <a href="{{ u_inventory }}" class="admin-nav-link {% if admin_page == 'inventory' or request.path == u_inventory %}is-active{% endif %}">Inventory</a>
+    <a href="{{ u_inventory_history }}" class="admin-nav-link {% if admin_page == 'inventory_history' or request.path == u_inventory_history %}is-active{% endif %}">History</a>
   </div>
+
   <div class="admin-nav-group">
     <span class="admin-nav-label">Content</span>
     <a href="{{ u_news }}" class="admin-nav-link {% if admin_page == 'news' or request.path == u_news %}is-active{% endif %}">News</a>
-    <a href="{{ u_feedback }}" class="admin-nav-link {% if admin_page == 'feedback' or request.path == u_feedback %}is-active{% endif %}">Feedback</a>
     <a href="{{ u_moderation }}" class="admin-nav-link {% if admin_page == 'moderation' or request.path == u_moderation %}is-active{% endif %}">Moderation</a>
   </div>
+
   <div class="admin-nav-group">
     <span class="admin-nav-label">Accounts</span>
     <a href="{{ u_users }}" class="admin-nav-link {% if admin_page == 'users' or request.path == u_users %}is-active{% endif %}">Users</a>
   </div>
+
   <div class="admin-nav-group" style="margin-left:auto">
     <a href="{% url 'home' %}" class="admin-nav-link" style="border-color:var(--line)">&#8592; Shop front</a>
   </div>

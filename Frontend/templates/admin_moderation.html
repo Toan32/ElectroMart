@@ -550,6 +550,12 @@ only by typing its URL. {% endcomment %}
   text-align: center;
 }
 
+/* Ensure the placeholder fully disappears after an item is selected. */
+.moderation-detail-empty[hidden],
+.moderation-detail[hidden] {
+  display: none !important;
+}
+
 .moderation-detail-empty strong {
   margin-top: 10px;
   color: #344054;
@@ -563,6 +569,10 @@ only by typing its URL. {% endcomment %}
 
 .moderation-empty-icon {
   font-size: 38px;
+}
+
+.moderation-detail {
+  width: 100%;
 }
 
 .moderation-detail-head {

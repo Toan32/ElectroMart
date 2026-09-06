@@ -1262,13 +1262,69 @@ def admin_low_stock_items():
     return rows
 
 
-def admin_inventory_movements(sku=None, limit=100):
-    """Return newest CV67 stock movements, optionally filtered by SKU."""
+def admin_inventory_movements(
+    sku=None,
+    from_date=None,
+    to_date=None,
+    limit=100,
+):
+    """
+    Return newest CV67 stock movements.
+
+    Optional filters are applied directly in MongoDB:
+    - sku
+    - created_at >= from_date
+    - created_at <= to_date
+    """
     query = {}
 
     sku = str(sku or '').strip()
     if sku:
         query['sku'] = sku
+
+    created_at_range = {}
+
+    if from_date is not None:
+        if not isinstance(from_date, datetime):
+            raise ValueError('from_date must be a datetime.')
+
+        if from_date.tzinfo is None:
+            from_date = from_date.replace(
+                tzinfo=timezone.utc
+            )
+        else:
+            from_date = from_date.astimezone(
+                timezone.utc
+            )
+
+        created_at_range['$gte'] = from_date
+
+    if to_date is not None:
+        if not isinstance(to_date, datetime):
+            raise ValueError('to_date must be a datetime.')
+
+        if to_date.tzinfo is None:
+            to_date = to_date.replace(
+                tzinfo=timezone.utc
+            )
+        else:
+            to_date = to_date.astimezone(
+                timezone.utc
+            )
+
+        created_at_range['$lte'] = to_date
+
+    if (
+        from_date is not None
+        and to_date is not None
+        and from_date > to_date
+    ):
+        raise ValueError(
+            'From date cannot be after To date.'
+        )
+
+    if created_at_range:
+        query['created_at'] = created_at_range
 
     try:
         limit = int(limit)
