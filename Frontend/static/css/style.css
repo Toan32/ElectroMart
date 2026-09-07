@@ -31,6 +31,20 @@ img{max-width:100%}
 .hide{display:none !important}
 .muted{color:var(--muted)}
 
+/* ---------------------------------------------------- form validation
+   Site-wide so every app's forms (Storefront review/feedback, Sales &
+   Payment checkout/cart, Admin) get the same red "field is wrong" state
+   and inline message as the accounts module - see initClientValidation
+   in app.js, which toggles .is-invalid and fills .form-error. Targets
+   bare input/select/textarea (not just .form-control) since most forms
+   outside accounts do not use that class. accounts.css redeclares the
+   same rule scoped to .form-control; harmless duplication, not a conflict. */
+input.is-invalid,select.is-invalid,textarea.is-invalid{border-color:var(--red) !important}
+input.is-invalid:focus,select.is-invalid:focus,textarea.is-invalid:focus{
+  outline:none;border-color:var(--red) !important;
+}
+.form-error{font-size:12px;color:var(--red);margin-top:5px}
+
 /* ---------------------------------------------------------- header */
 .topbar{background:var(--blue-darker);color:#c9d3f5;font-size:12px}
 .topbar-in{display:flex;justify-content:space-between;align-items:center;height:32px}

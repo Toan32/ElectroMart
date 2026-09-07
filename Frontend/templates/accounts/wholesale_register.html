@@ -35,7 +35,8 @@
       </div>
       <div class="form-group">
         <label class="form-label" for="id_tax_code">Tax code (MST) <span class="req">*</span></label>
-        <input class="form-control" type="text" id="id_tax_code" name="tax_code"
+        <input class="form-control" type="text" id="id_tax_code" name="tax_code" pattern="\d{10}|\d{13}"
+               data-pattern-msg="Enter 10 or 13 digits."
                value="{{ request.POST.tax_code|default:initial.tax_code|default:'' }}" required>
         <div class="form-hint">10 or 13 digits.</div>
         {% if form.tax_code.errors %}<div class="form-error">{{ form.tax_code.errors.0 }}</div>{% endif %}
@@ -57,3 +58,5 @@
   </div>
 </div>
 {% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/accounts.js' %}"></script>{% endblock %}

@@ -235,6 +235,8 @@
                     type="text"
                     id="field-key-input"
                     placeholder="Example: clock_speed_mhz"
+                    pattern="[a-z][a-z0-9_]*"
+                    data-pattern-msg="Lowercase letters, numbers and underscores, starting with a letter."
                     required
                 >
             </div>
@@ -356,8 +358,11 @@
                     type="text"
                     id="category-slug-input"
                     placeholder="example-category"
+                    pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                    data-pattern-msg="Lowercase letters, numbers and hyphens only, e.g. example-category."
                     required
                 >
+                <div class="form-error" id="category-slug-error"></div>
             </div>
 
 
@@ -1056,6 +1061,9 @@ deleteCategoryButton.addEventListener("click", function () {
 
 });
 
+const categorySlugError =
+    document.getElementById("category-slug-error");
+
 categoryForm.addEventListener("submit", function (event) {
 
     event.preventDefault();
@@ -1071,7 +1079,12 @@ categoryForm.addEventListener("submit", function (event) {
     const parentValue =
         categoryParentInput.value;
 
+    if (categorySlugError) categorySlugError.textContent = "";
 
+    // Required + slug format are already enforced by app.js's shared
+    // validator (see the required/pattern attributes above) before this
+    // handler ever runs; this is just the uniqueness rule, which depends
+    // on the mock-up data in categorySpecTemplates and so has to stay here.
     if (!categoryNameValue || !categoryKeyValue) {
         return;
     }
@@ -1085,7 +1098,10 @@ categoryForm.addEventListener("submit", function (event) {
 
         if (categorySpecTemplates[categoryKeyValue]) {
 
-            alert("This category slug already exists.");
+            if (categorySlugError) {
+                categorySlugError.textContent = "This category slug already exists.";
+            }
+            categorySlugInput.focus();
 
             return;
         }
@@ -1184,7 +1200,10 @@ categoryForm.addEventListener("submit", function (event) {
             categorySpecTemplates[categoryKeyValue]
         ) {
 
-            alert("This category slug already exists.");
+            if (categorySlugError) {
+                categorySlugError.textContent = "This category slug already exists.";
+            }
+            categorySlugInput.focus();
 
             return;
         }

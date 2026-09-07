@@ -136,4 +136,106 @@
       cb.addEventListener('change', function () { form.submit(); });
     });
   }
+
+  /* ------------------------------------------------ client-side form validation
+     Shared by every app (Storefront, Sales & Payment, Accounts, Admin): shows
+     the same styled inline message for every form on the site, computed from
+     whatever required/pattern/minlength/type constraints the template already
+     declares, instead of each browser's own "Please fill out this field"
+     bubble (wording/style differs per browser, and clashes with the red
+     .form-error text already used for errors coming back from the server).
+     Those HTML attributes are left as-is: if this script fails to load, the
+     browser's own validation still runs and nothing breaks.
+     Runs on every <form> - including the GET filter/search/toolbar forms
+     (product list, order tracking, admin search boxes) - because none of
+     those declare any required/pattern field, so checkValidity() is always
+     true for them and this is a no-op there. A form that truly wants no
+     part of this (none today) can opt out with data-no-client-validate. */
+  var VALIDATION_MESSAGES = {
+    valueMissing: 'This field is required.',
+    typeMismatch: function (f) {
+      return f.type === 'email' ? 'Please enter a valid email address.' : 'Please enter a valid value.';
+    },
+    tooShort: function (f) { return 'Please use at least ' + f.minLength + ' characters.'; },
+    tooLong: function (f) { return 'Please use no more than ' + f.maxLength + ' characters.'; },
+    patternMismatch: function (f) { return f.dataset.patternMsg || 'Please match the requested format.'; },
+    rangeUnderflow: function (f) { return 'Value must be at least ' + f.min + '.'; },
+    rangeOverflow: function (f) { return 'Value must be at most ' + f.max + '.'; },
+    badInput: 'Please enter a valid value.',
+  };
+
+  function validationMessage(field) {
+    if (field.validity.customError) return field.validationMessage; // e.g. a "passwords must match" check
+    for (var key in VALIDATION_MESSAGES) {
+      if (field.validity[key]) {
+        var m = VALIDATION_MESSAGES[key];
+        return typeof m === 'function' ? m(field) : m;
+      }
+    }
+    return field.validationMessage || 'Please check this field.';
+  }
+
+  // Reuse the message box the template already renders for this field when
+  // there is one - either the .form-error convention (accounts, admin,
+  // sales admin) or checkout.html's own .invalid-feedback - and only create
+  // a new .form-error for forms that never had a per-field box (mock-up
+  // admin forms, the review form, ...).
+  function validationErrorBox(field, createIfMissing) {
+    var host = field.closest('.form-group') || field.closest('td') || field.parentElement;
+    var box = host && host.querySelector('.form-error, .invalid-feedback');
+    if (!box && createIfMissing) {
+      box = document.createElement('div');
+      box.className = 'form-error';
+      field.insertAdjacentElement('afterend', box);
+    }
+    return box;
+  }
+
+  function validateField(field) {
+    if (!field.willValidate || field.type === 'radio') return true;
+    var valid = field.checkValidity();
+    field.classList.toggle('is-invalid', !valid);
+    field.setAttribute('aria-invalid', valid ? 'false' : 'true');
+    var box = validationErrorBox(field, !valid);
+    if (box) box.textContent = valid ? '' : validationMessage(field);
+    return valid;
+  }
+
+  function isFormField(el) {
+    return !!(el && el.matches && el.matches('input, textarea, select'));
+  }
+
+  document.querySelectorAll('form').forEach(function (form) {
+    if (form.dataset.noClientValidate !== undefined) return;
+    form.setAttribute('novalidate', 'novalidate');
+
+    // Delegated on the form (not bound per-field) so a row a page adds
+    // later - the RFQ "+ Add row" button, an admin "+ Add variant" modal,
+    // ... - is validated too, with nothing extra for that page to wire up.
+    // 'focusout' is used instead of 'blur' because only focusout bubbles.
+    form.addEventListener('focusout', function (e) {
+      if (isFormField(e.target)) validateField(e.target);
+    });
+    form.addEventListener('input', function (e) {
+      if (isFormField(e.target) && e.target.classList.contains('is-invalid')) validateField(e.target);
+    });
+    form.addEventListener('change', function (e) {
+      if (isFormField(e.target) && e.target.classList.contains('is-invalid')) validateField(e.target);
+    });
+
+    form.addEventListener('submit', function (e) {
+      var firstInvalid = null;
+      // Queried fresh (not captured once) for the same reason: fields added
+      // after page load must still be checked before the form submits.
+      form.querySelectorAll('input, textarea, select').forEach(function (field) {
+        var ok = validateField(field);
+        if (!ok && !firstInvalid) firstInvalid = field;
+      });
+      if (firstInvalid) {
+        e.preventDefault();
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        firstInvalid.focus();
+      }
+    }, true); // capture: run before any page-specific submit handler (checkout.js, cart.js, admin mock-up scripts, ...) so an invalid field always blocks them too.
+  });
 })();

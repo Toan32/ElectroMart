@@ -18,3 +18,6 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+# User-uploaded files (avatars, ...) - never part of the codebase
+media/

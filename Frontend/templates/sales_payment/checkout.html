@@ -80,8 +80,9 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
                     <div class="form-group">
                         <label class="form-label" for="phoneNumber">Phone Number</label>
-                        <input type="tel" id="phoneNumber" class="form-control" placeholder="e.g. 0987654321" required>
-                        <div class="invalid-feedback">Phone number must contain 10-11 digits.</div>
+                        <input type="tel" id="phoneNumber" class="form-control" placeholder="e.g. 0987654321"
+                               pattern="[0-9]{10,11}" data-pattern-msg="Phone number must contain 10-11 digits." required>
+                        <div class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="email">Email Address</label>
@@ -220,5 +221,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'sales_payment/js/checkout.js' %}?v=4"></script>
+<script src="{% static 'sales_payment/js/checkout.js' %}?v=5"></script>
 {% endblock %}

@@ -230,7 +230,7 @@
                     Product / SKU
                 </label>
 
-                <select id="stock-sku">
+                <select id="stock-sku" required>
 
                     <option value="">
                         Select product
@@ -269,6 +269,7 @@
                     id="stock-quantity"
                     min="1"
                     placeholder="Enter quantity"
+                    required
                 >
 
             </div>
@@ -551,27 +552,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         event.preventDefault();
 
+        // "Product / SKU" and "Quantity" are required (see the attributes
+        // above) - app.js's shared validator already blocked this handler
+        // from running at all while either was empty/zero, so there is
+        // nothing left to check here beyond parsing the value.
 
         const selectedSku =
             stockSku.value;
 
         const quantityToAdd =
             parseInt(stockQuantity.value);
-
-
-        if (selectedSku === "") {
-            alert("Please select a product.");
-            return;
-        }
-
-
-        if (
-            isNaN(quantityToAdd) ||
-            quantityToAdd <= 0
-        ) {
-            alert("Please enter a valid quantity.");
-            return;
-        }
 
 
         let selectedRow = null;

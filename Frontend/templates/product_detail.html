@@ -193,6 +193,7 @@
           </div>
 
           <input type="hidden" name="rating" id="review-rating">
+          <div class="form-error" id="review-rating-error"></div>
         </div>
 
 
@@ -204,6 +205,8 @@
             id="review-title"
             name="title"
             placeholder="Summarize your experience"
+            required
+            maxlength="120"
           >
         </div>
 
@@ -216,6 +219,8 @@
             name="content"
             rows="5"
             placeholder="Tell us what you think about this product"
+            required
+            minlength="10"
           ></textarea>
         </div>
 
@@ -791,6 +796,26 @@ ratingStars.forEach(function (star) {
 if (ratingContainer) {
   ratingContainer.addEventListener('mouseleave', function () {
     showRating(selectedRating);
+  });
+}
+
+// Star rating is a type="hidden" input, so the browser's own required/
+// checkValidity() never looks at it (hidden fields are excluded from
+// constraint validation) - app.js's shared validator skips it the same
+// way. Enforced here instead, with the same .form-error styling.
+const reviewForm = document.querySelector('.review-form form');
+const ratingError = document.getElementById('review-rating-error');
+if (reviewForm && ratingError) {
+  reviewForm.addEventListener('submit', function (e) {
+    if (selectedRating < 1) {
+      e.preventDefault();
+      ratingError.textContent = 'Please select a star rating.';
+    } else {
+      ratingError.textContent = '';
+    }
+  });
+  ratingStars.forEach(function (star) {
+    star.addEventListener('click', function () { ratingError.textContent = ''; });
   });
 }
 

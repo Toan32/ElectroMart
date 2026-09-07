@@ -50,7 +50,8 @@
 
       <div class="form-group">
         <label class="form-label" for="id_phone">Phone number</label>
-        <input class="form-control" type="text" id="id_phone" name="phone" value="{{ user.phone|default:'' }}" pattern="[0-9]{9,11}">
+        <input class="form-control" type="text" id="id_phone" name="phone" value="{{ user.phone|default:'' }}"
+               pattern="[0-9]{9,11}" data-pattern-msg="Digits only, 9 to 11 numbers.">
         {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
       </div>
 
