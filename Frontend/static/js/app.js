@@ -144,8 +144,10 @@
      declares, instead of each browser's own "Please fill out this field"
      bubble (wording/style differs per browser, and clashes with the red
      .form-error text already used for errors coming back from the server).
-     Those HTML attributes are left as-is: if this script fails to load, the
-     browser's own validation still runs and nothing breaks.
+     The native bubble itself is already turned off site-wide by the small
+     inline script in base.html <head> (which also runs when this file fails
+     to load); the block below adds the inline .form-error message and blocks
+     submit before the page's own handlers run.
      Runs on every <form> - including the GET filter/search/toolbar forms
      (product list, order tracking, admin search boxes) - because none of
      those declare any required/pattern field, so checkValidity() is always
