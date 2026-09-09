@@ -4,7 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ page_title|default:"ElectroMart" }}</title>
-<link rel="stylesheet" href="{% static 'css/style.css' %}?v=5">
+<script>
+/* Site-wide: never show the browser's own "Please fill out this field"
+   validation bubbles. This runs in <head>, before any <form> is parsed, and
+   does NOT depend on app.js - so it also covers forms added to the page
+   later and the case where app.js fails to load (stale cache, DEBUG=0, JS
+   error). app.js still renders the styled inline .form-error for each field.
+     - cancelling the `invalid` event  -> no native popup, for every field
+     - marking every form `novalidate`  -> the submit still reaches Django,
+       which re-renders the page with the same .form-error messages */
+(function () {
+  document.addEventListener('invalid', function (e) { e.preventDefault(); }, true);
+  function killNativeValidation(scope) {
+    (scope.querySelectorAll ? scope.querySelectorAll('form') : []).forEach(
+      function (f) { f.setAttribute('novalidate', 'novalidate'); });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    killNativeValidation(document);
+  });
+  document.addEventListener('submit', function (e) {
+    if (e.target && e.target.tagName === 'FORM') {
+      e.target.setAttribute('novalidate', 'novalidate');
+    }
+  }, true);
+}());
+</script>
+<link rel="stylesheet" href="{% static 'css/style.css' %}?v=6">
 {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -160,7 +185,7 @@
   <a class="btn btn-primary btn-sm" href="{% url 'compare' %}">View comparison</a>
 </div>
 
-<script src="{% static 'js/app.js' %}?v=2"></script>
+<script src="{% static 'js/app.js' %}?v=4"></script>
 <script src="{% static 'sales_payment/js/shared.js' %}?v=5"></script>
 <script src="{% static 'sales_payment/js/cart.js' %}?v=5"></script>
 {% block extra_js %}{% endblock %}

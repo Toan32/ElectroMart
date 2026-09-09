@@ -7,9 +7,15 @@
 document.addEventListener('DOMContentLoaded', function () {
   initAccountTypeToggle();
   initPasswordStrength();
+  initPasswordMatch();
   initAvatarPreview();
   initRfqRows();
   initBomDropZone();
+  // The generic "required/pattern/type -> styled inline message" validator
+  // that used to live here now lives in app.js (initClientValidation moved
+  // there and renamed) so every app on the site shares one implementation,
+  // not just accounts/admin forms. app.js loads before this file (see
+  // base.html), so it has already run by the time this listener fires.
 });
 
 /* ---- register.html: show Company name + Tax code only for Wholesale ---- */
@@ -99,7 +105,13 @@ function initRfqRows() {
 
   addBtn.addEventListener('click', function () {
     var row = body.rows[0].cloneNode(true);
-    row.querySelectorAll('input').forEach(function (el) { el.value = ''; });
+    row.querySelectorAll('input').forEach(function (el) {
+      el.value = '';
+      el.classList.remove('is-invalid');
+    });
+    // Drop any error message cloned from a row the user had already left
+    // blank before clicking "+ Add row" (initClientValidation() below).
+    row.querySelectorAll('.form-error').forEach(function (el) { el.remove(); });
     body.appendChild(row);
   });
 
@@ -116,7 +128,24 @@ function initBomDropZone() {
   var zone = document.getElementById('bom-drop');
   var input = document.getElementById('id_bom_file');
   var nameLabel = document.getElementById('bom-filename');
+  var body = document.getElementById('rfq-rows');
   if (!zone || !input) return;
+
+  // The manual-entry row's Part number/Quantity are marked "required" so a
+  // fully empty submit is caught before it reaches the server (TH38). But a
+  // customer who only wants to upload a BOM file never touches that row, so
+  // the browser blocked Submit on it being empty - required must follow
+  // whichever input method is actually in use.
+  function setRowsRequired(isRequired) {
+    if (!body) return;
+    body.querySelectorAll('input[name="part_number[]"], input[name="quantity[]"]')
+      .forEach(function (el) { el.required = isRequired; });
+  }
+
+  function onFileChosen(file) {
+    if (nameLabel && file) nameLabel.textContent = file.name;
+    setRowsRequired(!file);
+  }
 
   ['dragenter', 'dragover'].forEach(function (evt) {
     zone.addEventListener(evt, function (e) {
@@ -133,11 +162,31 @@ function initBomDropZone() {
   zone.addEventListener('drop', function (e) {
     if (e.dataTransfer.files.length) {
       input.files = e.dataTransfer.files;
-      if (nameLabel) nameLabel.textContent = e.dataTransfer.files[0].name;
+      onFileChosen(e.dataTransfer.files[0]);
     }
   });
   zone.addEventListener('click', function () { input.click(); });
   input.addEventListener('change', function () {
-    if (nameLabel && input.files[0]) nameLabel.textContent = input.files[0].name;
+    onFileChosen(input.files[0]);
   });
 }
+
+/* ---- register.html / reset_password.html / change_password.html:
+   "Confirm password" must match "Password" - checked live via the native
+   Constraint Validation API (setCustomValidity) so initClientValidation()
+   below reports it exactly like any other HTML5 rule. ---- */
+function initPasswordMatch() {
+  var pwd = document.getElementById('id_password');
+  var confirmField = document.getElementById('id_password2');
+  if (!pwd || !confirmField) return;
+
+  function sync() {
+    var mismatch = confirmField.value && confirmField.value !== pwd.value;
+    confirmField.setCustomValidity(mismatch ? 'Passwords do not match.' : '');
+  }
+  pwd.addEventListener('input', sync);
+  confirmField.addEventListener('input', sync);
+}
+
+/* initClientValidation() used to live here - moved to app.js so it covers
+   every form on every page, not just accounts/admin. See app.js. */

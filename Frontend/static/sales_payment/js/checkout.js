@@ -128,19 +128,16 @@ window.postJson = postJson;
 
 // Submit Order and open payment modal if bank transfer, or direct success page
 function processOrderSubmit() {
+    // Name/phone/email/address required + phone pattern are already enforced
+    // by app.js's shared validator (see the required/pattern attributes on
+    // these fields in checkout.html) before this function ever runs - the
+    // capture-phase listener it installs on every form blocks an invalid
+    // submit from reaching this bubble-phase handler at all.
     const name = document.getElementById('fullName').value.trim();
     const phone = document.getElementById('phoneNumber').value.trim();
     const email = document.getElementById('email').value.trim();
     const address = document.getElementById('address').value.trim();
     const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-
-    // Validate phone number (basic)
-    if (!/^\d{10,11}$/.test(phone)) {
-        document.getElementById('phoneNumber').classList.add('is-invalid');
-        return;
-    } else {
-        document.getElementById('phoneNumber').classList.remove('is-invalid');
-    }
 
     const submitBtn = document.getElementById('placeOrderBtn');
     if (submitBtn) {
