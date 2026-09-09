@@ -23,52 +23,65 @@
     Promo codes customers can apply at checkout. A code only applies when it is
     active and the order reaches its minimum value.
   </p>
-  <details class="a-details" {% if form_error %}open{% endif %}>
-    <summary class="btn btn-primary btn-sm">+ Create promo code</summary>
-    <div class="a-popover" style="min-width:340px">
-      <form method="post" action="{% url 'admin_promotions' %}">
-        {% csrf_token %}
-        {% if form_error %}<div class="form-error" style="margin-bottom:10px">{{ form_error }}</div>{% endif %}
+  <button type="button" class="btn btn-primary btn-sm" id="open-promo-modal-btn">+ Create promo code</button>
+</div>
 
-        <div class="form-group">
-          <label class="form-label" for="id_code">Code <span class="req">*</span></label>
-          <input class="form-control a-code" type="text" id="id_code" name="code" required
-                 maxlength="20" pattern="[A-Za-z0-9]{3,20}" placeholder="ELECTRO10"
-                 style="text-transform:uppercase" value="{{ form_data.code|default:'' }}">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="id_type">Discount type <span class="req">*</span></label>
-          <select id="id_type" name="type" class="form-control" required>
-            {% for value, label in coupon_types %}
-            <option value="{{ value }}" {% if form_data.type == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="id_value">Value <span class="req">*</span></label>
-          <input class="form-control" type="number" id="id_value" name="value" min="0" required
-                 placeholder="10 for 10%, or 500000 for a fixed amount"
-                 value="{{ form_data.value|default:'' }}">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="id_min_order">Minimum order <span class="req">*</span></label>
-          <input class="form-control" type="number" id="id_min_order" name="min_order" min="0" required
-                 placeholder="0 for no minimum" value="{{ form_data.min_order|default:'' }}">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="id_description">Description <span class="req">*</span></label>
-          <textarea class="form-control" id="id_description" name="description" rows="2" required
-                    placeholder="10% off orders from 10,000,000 d">{{ form_data.description|default:'' }}</textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block">Create promo code</button>
-      </form>
+<!-- PROMO MODAL -->
+<div class="category-modal {% if form_error %}show{% endif %}" id="promo-modal">
+  <div class="category-modal-backdrop" id="promo-modal-backdrop"></div>
+  <div class="category-modal-box" style="width: 100%; max-width: 400px; padding: 24px;">
+    <div class="category-modal-header" style="margin-bottom: 20px;">
+      <div>
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin: 0; color: #111827;">Create promo code</h2>
+      </div>
+      <button type="button" class="category-modal-close" id="promo-modal-close">×</button>
     </div>
-  </details>
+
+    <form method="post" action="{% url 'admin_promotions' %}">
+      {% csrf_token %}
+      {% if form_error %}<div class="form-error" style="margin-bottom:15px">{{ form_error }}</div>{% endif %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_code">Code <span class="req">*</span></label>
+        <input class="form-control a-code" type="text" id="id_code" name="code" required
+               maxlength="20" pattern="[A-Za-z0-9]{3,20}" placeholder="ELECTRO10"
+               style="text-transform:uppercase" value="{{ form_data.code|default:'' }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_type">Discount type <span class="req">*</span></label>
+        <select id="id_type" name="type" class="form-control" required>
+          {% for value, label in coupon_types %}
+          <option value="{{ value }}" {% if form_data.type == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_value">Value <span class="req">*</span></label>
+        <input class="form-control" type="number" id="id_value" name="value" min="0" required
+               placeholder="10 for 10%, or 500000 for a fixed amount"
+               value="{{ form_data.value|default:'' }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_min_order">Minimum order <span class="req">*</span></label>
+        <input class="form-control" type="number" id="id_min_order" name="min_order" min="0" required
+               placeholder="0 for no minimum" value="{{ form_data.min_order|default:'' }}">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_description">Description <span class="req">*</span></label>
+        <textarea class="form-control" id="id_description" name="description" rows="2" required
+                  placeholder="10% off orders from 10,000,000 d">{{ form_data.description|default:'' }}</textarea>
+      </div>
+
+      <div class="category-modal-footer" style="padding: 0; margin-top: 24px; border-top: none;">
+        <button type="button" class="category-modal-cancel" id="promo-modal-cancel">Cancel</button>
+        <button type="submit" class="category-modal-save" style="background-color: #1135a6; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 500; cursor: pointer;">Create promo code</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <div class="promo-grid">
@@ -128,4 +141,29 @@
   </div>
   {% endfor %}
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const promoModal = document.getElementById("promo-modal");
+    if (!promoModal) return;
+
+    const openBtn = document.getElementById("open-promo-modal-btn");
+    const closeBtn = document.getElementById("promo-modal-close");
+    const cancelBtn = document.getElementById("promo-modal-cancel");
+    const backdrop = document.getElementById("promo-modal-backdrop");
+
+    function openModal() {
+      promoModal.classList.add("show");
+    }
+
+    function closeModal() {
+      promoModal.classList.remove("show");
+    }
+
+    if (openBtn) openBtn.addEventListener("click", openModal);
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+    if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+    if (backdrop) backdrop.addEventListener("click", closeModal);
+  });
+</script>
 {% endblock %}
