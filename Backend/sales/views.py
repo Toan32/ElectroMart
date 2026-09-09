@@ -12,6 +12,7 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 from accounts.decorators import admin_required, current_user
 
@@ -63,7 +64,12 @@ def admin_orders(request):
     status = request.GET.get('status') or 'all'
     q = (request.GET.get('q') or '').strip()
 
-    orders = [repo.decorate(o) for o in repo.list_orders(status=status, q=q)]
+    all_orders = [repo.decorate(o) for o in repo.list_orders(status=status, q=q)]
+    
+    paginator = Paginator(all_orders, 15)  # 15 orders per page
+    page_number = request.GET.get('page')
+    orders = paginator.get_page(page_number)
+
     counts = repo.status_counts()
 
     # Built here rather than in the template: a Django template cannot look a

@@ -96,4 +96,25 @@
     </table>
   </div>
 </div>
+
+{% if orders.has_other_pages %}
+<div style="display:flex; justify-content:center; gap:8px; margin-top:20px; padding-bottom: 20px;">
+  {% if orders.has_previous %}
+  <a href="?page={{ orders.previous_page_number }}&amp;status={{ status }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}" class="btn btn-outline btn-sm">&laquo; Prev</a>
+  {% else %}
+  <button class="btn btn-outline btn-sm" disabled>&laquo; Prev</button>
+  {% endif %}
+
+  <span style="display:flex; align-items:center; font-size:14px; font-weight:500; color: #4b5563;">
+    Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+  </span>
+
+  {% if orders.has_next %}
+  <a href="?page={{ orders.next_page_number }}&amp;status={{ status }}{% if q %}&amp;q={{ q|urlencode }}{% endif %}" class="btn btn-outline btn-sm">Next &raquo;</a>
+  {% else %}
+  <button class="btn btn-outline btn-sm" disabled>Next &raquo;</button>
+  {% endif %}
+</div>
+{% endif %}
+
 {% endblock %}
