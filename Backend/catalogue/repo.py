@@ -1545,6 +1545,17 @@ def products_by_slugs(slugs):
     return [docs[s] for s in slugs if s in docs]
 
 
+def products_by_ids(ids):
+    """Map product ObjectIds (or their hex strings) onto product documents,
+    keyed by the string id, in one round trip. Used by the account
+    "My reviews" page to name the product each review was written about -
+    hidden products included, so an old review still shows what it was for."""
+    oids = [oid for oid in (_product_oid(i) for i in ids) if oid is not None]
+    if not oids:
+        return {}
+    return {str(d['_id']): d for d in get_db()[PRODUCTS].find({'_id': {'$in': oids}})}
+
+
 def related_products(product, limit=5):
     return list(get_db()[PRODUCTS].find({
         'category_id': product['category_id'],

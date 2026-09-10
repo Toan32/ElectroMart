@@ -362,6 +362,42 @@ def rfq_list(request):
         'page_title': 'My RFQs - ElectroMart', 'quotations': quotations})
 
 
+# ------------------------------------------------------- my orders / my reviews
+# Two panels the profile sidebar has always linked to with href="#". They read
+# the sales and interaction modules through their own repos (read-only) - no
+# other module's data-access code is changed.
+@login_required
+def my_orders(request):
+    """Every order the logged-in customer has placed, newest first (CV54 /
+    REQ-30 seen from the account, not the guest-tracking form)."""
+    from sales import repo as sales_repo
+
+    user = current_user(request)
+    orders = [sales_repo.decorate(o) for o in sales_repo.list_orders_by_user(user['_id'])]
+    return render(request, 'accounts/my_orders.html', {
+        'page_title': 'My orders - ElectroMart', 'user': user, 'orders': orders})
+
+
+@login_required
+def my_reviews(request):
+    """Every product review the logged-in customer has written (CV68), with the
+    product it belongs to. The owner sees their hidden reviews too; editing
+    still happens on the product page."""
+    from catalogue import repo as catalogue_repo
+    from interaction import repo as interaction_repo
+
+    user = current_user(request)
+    reviews = interaction_repo.list_reviews_by_user(user['_id'])
+    products = catalogue_repo.products_by_ids([r['product_id'] for r in reviews])
+    for r in reviews:
+        r['id'] = str(r['_id'])
+        product = products.get(str(r['product_id']))
+        r['product_name'] = product['name'] if product else 'Product no longer available'
+        r['product_slug'] = product.get('slug') if product else None
+    return render(request, 'accounts/my_reviews.html', {
+        'page_title': 'My reviews - ElectroMart', 'user': user, 'reviews': reviews})
+
+
 # ------------------------------------------------------------------- Admin
 @admin_required
 def admin_manage_user(request):

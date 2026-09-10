@@ -44,6 +44,8 @@ urlpatterns = [
     path('accounts/rfq/', accounts_views.rfq_list, name='accounts_rfq_list'),
 
     path('accounts/orders/', sales_views.track_order, name='accounts_orders'),
+    path('accounts/my-orders/', accounts_views.my_orders, name='accounts_my_orders'),
+    path('accounts/my-reviews/', accounts_views.my_reviews, name='accounts_my_reviews'),
 
     # ------------------------------------------------------- catalogue & content (Minh)
     path('news/', views.news, name='news'),

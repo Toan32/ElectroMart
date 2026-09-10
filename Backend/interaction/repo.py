@@ -95,6 +95,24 @@ def list_reviews(product_id, include_hidden=False):
 
 
 
+def list_reviews_by_user(user_id, include_hidden=True):
+    # Every review one customer has written, across all products, newest
+    # first. Feeds the account "My reviews" page (profile sidebar). Hidden
+    # reviews are kept in by default so the owner still sees their own.
+    query = {
+        'user_id': _oid(user_id)
+    }
+
+    if not include_hidden:
+        query['is_hidden'] = False
+
+    return list(
+        get_db()[REVIEWS]
+        .find(query)
+        .sort('created_at', -1)
+    )
+
+
 def admin_list_reviews(product_id=None, is_hidden=None):
     # CV71 moderation list.
     query = {}

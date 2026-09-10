@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% load em_extras %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> <a href="{% url 'accounts_profile' %}">My account</a> <span>&#8250;</span> My orders</nav>
+
+{% comment %} ---------- Control table ----------
+   Read-only. Lists every order whose user_id is the logged-in customer
+   (sales.repo.list_orders_by_user), newest first. Each row expands to show
+   the order lines and the money breakdown; the "Track" link opens the
+   public tracking page pre-filled so the full status timeline is reachable
+   without a second account-only view. {% endcomment %}
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}">Profile</a>
+    <a href="{% url 'accounts_address_book' %}">Address book</a>
+    <a href="{% url 'accounts_my_orders' %}" class="active">My orders</a>
+    <a href="{% url 'accounts_my_reviews' %}">My reviews</a>
+    <a href="{% url 'accounts_edit_profile' %}">Edit profile</a>
+    <a href="{% url 'accounts_change_password' %}">Change password</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">My orders</h1>
+
+    {% if orders %}
+    <div class="table-scroll">
+      <table class="a-table">
+        <thead>
+          <tr>
+            <th>Order</th><th>Placed</th><th class="num">Items</th>
+            <th class="num">Total</th><th>Status</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders %}
+          <tr>
+            <td class="a-code">{{ o.order_code }}</td>
+            <td class="muted">{{ o.created_at|date:"d/m/Y H:i" }}</td>
+            <td class="num">{{ o.item_count }}</td>
+            <td class="num"><strong>{{ o.total|money }}</strong></td>
+            <td><span class="badge {{ o.status_badge }}">{{ o.status_label }}</span></td>
+            <td>
+              <a class="btn btn-outline btn-sm"
+                 href="{% url 'tracking' %}?order_code={{ o.order_code }}&amp;contact={{ o.phone|urlencode }}">Track</a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="6" style="padding-top:0">
+              <details>
+                <summary style="cursor:pointer;color:var(--blue);font-size:12.5px">Order details</summary>
+                <div style="margin-top:10px">
+                  <table class="rfq-table" style="margin-bottom:12px">
+                    <thead><tr><th>Product</th><th>Unit price</th><th>Qty</th><th>Line total</th></tr></thead>
+                    <tbody>
+                      {% for item in o.items %}
+                      <tr>
+                        <td>{{ item.name }}{% if item.specs %}<div class="muted">{{ item.specs }}</div>{% endif %}</td>
+                        <td>{{ item.price|money }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.line_total|money }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  <div class="money-rows" style="max-width:320px;margin-left:auto">
+                    <div><span>Subtotal</span><span>{{ o.subtotal|money }}</span></div>
+                    <div>
+                      <span>Discount{% if o.coupon_code %} <span class="a-code">{{ o.coupon_code }}</span>{% endif %}</span>
+                      <span>{% if o.discount %}-{{ o.discount|money }}{% else %}&mdash;{% endif %}</span>
+                    </div>
+                    <div><span>Shipping{% if o.shipping_label %} ({{ o.shipping_label }}){% endif %}</span>
+                      <span>{% if o.shipping_fee %}{{ o.shipping_fee|money }}{% else %}Free{% endif %}</span></div>
+                    <div class="grand"><span>Total</span><span>{{ o.total|money }}</span></div>
+                  </div>
+                  <div class="muted" style="margin-top:10px">
+                    Ship to: {{ o.customer_name }} &middot; {{ o.phone }} &middot; {{ o.address }}<br>
+                    Payment: {{ o.payment_label }}
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted">You have not placed any order yet.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary">Start shopping</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

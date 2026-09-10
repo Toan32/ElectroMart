@@ -14,8 +14,8 @@
   <aside class="acc-side">
     <a href="{% url 'accounts_profile' %}" class="active">Profile</a>
     <a href="{% url 'accounts_address_book' %}">Address book</a>
-    <a href="#">My orders</a>
-    <a href="#">My reviews</a>
+    <a href="{% url 'accounts_my_orders' %}">My orders</a>
+    <a href="{% url 'accounts_my_reviews' %}">My reviews</a>
     <a href="{% url 'accounts_change_password' %}">Change password</a>
     {% if user.role == 'wholesale' %}<a href="{% url 'accounts_wholesale_status' %}">Wholesale status</a>
     {% else %}<a href="{% url 'accounts_wholesale_register' %}">Become a business account</a>{% endif %}

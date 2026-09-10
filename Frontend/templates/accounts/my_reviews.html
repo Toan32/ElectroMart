@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% load em_extras %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> <a href="{% url 'accounts_profile' %}">My account</a> <span>&#8250;</span> My reviews</nav>
+
+{% comment %} ---------- Control table ----------
+   Read-only. Lists every review this customer has written
+   (interaction.repo.list_reviews_by_user), newest first, hidden ones
+   included so the owner still sees them. Editing / hiding stays on the
+   product page where the review form already lives (CV68). {% endcomment %}
+
+<div class="acc-layout">
+  <aside class="acc-side">
+    <a href="{% url 'accounts_profile' %}">Profile</a>
+    <a href="{% url 'accounts_address_book' %}">Address book</a>
+    <a href="{% url 'accounts_my_orders' %}">My orders</a>
+    <a href="{% url 'accounts_my_reviews' %}" class="active">My reviews</a>
+    <a href="{% url 'accounts_edit_profile' %}">Edit profile</a>
+    <a href="{% url 'accounts_change_password' %}">Change password</a>
+  </aside>
+
+  <div class="acc-main">
+    <h1 class="acc-title">My reviews</h1>
+
+    {% for r in reviews %}
+    <div class="addr-card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <b>
+          {% if r.product_slug %}
+          <a href="{% url 'product_detail' slug=r.product_slug %}" style="color:var(--blue)">{{ r.product_name }}</a>
+          {% else %}{{ r.product_name }}{% endif %}
+        </b>
+        {% if r.is_hidden %}<span class="pill pill-rejected">Hidden</span>{% endif %}
+      </div>
+      <div style="margin:6px 0">
+        <span class="stars" style="color:#f5a623;letter-spacing:2px">{{ r.rating|stars }}</span>
+        <span class="muted" style="margin-left:8px">{{ r.rating }}/5</span>
+      </div>
+      {% if r.title %}<div style="font-weight:600">{{ r.title }}</div>{% endif %}
+      {% if r.content %}<div style="margin-top:4px">{{ r.content|linebreaksbr }}</div>{% endif %}
+      <div class="muted" style="margin:8px 0 0">
+        Posted {{ r.created_at|date:"d/m/Y H:i" }}
+        {% if r.updated_at and r.updated_at != r.created_at %} &middot; edited {{ r.updated_at|date:"d/m/Y H:i" }}{% endif %}
+      </div>
+      {% if r.product_slug %}
+      <div style="margin-top:10px">
+        <a class="btn btn-outline btn-sm" href="{% url 'product_detail' slug=r.product_slug %}">View / edit on product page</a>
+      </div>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p class="muted">You have not written any product review yet.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary">Browse products</a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
