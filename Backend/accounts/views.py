@@ -428,6 +428,121 @@ def admin_wholesale_review(request, profile_id):
     return redirect('admin_manage_user')
 
 
+# ------------------------------------------------------------- Admin: RFQ
+# The customer side of RFQ (rfq_create / rfq_list) shipped in Viec 14; this
+# is the admin side (CV62): read an RFQ, put a wholesale unit price on every
+# line, set how long the quote is valid, and send it back. repo.py already
+# had submit_quote_prices() waiting for a caller - this is it.
+RFQ_NOTICES = {
+    'quote_sent': 'The quotation was sent to the customer by email.',
+}
+
+
+@admin_required
+def admin_rfq_list(request):
+    status = request.GET.get('status') or None
+    quotations = repo.list_quotations(status)
+
+    db = repo.get_db()
+    ids = list({q['user_id'] for q in quotations})
+    users = {u['_id']: u for u in db[repo.USERS].find({'_id': {'$in': ids}})} if ids else {}
+    for q in quotations:
+        q['id'] = str(q['_id'])
+        customer = users.get(q['user_id'])
+        q['customer_name'] = customer.get('full_name') if customer else '(unknown user)'
+        q['customer_email'] = customer.get('email') if customer else ''
+        q['line_count'] = len(q.get('items', []))
+
+    return render(request, 'admin/manage_rfq.html', {
+        'page_title': 'Manage RFQs - ElectroMart',
+        'admin_page': 'rfqs',
+        'quotations': quotations,
+        'status_filter': status or '',
+        'statuses': [repo.QUOTE_PENDING, repo.QUOTE_QUOTED, repo.QUOTE_ACCEPTED,
+                     repo.QUOTE_REJECTED, repo.QUOTE_EXPIRED],
+        'notice': RFQ_NOTICES.get(request.GET.get('notice')),
+    })
+
+
+@admin_required
+def admin_rfq_detail(request, quotation_id):
+    try:
+        quotation = repo.get_quotation(quotation_id)
+    except Exception:
+        quotation = None  # a malformed id in the URL, not a real 500
+    if not quotation:
+        return redirect('admin_rfq_list')
+    customer = repo.find_user_by_id(quotation['user_id'])
+
+    # A quote can only be priced once, while it is still pending. After that
+    # the page is read-only (the customer may already have acted on it).
+    if request.method == 'POST' and quotation['status'] == repo.QUOTE_PENDING:
+        error, priced_items, valid_until = _read_quote_form(request, quotation)
+        if error:
+            return render(request, 'admin/rfq_detail.html', {
+                'page_title': 'RFQ detail - ElectroMart', 'admin_page': 'rfqs',
+                'quotation': _decorate_quotation(quotation), 'customer': customer,
+                'error': error,
+            })
+        repo.submit_quote_prices(quotation_id, priced_items, valid_until)
+        if customer:
+            mailer.send_rfq_quoted_email(customer, repo.get_quotation(quotation_id))
+        return redirect('%s?notice=quote_sent' % _url('admin_rfq_list'))
+
+    return render(request, 'admin/rfq_detail.html', {
+        'page_title': 'RFQ detail - ElectroMart', 'admin_page': 'rfqs',
+        'quotation': _decorate_quotation(quotation), 'customer': customer,
+    })
+
+
+def _read_quote_form(request, quotation):
+    """Pull one unit price per line + a validity date out of request.POST.
+
+    Returns (error_message, priced_items, valid_until); error_message is None
+    when every field is acceptable.
+    """
+    prices = request.POST.getlist('unit_price[]')
+    items = quotation.get('items', [])
+    priced = []
+    for i, item in enumerate(items):
+        raw = prices[i].strip() if i < len(prices) else ''
+        try:
+            unit_price = float(raw)
+        except ValueError:
+            return 'Please enter a unit price (a number, 0 or more) for every line.', None, None
+        if unit_price < 0:
+            return 'A unit price cannot be negative.', None, None
+        priced.append(dict(item, unit_price=unit_price))
+
+    valid_raw = (request.POST.get('valid_until') or '').strip()
+    if not valid_raw:
+        return 'Please choose a date until which this quote stays valid.', None, None
+    try:
+        valid_until = datetime.strptime(valid_raw, '%Y-%m-%d')
+    except ValueError:
+        return 'The quote validity date is not a valid date.', None, None
+    if valid_until.date() < datetime.utcnow().date():
+        return 'The quote validity date is in the past.', None, None
+
+    return None, priced, valid_until
+
+
+def _decorate_quotation(quotation):
+    """Add the string id and per-line / grand totals the template needs
+    (Django templates cannot multiply unit_price by quantity themselves)."""
+    quotation['id'] = str(quotation['_id'])
+    grand_total = 0
+    for item in quotation.get('items', []):
+        unit_price = item.get('unit_price')
+        if unit_price is None:
+            item['line_total'] = None
+        else:
+            item['line_total'] = unit_price * item.get('quantity', 0)
+            grand_total += item['line_total']
+    quotation['grand_total'] = grand_total if quotation['status'] != repo.QUOTE_PENDING else None
+    return quotation
+
+
 def _url(name):
     from django.urls import reverse
     return reverse(name)

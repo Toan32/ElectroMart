@@ -18,6 +18,7 @@ Orders). {% endcomment %}
 {% url 'admin_news' as u_news %}
 {% url 'admin_moderation' as u_moderation %}
 {% url 'admin_manage_user' as u_users %}
+{% url 'admin_rfq_list' as u_rfqs %}
 
 <div class="admin-nav">
   <div class="admin-nav-group">
@@ -44,6 +45,7 @@ Orders). {% endcomment %}
   <div class="admin-nav-group">
     <span class="admin-nav-label">Accounts</span>
     <a href="{{ u_users }}" class="admin-nav-link {% if admin_page == 'users' or request.path == u_users %}is-active{% endif %}">Users</a>
+    <a href="{{ u_rfqs }}" class="admin-nav-link {% if admin_page == 'rfqs' or request.path == u_rfqs %}is-active{% endif %}">RFQs</a>
   </div>
 
   <div class="admin-nav-group" style="margin-left:auto">

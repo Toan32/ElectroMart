@@ -92,6 +92,18 @@ def send_password_reset_email(user, token):
     )
 
 
+def send_rfq_quoted_email(user, quotation):
+    """Tell a wholesale customer their RFQ now has prices on it (CV62)."""
+    rfq_url = '%s/accounts/rfq/' % settings.SITE_BASE_URL
+    _log_action_link('RFQ quotation ready for %s' % user['email'], rfq_url)
+    return send_mail(
+        user['email'],
+        'Your ElectroMart quotation is ready',
+        'rfq_quoted_email.html',
+        {'full_name': user['full_name'], 'quotation': quotation, 'rfq_url': rfq_url},
+    )
+
+
 def send_b2b_approval_email(user, approved, reason=''):
     return send_mail(
         user['email'],

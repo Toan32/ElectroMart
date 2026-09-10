@@ -80,6 +80,11 @@ urlpatterns = [
     path('admin/users/<str:user_id>/lock/', accounts_views.admin_toggle_lock, name='admin_toggle_lock'),
     path('admin/users/<str:profile_id>/wholesale-review/', accounts_views.admin_wholesale_review, name='admin_wholesale_review'),
 
+    # Admin side of RFQ (CV62): list every customer's quotation, open one and
+    # price it. The customer-facing /accounts/rfq/... URLs are above.
+    path('admin/rfqs/', accounts_views.admin_rfq_list, name='admin_rfq_list'),
+    path('admin/rfqs/<str:quotation_id>/', accounts_views.admin_rfq_detail, name='admin_rfq_detail'),
+
     # Catalogue admin (CV65-CV67). Each page renders once and then talks to
     # its own JSON endpoints below, which is why the fetch() URLs live under
     # the same /admin/ prefix as the page that calls them.

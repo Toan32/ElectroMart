@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Admin <span>&#8250;</span> Manage RFQs</nav>
+
+{% include "admin/_admin_nav.html" %}
+
+<h1 class="acc-title">Manage RFQs</h1>
+
+{% comment %} ---------- Control table ----------
+   status filter : select (all / pending / quoted / accepted / rejected /
+                   expired), GET param "status"
+   Open link     : per row, goes to admin/views.py -> admin_rfq_detail
+   A "pending" RFQ is one a customer has sent but nobody has priced yet -
+   that is the queue the admin works through. {% endcomment %}
+
+{% if notice %}<div class="notice-banner">{{ notice }}</div>{% endif %}
+
+<form class="admin-toolbar" method="get" action="{% url 'admin_rfq_list' %}">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for s in statuses %}
+    <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s|capfirst }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-outline btn-sm">Filter</button>
+</form>
+
+<div style="overflow-x:auto">
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>RFQ</th>
+      <th>Customer</th>
+      <th>Sent on</th>
+      <th>Lines</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for q in quotations %}
+    <tr>
+      <td>#{{ q.id|slice:"-6:" }}</td>
+      <td>{{ q.customer_name }}<br><span class="muted">{{ q.customer_email }}</span></td>
+      <td>{{ q.created_at|date:"d/m/Y H:i" }}</td>
+      <td>{{ q.line_count }}</td>
+      <td><span class="pill pill-{{ q.status }}">{{ q.status|capfirst }}</span></td>
+      <td>
+        <a href="{% url 'admin_rfq_detail' quotation_id=q.id %}" class="btn btn-outline btn-sm">
+          {% if q.status == 'pending' %}Price it{% else %}View{% endif %}
+        </a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" class="muted" style="text-align:center;padding:30px">No RFQs match this filter.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/accounts.js' %}"></script>{% endblock %}

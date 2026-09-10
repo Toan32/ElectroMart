@@ -333,6 +333,13 @@ def list_quotations_by_user(user_id):
     return list(get_db()[QUOTATIONS].find({'user_id': _oid(user_id)}).sort('created_at', -1))
 
 
+def list_quotations(status=None, limit=200):
+    """Admin RFQ inbox (CV62): every customer's quotation, newest first, with
+    an optional status filter ('pending' / 'quoted' / 'accepted' / ...)."""
+    query = {'status': status} if status else {}
+    return list(get_db()[QUOTATIONS].find(query).sort('created_at', -1).limit(limit))
+
+
 def submit_quote_prices(quotation_id, items, valid_until):
     """Admin fills in unit_price per line and a validity date (CV62 step 3)."""
     db = get_db()

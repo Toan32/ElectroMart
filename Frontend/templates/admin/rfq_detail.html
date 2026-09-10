@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin_sales.css' %}">{% endblock %}
+
+{% block content %}
+<nav class="crumb"><a href="{% url 'home' %}">Home</a> <span>&#8250;</span> Admin <span>&#8250;</span>
+  <a href="{% url 'admin_rfq_list' %}">Manage RFQs</a> <span>&#8250;</span> RFQ #{{ quotation.id|slice:"-6:" }}</nav>
+
+{% include "admin/_admin_nav.html" %}
+
+<h1 class="acc-title">RFQ #{{ quotation.id|slice:"-6:" }}
+  <span class="pill pill-{{ quotation.status }}" style="vertical-align:middle">{{ quotation.status|capfirst }}</span>
+</h1>
+
+<div class="addr-card" style="margin-bottom:16px">
+  <div><b>Customer:</b>
+    {% if customer %}{{ customer.full_name }} &lt;{{ customer.email }}&gt;{% else %}(unknown user){% endif %}
+  </div>
+  <div class="muted" style="margin-top:4px">Sent on {{ quotation.created_at|date:"d/m/Y H:i" }}
+    {% if quotation.valid_until %} &nbsp;|&nbsp; quote valid until {{ quotation.valid_until|date:"d/m/Y" }}{% endif %}
+  </div>
+</div>
+
+{% if error %}<div class="form-error" style="margin-bottom:14px">{{ error }}</div>{% endif %}
+
+{% comment %} ---------- Control table ----------
+   Pending  -> editable: one unit_price[] number input per line + a
+               valid_until date, submit posts to admin_rfq_detail which
+               calls repo.submit_quote_prices() and emails the customer.
+   Otherwise -> read-only: prices already sent, the customer may have
+                acted on them already. {% endcomment %}
+
+{% if quotation.status == 'pending' %}
+<form method="post" action="{% url 'admin_rfq_detail' quotation_id=quotation.id %}">
+  {% csrf_token %}
+  <table class="rfq-table">
+    <thead>
+      <tr>
+        <th style="width:30%">Part number</th>
+        <th style="width:10%">Qty</th>
+        <th>Note</th>
+        <th style="width:14%">In catalog?</th>
+        <th style="width:22%">Unit price <span class="req">*</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in quotation.items %}
+      <tr>
+        <td>{{ item.part_number }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.note|default:"-" }}</td>
+        <td>{% if item.matched %}Yes{% else %}<span style="color:var(--red)">Not found</span>{% endif %}</td>
+        <td><input type="number" name="unit_price[]" min="0" step="0.01" required
+                   value="{{ item.unit_price|default_if_none:'' }}"></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="form-group" style="margin-top:18px;max-width:260px">
+    <label class="form-label" for="id_valid_until">Quote valid until <span class="req">*</span></label>
+    <input class="form-control" type="date" id="id_valid_until" name="valid_until" required>
+  </div>
+
+  <div class="btn-block-group" style="flex-direction:row;margin-top:16px">
+    <button type="submit" class="btn btn-primary">Send quote to customer</button>
+    <a href="{% url 'admin_rfq_list' %}" class="btn btn-outline">Cancel</a>
+  </div>
+</form>
+{% else %}
+<table class="rfq-table">
+  <thead>
+    <tr>
+      <th style="width:30%">Part number</th>
+      <th style="width:10%">Qty</th>
+      <th>Note</th>
+      <th style="width:14%">In catalog?</th>
+      <th style="width:16%">Unit price</th>
+      <th style="width:16%">Line total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in quotation.items %}
+    <tr>
+      <td>{{ item.part_number }}</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.note|default:"-" }}</td>
+      <td>{% if item.matched %}Yes{% else %}<span style="color:var(--red)">Not found</span>{% endif %}</td>
+      <td>{{ item.unit_price|default_if_none:"-" }}</td>
+      <td>{{ item.line_total|default_if_none:"-" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  {% if quotation.grand_total is not None %}
+  <tfoot>
+    <tr>
+      <th colspan="5" style="text-align:right">Grand total</th>
+      <th>{{ quotation.grand_total }}</th>
+    </tr>
+  </tfoot>
+  {% endif %}
+</table>
+<p class="muted" style="margin-top:12px">
+  This quote has already been sent to the customer, so it can no longer be edited here.
+</p>
+<a href="{% url 'admin_rfq_list' %}" class="btn btn-outline" style="margin-top:8px">Back to list</a>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}<script src="{% static 'js/accounts.js' %}"></script>{% endblock %}
